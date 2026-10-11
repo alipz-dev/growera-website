@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07111f">
+    <title>GROWERA | Login</title><style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        color: #eaf8ff;
+        background:
+            radial-gradient(circle at top, #163d64, transparent 55%),
+            #07111f;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 390px;
+        padding: 32px;
+        border: 1px solid #245477;
+        border-radius: 18px;
+        background: rgba(9, 24, 42, 0.95);
+        box-shadow: 0 0 45px #00c8ff12;
+    }
+
+    .logo {
+        margin: 0 0 8px;
+        text-align: center;
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: 4px;
+        color: #70eaff;
+    }
+
+    .subtitle {
+        margin: 0 0 28px;
+        text-align: center;
+        color: #8ca9bf;
+        font-size: 13px;
+    }
+
+    label {
+        display: block;
+        margin: 16px 0 8px;
+        font-size: 13px;
+        color: #b9d7e9;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #284b65;
+        border-radius: 9px;
+        outline: none;
+        color: white;
+        background: #0b1a2b;
+        font-size: 14px;
+    }
+
+    input:focus {
+        border-color: #54dfff;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 22px;
+        padding: 14px;
+        border: 0;
+        border-radius: 9px;
+        color: #04131e;
+        background: linear-gradient(90deg, #79efff, #39b9ff);
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+    }
+
+    #message {
+        min-height: 20px;
+        margin-top: 18px;
+        text-align: center;
+        font-size: 13px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .footer {
+        margin-top: 22px;
+        text-align: center;
+        color: #66859c;
+        font-size: 11px;
+    }
+</style>
+
+</head><body>
+    <main class="login-box">
+        <h1 class="logo">GROWERA</h1>    <p class="subtitle">
+        Crystal Era • Account Connection Test
+    </p>
+
+    <form id="loginForm">
+        <label for="username">Username</label>
+        <input
+            id="username"
+            type="text"
+            placeholder="Masukkan username"
+            autocomplete="username"
+            required
+        >
+
+        <label for="password">Password</label>
+        <input
+            id="password"
+            type="password"
+            placeholder="Masukkan password"
+            autocomplete="current-password"
+            required
+        >
+
+        <button id="loginButton" type="submit">
+            TEST CONNECTION
+        </button>
+    </form>
+
+    <div id="message" role="status" aria-live="polite">
+        Memeriksa koneksi GROWERA...
+    </div>
+
+    <div class="footer">
+        GROWERA • DEVELOPMENT TEST
+    </div>
+</main>
+
+<script>
+    // Gunakan endpoint dari domain website sendiri.
+    // Membutuhkan konfigurasi vercel.json.
+    const API_URL = "/api/growera/status";
+
+    const form = document.getElementById("loginForm");
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    function showMessage(text, color) {
+        message.textContent = text;
+        message.style.color = color;
+    }
+
+    async function testConnection() {
+        showMessage("Menghubungkan ke API...", "#70eaff");
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+            if (data.success !== true) {
+                throw new Error(
+                    data.message || "Respons API tidak valid."
+                );
+            }
+
+            showMessage(
+                "API GROWERA terhubung! " +
+                (data.message || ""),
+                "#58ffad"
+            );
+
+        } catch (error) {
+            console.error("[GROWERA API ERROR]", error);
+
+            showMessage(
+                "Koneksi API gagal: " + error.message,
+                "#ff8585"
+            );
+        }
+    }
+
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        button.disabled = true;
+        button.textContent = "CONNECTING...";
+
+        await testConnection();
+
+        button.disabled = false;
+        button.textContent = "TEST CONNECTION";
+    });
+
+    // Jalankan tes otomatis saat halaman dibuka.
+    testConnection();
+</script>
+
+</body>
+</html>
