@@ -212,6 +212,33 @@
 
     // Jalankan tes otomatis saat halaman dibuka.
     testConnection();
+    async function testGrowEraLogin() {
+    console.log("[GROWERA] Starting login test...");
+
+    try {
+        const response = await fetch("/api/growera/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                username: "PlayerTest1",
+                password: "dummy_password_1"
+            })
+        });
+
+        const result = await response.json();
+
+        console.log("[GROWERA] HTTP status:", response.status);
+        console.log("[GROWERA] Response:", result);
+
+        return result;
+    } catch (error) {
+        console.error("[GROWERA] Request failed:", error);
+        return null;
+    }
+}
 </script>
 
 </body>
