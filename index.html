@@ -39,6 +39,7 @@
         font-weight: 900;
         letter-spacing: 4px;
         color: #70eaff;
+        text-shadow: 0 0 20px #00c8ff50;
     }
 
     .subtitle {
@@ -68,11 +69,12 @@
 
     input:focus {
         border-color: #54dfff;
+        box-shadow: 0 0 10px #54dfff18;
     }
 
     button {
         width: 100%;
-        margin-top: 22px;
+        margin-top: 14px;
         padding: 14px;
         border: 0;
         border-radius: 9px;
@@ -81,6 +83,7 @@
         font-size: 14px;
         font-weight: bold;
         cursor: pointer;
+        transition: opacity 0.2s;
     }
 
     button:disabled {
@@ -88,13 +91,38 @@
         cursor: wait;
     }
 
-    #message {
+    button.secondary {
+        color: #bdeeff;
+        background: #102b42;
+        border: 1px solid #245477;
+    }
+
+    #message,
+    #loginTestResult {
         min-height: 20px;
         margin-top: 18px;
         text-align: center;
         font-size: 13px;
         line-height: 1.6;
         overflow-wrap: anywhere;
+    }
+
+    #loginTestResult {
+        padding: 12px;
+        border: 1px solid #203f57;
+        border-radius: 9px;
+        background: #061421;
+        text-align: left;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .section-title {
+        margin: 24px 0 8px;
+        color: #70eaff;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 1px;
     }
 
     .footer {
@@ -115,23 +143,27 @@
         <label for="username">Username</label>
         <input
             id="username"
+            name="username"
             type="text"
             placeholder="Masukkan username"
             autocomplete="username"
+            maxlength="64"
             required
         >
 
         <label for="password">Password</label>
         <input
             id="password"
+            name="password"
             type="password"
             placeholder="Masukkan password"
             autocomplete="current-password"
+            maxlength="256"
             required
         >
 
         <button id="loginButton" type="submit">
-            TEST CONNECTION
+            TEST LOGIN
         </button>
     </form>
 
@@ -139,30 +171,64 @@
         Memeriksa koneksi GROWERA...
     </div>
 
+    <div class="section-title">API CONNECTION</div>
+
+    <button
+        id="connectionButton"
+        class="secondary"
+        type="button"
+    >
+        TEST CONNECTION
+    </button>
+
+    <div class="section-title">LOGIN TEST RESULT</div>
+
+    <pre id="loginTestResult">Belum ada tes login.</pre>
+
     <div class="footer">
         GROWERA • DEVELOPMENT TEST
     </div>
 </main>
 
 <script>
-    // Gunakan endpoint dari domain website sendiri.
-    // Membutuhkan konfigurasi vercel.json.
-    const API_URL = "/api/growera/status";
+    const API_STATUS_URL = "/api/growera/status";
+    const API_LOGIN_URL = "/api/growera/login";
 
     const form = document.getElementById("loginForm");
-    const button = document.getElementById("loginButton");
+    const loginButton = document.getElementById("loginButton");
+    const connectionButton = document.getElementById("connectionButton");
     const message = document.getElementById("message");
+    const loginTestResult = document.getElementById("loginTestResult");
 
-    function showMessage(text, color) {
+    function showMessage(text, color = "#70eaff") {
         message.textContent = text;
         message.style.color = color;
     }
 
+    async function readResponse(response) {
+        const raw = await response.text();
+
+        try {
+            return {
+                data: JSON.parse(raw),
+                raw: raw
+            };
+        } catch {
+            return {
+                data: null,
+                raw: raw
+            };
+        }
+    }
+
     async function testConnection() {
+        connectionButton.disabled = true;
+        connectionButton.textContent = "CHECKING...";
+
         showMessage("Menghubungkan ke API...", "#70eaff");
 
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch(API_STATUS_URL, {
                 method: "GET",
                 headers: {
                     "Accept": "application/json"
@@ -170,75 +236,133 @@
                 cache: "no-store"
             });
 
+            const result = await readResponse(response);
+
             if (!response.ok) {
-                throw new Error("HTTP " + response.status);
+                throw new Error(
+                    "HTTP " + response.status + ": " + result.raw
+                );
             }
 
-            const data = await response.json();
-
-            if (data.success !== true) {
+            if (!result.data || result.data.success !== true) {
                 throw new Error(
-                    data.message || "Respons API tidak valid."
+                    result.data?.message || "Respons API tidak valid."
                 );
             }
 
             showMessage(
                 "API GROWERA terhubung! " +
-                (data.message || ""),
+                (result.data.message || ""),
                 "#58ffad"
             );
 
         } catch (error) {
-            console.error("[GROWERA API ERROR]", error);
+            console.error("[GROWERA STATUS ERROR]", error);
 
             showMessage(
                 "Koneksi API gagal: " + error.message,
                 "#ff8585"
             );
+
+        } finally {
+            connectionButton.disabled = false;
+            connectionButton.textContent = "TEST CONNECTION";
         }
     }
 
-    form.addEventListener("submit", async function(event) {
-        event.preventDefault();
-
-        button.disabled = true;
-        button.textContent = "CONNECTING...";
-
-        await testConnection();
-
-        button.disabled = false;
-        button.textContent = "TEST CONNECTION";
-    });
-
-    // Jalankan tes otomatis saat halaman dibuka.
-    testConnection();
-    async function testGrowEraLogin() {
-    console.log("[GROWERA] Starting login test...");
-
-    try {
-        const response = await fetch("/api/growera/login", {
+    async function testGrowEraLogin(username, password) {
+        const response = await fetch(API_LOGIN_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
             body: JSON.stringify({
-                username: "PlayerTest1",
-                password: "dummy_password_1"
-            })
+                username: username,
+                password: password
+            }),
+            cache: "no-store"
         });
 
-        const result = await response.json();
+        const result = await readResponse(response);
 
-        console.log("[GROWERA] HTTP status:", response.status);
-        console.log("[GROWERA] Response:", result);
-
-        return result;
-    } catch (error) {
-        console.error("[GROWERA] Request failed:", error);
-        return null;
+        return {
+            status: response.status,
+            data: result.data,
+            raw: result.raw
+        };
     }
-}
+
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (!username || !password) {
+            showMessage(
+                "Username dan password wajib diisi.",
+                "#ff8585"
+            );
+            return;
+        }
+
+        loginButton.disabled = true;
+        loginButton.textContent = "TESTING LOGIN...";
+
+        loginTestResult.textContent = "Sedang mengirim request login...";
+        showMessage("Memeriksa kredensial akun...", "#70eaff");
+
+        try {
+            const result = await testGrowEraLogin(username, password);
+
+            loginTestResult.textContent =
+                "HTTP Status: " + result.status +
+                "\n\nResponse:\n" +
+                (result.raw || "(Respons kosong)");
+
+            if (result.status >= 200 && result.status < 300 &&
+                result.data?.success === true) {
+
+                showMessage(
+                    "Login berhasil diverifikasi oleh API.",
+                    "#58ffad"
+                );
+
+            } else if (result.status === 401) {
+                showMessage(
+                    "Login gagal. Username atau password tidak cocok.",
+                    "#ff8585"
+                );
+
+            } else {
+                showMessage(
+                    "Tes selesai, tetapi login belum berhasil. Periksa hasil tes di bawah.",
+                    "#ffd479"
+                );
+            }
+
+        } catch (error) {
+            console.error("[GROWERA LOGIN ERROR]", error);
+
+            loginTestResult.textContent =
+                "Request gagal:\n" + error.message;
+
+            showMessage(
+                "Gagal menghubungi endpoint login.",
+                "#ff8585"
+            );
+
+        } finally {
+            loginButton.disabled = false;
+            loginButton.textContent = "TEST LOGIN";
+        }
+    });
+
+    connectionButton.addEventListener("click", testConnection);
+
+    // Cek koneksi status saat halaman pertama kali dibuka.
+    testConnection();
 </script>
 
 </body>
