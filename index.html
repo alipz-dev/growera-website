@@ -1108,95 +1108,122 @@
             }
         }
 
+        /* =====================================================
+           MOBILE (<=560px)
+           Player overview tetap tampil penuh. Sidebar 190px.
+        ===================================================== */
+
         @media (max-width: 560px) {
             :root {
-                --sidebar-width: 68px;
+                --sidebar-width: 190px;
             }
 
             .sidebar {
-                padding: 14px 6px;
+                padding: 14px 8px;
             }
 
             .sidebar-brand {
-                padding: 4px 0 14px;
-                font-size: 0;
-                text-align: center;
+                padding: 4px 8px 14px;
+                font-size: 15px;
             }
 
-            .sidebar-brand::first-letter {
-                font-size: 22px;
+            .sidebar-brand small {
+                font-size: 7px;
             }
 
-            .sidebar-brand small,
-            .sidebar-label,
-            .nav-text {
+            .sidebar-label {
                 display: none;
             }
 
-            /* Sembunyikan detail player overview di mobile,
-               hanya sisakan avatar sebagai indikator. */
+            /* Player overview tetap tampil penuh */
             .sidebar-player {
-                padding: 8px;
+                padding: 10px;
                 margin-bottom: 12px;
             }
 
-            .sidebar-player-top {
-                justify-content: center;
-                margin-bottom: 0;
+            .sidebar-avatar {
+                width: 34px;
+                height: 34px;
+                font-size: 14px;
             }
 
-            .sidebar-player-info,
-            .sidebar-stats,
-            .sidebar-xp-header,
-            .sidebar-xp-note,
-            .sidebar-xp-block {
-                display: none;
+            .sidebar-player-name {
+                font-size: 11px;
             }
 
+            .sidebar-player-status {
+                font-size: 8px;
+            }
+
+            .sidebar-stat {
+                padding: 5px 7px;
+            }
+
+            .sidebar-stat-label {
+                font-size: 7px;
+            }
+
+            .sidebar-stat-value {
+                font-size: 12px;
+            }
+
+            .sidebar-stat-value.gems {
+                font-size: 11px;
+            }
+
+            .sidebar-xp-header {
+                font-size: 8px;
+            }
+
+            .sidebar-xp-note {
+                font-size: 8px;
+            }
+
+            /* Nav menu — teks tetap tampil karena sidebar cukup lebar */
             .sidebar-nav .nav-button,
             .sidebar-bottom .nav-button {
-                justify-content: center;
-                gap: 0;
-                padding: 0;
+                padding: 0 10px;
+                gap: 10px;
+                min-height: 38px;
+                font-size: 11px;
             }
 
             .sidebar-nav .nav-button .nav-icon,
             .sidebar-bottom .nav-button .nav-icon {
-                width: auto;
-                font-size: 19px;
-            }
-
-            .topbar {
-                height: 64px;
-                padding: 10px 12px;
-            }
-
-            .brand {
                 font-size: 16px;
             }
 
+            .topbar {
+                height: 60px;
+                padding: 8px 12px;
+            }
+
+            .brand {
+                font-size: 14px;
+            }
+
             .brand small {
-                font-size: 8px;
+                font-size: 7px;
             }
 
             .account-button {
-                padding: 6px;
+                padding: 6px 8px;
             }
 
             .account-name {
-                max-width: 75px;
+                max-width: 70px;
             }
 
             .content {
-                padding: 82px 13px 25px;
+                padding: 78px 12px 25px;
             }
 
             .page-panel {
-                padding: 17px;
+                padding: 15px;
             }
 
             .news-card {
-                padding: 18px;
+                padding: 16px;
             }
 
             .news-title {
@@ -1414,21 +1441,13 @@
 
     <section id="dashboardScreen" class="hidden">
 
-        <!-- =====================================================
-             FIXED LEFT SIDEBAR
-             - Brand
-             - Player overview compact (pojok kiri atas)
-             - Nav menu (langsung di bawah player overview)
-             - Bottom: settings/logout
-        ===================================================== -->
-
         <aside class="sidebar">
             <div class="sidebar-brand">
                 💎 GROWERA
                 <small>CRYSTAL ERA</small>
             </div>
 
-            <!-- PLAYER OVERVIEW (compact) -->
+            <!-- PLAYER OVERVIEW (compact, pojok kiri atas) -->
 
             <div class="sidebar-player">
                 <div class="sidebar-player-top">
@@ -1478,7 +1497,7 @@
                 </div>
             </div>
 
-            <!-- NAV MENU -->
+            <!-- NAV MENU (tepat di bawah player overview) -->
 
             <div class="sidebar-label">MAIN MENU</div>
 
@@ -2058,7 +2077,6 @@
             setPlayerStatus("Memuat...", "#65E7FF");
             setProfileStatus("Memuat profil pemain...", "#65E7FF");
 
-            // Panel kanan
             document.getElementById("rightPlayerUsername").textContent =
                 "Memuat...";
 
@@ -2072,7 +2090,6 @@
             document.getElementById("rightPlayerGems").textContent = "—";
             document.getElementById("rightPlayerPlaytime").textContent = "—";
 
-            // Player overview (sidebar kiri)
             resetPlayerOverview();
         }
 
@@ -2166,7 +2183,7 @@
 
 
         /* =========================================
-           PLAYER OVERVIEW (di sidebar kiri)
+           PLAYER OVERVIEW (sidebar kiri)
         ========================================= */
 
         function resetPlayerOverview() {
@@ -2361,17 +2378,13 @@
                 document.getElementById("headerAvatar").textContent = initial;
                 document.getElementById("playerAvatar").textContent = initial;
 
-                // Playtime stat card
                 document.getElementById("statPlaytime").textContent =
                     formatNumber(profile.playtime);
 
                 document.getElementById("statPlaytimeNote").textContent =
                     "Nilai playtime dari server";
 
-                // Player overview: level, gems, XP bar (sidebar kiri atas)
                 updatePlayerOverview(profile);
-
-                // Detail panjang di halaman Profile
                 renderProfileDetails(profile);
 
                 document.getElementById("profileError").classList.add("hidden");
@@ -2729,7 +2742,6 @@
         document.getElementById("newsReadMoreBtn").addEventListener(
             "click",
             function() {
-                // Placeholder: nanti bisa diarahkan ke halaman News detail.
                 alert(
                     "Halaman detail berita akan segera tersedia."
                 );
