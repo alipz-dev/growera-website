@@ -1,0 +1,9 @@
+{
+"$schema": "https://openapi.vercel.sh/vercel.json",
+"rewrites": [
+{
+"source": "/api/growera/:path*",
+"destination": "https://api.gtps.cloud/g-api/18891/api/growera/:path*"
+}
+]
+}
