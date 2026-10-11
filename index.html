@@ -1297,7 +1297,7 @@
 
         function navigateTo(pageName) {
 
-            const allowedPages = [
+            const validPages = [
                 "home",
                 "profile",
                 "rewards",
@@ -1306,54 +1306,76 @@
                 "more"
             ];
 
-            if (!allowedPages.includes(pageName)) {
+            if (!validPages.includes(pageName)) {
+                console.warn(
+                    "Halaman tidak ditemukan:",
+                    pageName
+                );
+
                 pageName = "home";
             }
 
-            const pageId =
-                pageName.charAt(0).toUpperCase() +
-                pageName.slice(1);
-
+            // Sembunyikan seluruh halaman
             document.querySelectorAll(".app-page").forEach(
                 function(page) {
                     page.classList.add("hidden");
                 }
             );
 
-            const selectedPage =
-                document.getElementById(pageId + "Page");
+            // PENTING:
+            // id HTML menggunakan huruf kecil di awal:
+            // homePage, profilePage, rewardsPage, morePage
+            let targetPage =
+                document.getElementById(pageName + "Page");
 
             /*
              * Halaman events dan history belum dibuat.
-             * Untuk sementara, tampilkan halaman More.
+             * Untuk sementara, fallback ke halaman More.
              */
-            if (!selectedPage) {
+            if (!targetPage) {
                 pageName = "more";
-
-                document.getElementById(
-                    "morePage"
-                ).classList.remove("hidden");
-
-            } else {
-                selectedPage.classList.remove("hidden");
+                targetPage =
+                    document.getElementById("morePage");
             }
 
-            document.querySelectorAll(".nav-button").forEach(
-                function(button) {
-                    button.classList.toggle(
-                        "active",
-                        button.dataset.page === pageName
-                    );
-                }
-            );
+            if (!targetPage) {
+                console.error(
+                    "Elemen halaman tidak ditemukan:",
+                    pageName + "Page"
+                );
+                return;
+            }
+
+            targetPage.classList.remove("hidden");
+
+            /*
+             * Perbarui status aktif HANYA untuk tombol
+             * bottom-nav, supaya quick-card di halaman Home
+             * tidak ikut "menyala".
+             */
+            document.querySelectorAll(
+                ".bottom-nav .nav-button"
+            ).forEach(function(button) {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.page === pageName
+                );
+            });
 
             window.scrollTo({
                 top: 0,
-                behavior: "smooth"
+                behavior: "auto"
             });
         }
 
 
+        /*
+         * Satu mekanisme navigasi saja:
+         * pasang listener ke semua elemen ber-attribute
+         * data-page (bottom-nav, View Profile, quick-card).
+         * JANGAN tambahkan onclick di HTML agar tidak
+         * terjadi pemanggilan ganda.
+         */
         document.querySelectorAll("[data-page]").forEach(
             function(button) {
 
