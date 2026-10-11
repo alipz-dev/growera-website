@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#080D19">
-
     <title>GROWERA | Crystal Era</title>
 
     <style>
@@ -63,9 +62,7 @@
             display: none !important;
         }
 
-        /* =========================
-           LOGIN
-        ========================= */
+        /* LOGIN */
 
         #loginScreen {
             min-height: 100vh;
@@ -158,9 +155,7 @@
             font-size: 11px;
         }
 
-        /* =========================
-           DASHBOARD HEADER
-        ========================= */
+        /* HEADER */
 
         #dashboardScreen {
             min-height: 100vh;
@@ -230,9 +225,7 @@
             white-space: nowrap;
         }
 
-        /* =========================
-           MAIN CONTENT
-        ========================= */
+        /* CONTENT */
 
         .content {
             width: 100%;
@@ -257,6 +250,7 @@
             margin: 10px 0 8px;
             font-size: clamp(24px, 5vw, 34px);
             line-height: 1.2;
+            overflow-wrap: anywhere;
         }
 
         .welcome p {
@@ -266,9 +260,7 @@
             line-height: 1.7;
         }
 
-        /* =========================
-           PLAYER CARD
-        ========================= */
+        /* PLAYER CARD */
 
         .player-card {
             position: relative;
@@ -342,11 +334,13 @@
             margin-top: 8px;
             color: var(--success);
             font-size: 11px;
+            overflow-wrap: anywhere;
         }
 
         .status-dot {
             width: 7px;
             height: 7px;
+            flex-shrink: 0;
             border-radius: 50%;
             background: var(--success);
         }
@@ -384,9 +378,7 @@
             font-size: 12px;
         }
 
-        /* =========================
-           SECTION
-        ========================= */
+        /* SECTIONS */
 
         .section {
             margin-top: 30px;
@@ -408,11 +400,10 @@
         .section-heading span {
             color: var(--muted);
             font-size: 11px;
+            text-align: right;
         }
 
-        /* =========================
-           STATISTICS
-        ========================= */
+        /* STATISTICS */
 
         .stats-grid {
             display: grid;
@@ -458,11 +449,10 @@
             color: #7186A4;
             font-size: 10px;
             line-height: 1.5;
+            overflow-wrap: anywhere;
         }
 
-        /* =========================
-           QUICK ACCESS
-        ========================= */
+        /* QUICK ACCESS */
 
         .quick-grid {
             display: grid;
@@ -514,9 +504,7 @@
             line-height: 1.5;
         }
 
-        /* =========================
-           UPDATES
-        ========================= */
+        /* UPDATES */
 
         .update-card {
             padding: 18px;
@@ -531,9 +519,7 @@
             line-height: 1.8;
         }
 
-        /* =========================
-           PAGES
-        ========================= */
+        /* PAGES */
 
         .page-panel {
             min-height: 250px;
@@ -545,17 +531,73 @@
 
         .page-panel h2 {
             margin-top: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .page-panel h3 {
+            overflow-wrap: anywhere;
         }
 
         .page-panel p {
             color: var(--muted);
             font-size: 13px;
             line-height: 1.8;
+            overflow-wrap: anywhere;
         }
 
-        /* =========================
-           BOTTOM NAVIGATION
-        ========================= */
+        .profile-details {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .profile-details-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(130, 160, 210, 0.08);
+            font-size: 12px;
+        }
+
+        .profile-details-label {
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+
+        .profile-details-value {
+            color: var(--text);
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .error-panel {
+            margin-top: 15px;
+            padding: 13px;
+            border: 1px solid rgba(255, 133, 133, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 133, 133, 0.05);
+        }
+
+        .logout-button {
+            margin-top: 20px;
+            padding: 11px 14px;
+            border: 1px solid rgba(255, 133, 133, 0.3);
+            border-radius: 10px;
+            color: var(--danger);
+            background: rgba(255, 133, 133, 0.06);
+            font-size: 12px;
+        }
+
+        .app-footer {
+            margin-top: 35px;
+            color: #566B86;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* BOTTOM NAVIGATION */
 
         .bottom-nav {
             position: fixed;
@@ -592,23 +634,6 @@
             color: var(--cyan);
         }
 
-        .logout-button {
-            margin-top: 20px;
-            padding: 11px 14px;
-            border: 1px solid rgba(255, 133, 133, 0.3);
-            border-radius: 10px;
-            color: var(--danger);
-            background: rgba(255, 133, 133, 0.06);
-            font-size: 12px;
-        }
-
-        .app-footer {
-            margin-top: 35px;
-            color: #566B86;
-            font-size: 10px;
-            text-align: center;
-        }
-
         @media (min-width: 760px) {
             .content {
                 padding: 35px 30px;
@@ -641,13 +666,10 @@
 
 <body>
 
-    <!-- =========================
-         LOGIN SCREEN
-    ========================== -->
+    <!-- LOGIN -->
 
     <section id="loginScreen">
         <main class="login-box">
-
             <h1 class="logo">GROWERA</h1>
 
             <p class="subtitle">
@@ -655,7 +677,6 @@
             </p>
 
             <form id="loginForm">
-
                 <label for="username">Username</label>
 
                 <input
@@ -687,7 +708,6 @@
                 >
                     SIGN IN
                 </button>
-
             </form>
 
             <div
@@ -700,48 +720,34 @@
             <div class="login-footer">
                 GROWERA © Crystal Era
             </div>
-
         </main>
     </section>
 
 
-    <!-- =========================
-         DASHBOARD SCREEN
-    ========================== -->
+    <!-- DASHBOARD -->
 
     <section id="dashboardScreen" class="hidden">
 
         <header class="topbar">
-
             <div class="brand">
                 💎 GROWERA
                 <small>CRYSTAL ERA</small>
             </div>
 
             <button class="account-button" id="accountButton" type="button">
-
                 <span class="avatar" id="headerAvatar">P</span>
-
-                <span class="account-name" id="headerUsername">
-                    Player
-                </span>
-
+                <span class="account-name" id="headerUsername">Player</span>
             </button>
-
         </header>
-
 
         <main class="content">
 
-            <!-- HOME PAGE -->
+            <!-- HOME -->
 
             <section class="app-page" id="homePage">
 
                 <div class="welcome">
-
-                    <div class="eyebrow">
-                        PLAYER PORTAL
-                    </div>
+                    <div class="eyebrow">PLAYER PORTAL</div>
 
                     <h1>
                         Welcome back,
@@ -751,48 +757,31 @@
                     <p>
                         Selamat datang kembali di dunia Crystal Era.
                     </p>
-
                 </div>
 
-
-                <!-- PLAYER IDENTITY CARD -->
-
                 <section class="player-card">
-
-                    <div class="card-label">
-                        PLAYER OVERVIEW
-                    </div>
+                    <div class="card-label">PLAYER OVERVIEW</div>
 
                     <div class="player-info">
-
-                        <div class="player-avatar" id="playerAvatar">
-                            P
-                        </div>
+                        <div class="player-avatar" id="playerAvatar">P</div>
 
                         <div>
-
                             <h2 class="player-name" id="playerUsername">
                                 Player
                             </h2>
 
-                            <div class="player-status">
+                            <div class="player-status" id="playerStatus">
                                 <span class="status-dot"></span>
-                                Account connected
+                                Menunggu profil...
                             </div>
-
                         </div>
-
                     </div>
 
                     <div class="card-bottom">
-
                         <div>
-                            <div class="level-label">
-                                PLAYER LEVEL
-                            </div>
-
-                            <div class="level-value">
-                                Belum tersedia
+                            <div class="level-label">PLAYER LEVEL</div>
+                            <div class="level-value" id="playerLevel">
+                                Memuat...
                             </div>
                         </div>
 
@@ -803,16 +792,10 @@
                         >
                             View Profile →
                         </button>
-
                     </div>
-
                 </section>
 
-
-                <!-- PLAYER STATISTICS -->
-
                 <section class="section">
-
                     <div class="section-heading">
                         <h2>Player Statistics</h2>
                         <span>Account overview</span>
@@ -821,227 +804,150 @@
                     <div class="stats-grid">
 
                         <article class="stat-card">
-
                             <div class="stat-icon">💎</div>
-
-                            <div class="stat-label">
-                                Gems
+                            <div class="stat-label">Gems</div>
+                            <div class="stat-value" id="statGems">—</div>
+                            <div class="stat-note" id="statGemsNote">
+                                Menunggu data API
                             </div>
-
-                            <div class="stat-value">—</div>
-
-                            <div class="stat-note">
-                                Menunggu integrasi API
-                            </div>
-
                         </article>
 
                         <article class="stat-card">
-
                             <div class="stat-icon">🔒</div>
-
-                            <div class="stat-label">
-                                World Locks
-                            </div>
-
+                            <div class="stat-label">World Locks</div>
                             <div class="stat-value">—</div>
-
                             <div class="stat-note">
-                                Menunggu integrasi API
+                                Belum tersedia dari API
                             </div>
-
                         </article>
 
                         <article class="stat-card">
-
                             <div class="stat-icon">🏆</div>
-
-                            <div class="stat-label">
-                                Achievements
-                            </div>
-
+                            <div class="stat-label">Achievements</div>
                             <div class="stat-value">—</div>
-
                             <div class="stat-note">
-                                Menunggu integrasi API
+                                Belum tersedia dari API
                             </div>
-
                         </article>
 
                         <article class="stat-card">
-
                             <div class="stat-icon">⏱️</div>
-
-                            <div class="stat-label">
-                                Play Time
+                            <div class="stat-label">Play Time</div>
+                            <div class="stat-value" id="statPlaytime">—</div>
+                            <div class="stat-note" id="statPlaytimeNote">
+                                Menunggu data API
                             </div>
-
-                            <div class="stat-value">—</div>
-
-                            <div class="stat-note">
-                                Menunggu integrasi API
-                            </div>
-
                         </article>
 
                     </div>
-
                 </section>
 
-
-                <!-- QUICK ACCESS -->
-
                 <section class="section">
-
                     <div class="section-heading">
                         <h2>Quick Access</h2>
                         <span>Explore GROWERA</span>
                     </div>
 
                     <div class="quick-grid">
-
-                        <button
-                            class="quick-card"
-                            data-page="profile"
-                            type="button"
-                        >
+                        <button class="quick-card" data-page="profile" type="button">
                             <span class="quick-icon">👤</span>
-
                             <span>
-                                <span class="quick-title">
-                                    My Profile
-                                </span>
-
-                                <div class="quick-description">
-                                    Informasi akun
-                                </div>
+                                <span class="quick-title">My Profile</span>
+                                <div class="quick-description">Informasi akun</div>
                             </span>
                         </button>
 
-                        <button
-                            class="quick-card"
-                            data-page="rewards"
-                            type="button"
-                        >
+                        <button class="quick-card" data-page="rewards" type="button">
                             <span class="quick-icon">🎁</span>
-
                             <span>
-                                <span class="quick-title">
-                                    Rewards
-                                </span>
-
-                                <div class="quick-description">
-                                    Hadiah dan reward
-                                </div>
+                                <span class="quick-title">Rewards</span>
+                                <div class="quick-description">Hadiah dan reward</div>
                             </span>
                         </button>
 
-                        <button
-                            class="quick-card"
-                            data-page="events"
-                            type="button"
-                        >
+                        <button class="quick-card" data-page="events" type="button">
                             <span class="quick-icon">🎉</span>
-
                             <span>
-                                <span class="quick-title">
-                                    Events
-                                </span>
-
-                                <div class="quick-description">
-                                    Informasi event
-                                </div>
+                                <span class="quick-title">Events</span>
+                                <div class="quick-description">Informasi event</div>
                             </span>
                         </button>
 
-                        <button
-                            class="quick-card"
-                            data-page="history"
-                            type="button"
-                        >
+                        <button class="quick-card" data-page="history" type="button">
                             <span class="quick-icon">📜</span>
-
                             <span>
-                                <span class="quick-title">
-                                    History
-                                </span>
-
-                                <div class="quick-description">
-                                    Riwayat aktivitas
-                                </div>
+                                <span class="quick-title">History</span>
+                                <div class="quick-description">Riwayat aktivitas</div>
                             </span>
                         </button>
-
                     </div>
-
                 </section>
 
-
-                <!-- LATEST UPDATES -->
-
                 <section class="section">
-
                     <div class="section-heading">
                         <h2>Latest Updates</h2>
                         <span>GROWERA News</span>
                     </div>
 
                     <div class="update-card">
-
                         <div class="update-placeholder">
                             Belum ada pengumuman yang dimuat.
                             <br>
-                            Bagian ini nantinya menampilkan berita
-                            dan event dari GROWERA.
+                            Bagian ini nantinya menampilkan berita dan event GROWERA.
                         </div>
-
                     </div>
-
                 </section>
-
             </section>
 
 
-            <!-- PROFILE PAGE -->
+            <!-- PROFILE -->
 
             <section class="app-page hidden" id="profilePage">
-
                 <div class="welcome">
                     <div class="eyebrow">PLAYER ACCOUNT</div>
                     <h1>My Profile</h1>
-                    <p>Informasi akun pemainmu.</p>
+                    <p>Informasi akun pemainmu dari server GROWERA.</p>
                 </div>
 
                 <div class="page-panel">
-
                     <h2 id="profileUsername">Player</h2>
 
-                    <p>
-                        Username telah diverifikasi oleh endpoint login.
-                    </p>
+                    <div id="profileStatusMessage" class="player-status">
+                        <span class="status-dot"></span>
+                        Menunggu data profil...
+                    </div>
 
-                    <p>
-                        Informasi level, title, dan statistik akan
-                        ditambahkan setelah endpoint profil tersedia.
-                    </p>
+                    <div id="profileError" class="error-panel hidden">
+                        <p id="profileErrorMessage"></p>
+
+                        <button
+                            id="retryProfileButton"
+                            class="profile-button"
+                            type="button"
+                        >
+                            Coba Lagi
+                        </button>
+                    </div>
+
+                    <div id="profileDetails" class="profile-details">
+                        <p>Data profil akan muncul setelah berhasil diambil dari API.</p>
+                    </div>
 
                     <button
                         class="profile-button"
                         data-page="home"
                         type="button"
+                        style="margin-top:20px"
                     >
                         ← Back to Home
                     </button>
-
                 </div>
-
             </section>
 
 
-            <!-- REWARDS PAGE -->
+            <!-- REWARDS -->
 
             <section class="app-page hidden" id="rewardsPage">
-
                 <div class="welcome">
                     <div class="eyebrow">CRYSTAL REWARDS</div>
                     <h1>Rewards</h1>
@@ -1049,23 +955,18 @@
                 </div>
 
                 <div class="page-panel">
-
                     <h2>Coming Soon</h2>
-
                     <p>
-                        Halaman ini akan menampilkan hadiah dan
-                        informasi reward yang tersedia.
+                        Halaman ini akan menampilkan hadiah dan informasi
+                        reward yang tersedia.
                     </p>
-
                 </div>
-
             </section>
 
 
-            <!-- MORE PAGE -->
+            <!-- MORE -->
 
             <section class="app-page hidden" id="morePage">
-
                 <div class="welcome">
                     <div class="eyebrow">EXPLORE</div>
                     <h1>More</h1>
@@ -1073,147 +974,176 @@
                 </div>
 
                 <div class="page-panel">
-
                     <h2>Account Settings</h2>
 
                     <p>
-                        Pengaturan akun akan dikembangkan
-                        pada tahap berikutnya.
+                        Pengaturan akun akan dikembangkan pada tahap berikutnya.
                     </p>
 
-                    <button
-                        class="logout-button"
-                        id="logoutButton"
-                        type="button"
-                    >
+                    <button class="logout-button" id="logoutButton" type="button">
                         Sign Out
                     </button>
-
                 </div>
-
             </section>
-
 
             <div class="app-footer">
                 GROWERA • CRYSTAL ERA
             </div>
-
         </main>
 
-
-        <!-- BOTTOM NAVIGATION -->
+        <!-- BOTTOM NAV -->
 
         <nav class="bottom-nav">
-
-            <button
-                class="nav-button active"
-                data-page="home"
-                type="button"
-            >
+            <button class="nav-button active" data-page="home" type="button">
                 <span class="nav-icon">⌂</span>
                 <span>Home</span>
             </button>
 
-            <button
-                class="nav-button"
-                data-page="profile"
-                type="button"
-            >
+            <button class="nav-button" data-page="profile" type="button">
                 <span class="nav-icon">♙</span>
                 <span>Profile</span>
             </button>
 
-            <button
-                class="nav-button"
-                data-page="rewards"
-                type="button"
-            >
+            <button class="nav-button" data-page="rewards" type="button">
                 <span class="nav-icon">✧</span>
                 <span>Rewards</span>
             </button>
 
-            <button
-                class="nav-button"
-                data-page="more"
-                type="button"
-            >
+            <button class="nav-button" data-page="more" type="button">
                 <span class="nav-icon">☰</span>
                 <span>More</span>
             </button>
-
         </nav>
-
     </section>
 
 
     <script>
+        /* =========================================
+           API CONFIGURATION
+        ========================================= */
+
         const API_LOGIN_URL = "/api/growera/login";
+        const API_PROFILE_URL = "/api/growera/me";
+        const API_LOGOUT_URL = "/api/growera/logout";
 
-        const loginScreen =
-            document.getElementById("loginScreen");
+        const loginScreen = document.getElementById("loginScreen");
+        const dashboardScreen = document.getElementById("dashboardScreen");
+        const loginForm = document.getElementById("loginForm");
+        const loginButton = document.getElementById("loginButton");
+        const loginMessage = document.getElementById("loginMessage");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
 
-        const dashboardScreen =
-            document.getElementById("dashboardScreen");
-
-        const loginForm =
-            document.getElementById("loginForm");
-
-        const loginButton =
-            document.getElementById("loginButton");
-
-        const loginMessage =
-            document.getElementById("loginMessage");
-
-        const usernameInput =
-            document.getElementById("username");
-
-        const passwordInput =
-            document.getElementById("password");
+        let profileRequestID = 0;
+        let currentProfile = null;
 
 
-        /* =========================
-           MESSAGE
-        ========================= */
+        /* =========================================
+           HELPERS
+        ========================================= */
 
-        function showLoginMessage(text, color) {
-            loginMessage.textContent = text;
+        function showLoginMessage(message, color) {
+            loginMessage.textContent = message;
             loginMessage.style.color = color || "#9BAAC3";
         }
 
+        function formatNumber(value) {
+            if (value === null || value === undefined || value === "") {
+                return "—";
+            }
 
-        /* =========================
+            const number = Number(value);
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            return new Intl.NumberFormat("id-ID", {
+                maximumFractionDigits: 0
+            }).format(number);
+        }
+
+        function getInitial(username) {
+            return String(username || "P")
+                .trim()
+                .charAt(0)
+                .toUpperCase() || "P";
+        }
+
+        async function readJSONResponse(response) {
+            const raw = await response.text();
+
+            try {
+                return JSON.parse(raw);
+            } catch (error) {
+                throw new Error(
+                    "Respons API bukan JSON yang valid. HTTP " +
+                    response.status
+                );
+            }
+        }
+
+        function setStatusElement(element, message, color) {
+            if (!element) {
+                return;
+            }
+
+            let dot = element.querySelector(".status-dot");
+
+            if (!dot) {
+                dot = document.createElement("span");
+                dot.className = "status-dot";
+                element.prepend(dot);
+            }
+
+            dot.style.background = color;
+            element.style.color = color;
+
+            Array.from(element.childNodes).forEach(function(node) {
+                if (node !== dot) {
+                    node.remove();
+                }
+            });
+
+            element.appendChild(document.createTextNode(message));
+        }
+
+        function setPlayerStatus(message, color) {
+            setStatusElement(
+                document.getElementById("playerStatus"),
+                message,
+                color
+            );
+        }
+
+        function setProfileStatus(message, color) {
+            setStatusElement(
+                document.getElementById("profileStatusMessage"),
+                message,
+                color
+            );
+        }
+
+
+        /* =========================================
            LOGIN REQUEST
-        ========================= */
+        ========================================= */
 
         async function loginRequest(username, password) {
-
             const response = await fetch(API_LOGIN_URL, {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-
                 body: JSON.stringify({
                     username: username,
                     password: password
                 }),
-
                 cache: "no-store"
             });
 
-            const raw = await response.text();
-
-            let data;
-
-            try {
-                data = JSON.parse(raw);
-            } catch {
-                throw new Error(
-                    "API mengembalikan respons yang tidak valid."
-                );
-            }
+            const data = await readJSONResponse(response);
 
             if (!response.ok || data.success !== true) {
                 throw new Error(
@@ -1222,17 +1152,13 @@
                 );
             }
 
-            if (!data.user ||
-                typeof data.user.username !== "string") {
-
+            if (!data.user || typeof data.user.username !== "string") {
                 throw new Error(
                     "Respons login tidak memiliki identitas pengguna."
                 );
             }
 
-            if (typeof data.token !== "string" ||
-                data.token.length === 0) {
-
+            if (typeof data.token !== "string" || !data.token) {
                 throw new Error(
                     "Token sesi tidak ditemukan pada respons API."
                 );
@@ -1246,57 +1172,300 @@
         }
 
 
-        /* =========================
+        /* =========================================
            SHOW DASHBOARD
-        ========================= */
+        ========================================= */
 
         function showDashboard(username) {
+            const initial = getInitial(username);
 
-            const initial =
-                username.trim().charAt(0).toUpperCase() || "P";
+            document.getElementById("headerUsername").textContent = username;
+            document.getElementById("welcomeUsername").textContent = username;
+            document.getElementById("playerUsername").textContent = username;
+            document.getElementById("profileUsername").textContent = username;
 
-            document.getElementById(
-                "headerUsername"
-            ).textContent = username;
-
-            document.getElementById(
-                "welcomeUsername"
-            ).textContent = username;
-
-            document.getElementById(
-                "playerUsername"
-            ).textContent = username;
-
-            document.getElementById(
-                "profileUsername"
-            ).textContent = username;
-
-            document.getElementById(
-                "headerAvatar"
-            ).textContent = initial;
-
-            document.getElementById(
-                "playerAvatar"
-            ).textContent = initial;
+            document.getElementById("headerAvatar").textContent = initial;
+            document.getElementById("playerAvatar").textContent = initial;
 
             loginScreen.classList.add("hidden");
             dashboardScreen.classList.remove("hidden");
 
             window.scrollTo({
                 top: 0,
-                behavior: "instant"
+                behavior: "auto"
             });
 
             navigateTo("home");
         }
 
 
-        /* =========================
+        /* =========================================
+           RESET PROFILE DISPLAY
+        ========================================= */
+
+        function resetProfileDisplay() {
+            currentProfile = null;
+
+            document.getElementById("playerLevel").textContent = "Memuat...";
+            document.getElementById("statGems").textContent = "—";
+            document.getElementById("statGemsNote").textContent =
+                "Memuat data dari server...";
+
+            document.getElementById("statPlaytime").textContent = "—";
+            document.getElementById("statPlaytimeNote").textContent =
+                "Memuat data dari server...";
+
+            document.getElementById("profileError").classList.add("hidden");
+
+            document.getElementById("profileDetails").replaceChildren();
+
+            const placeholder = document.createElement("p");
+            placeholder.textContent = "Sedang mengambil data profil...";
+            document.getElementById("profileDetails").appendChild(placeholder);
+
+            setPlayerStatus("Memuat profil pemain...", "#65E7FF");
+            setProfileStatus("Memuat profil pemain...", "#65E7FF");
+        }
+
+
+        /* =========================================
+           RENDER PROFILE
+        ========================================= */
+
+        function renderProfileDetails(profile) {
+            const container = document.getElementById("profileDetails");
+            container.replaceChildren();
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Account Information";
+            heading.style.color = "#65E7FF";
+            container.appendChild(heading);
+
+            const roleName = profile.role && profile.role.name
+                ? profile.role.name
+                : "Player";
+
+            const roleID = profile.role && profile.role.id !== undefined
+                ? profile.role.id
+                : 0;
+
+            const fields = [
+                ["Username", profile.username],
+                ["Display Name", profile.displayName],
+                ["User ID", profile.userID],
+                ["Level", formatNumber(profile.level)],
+                ["XP", formatNumber(profile.xp)],
+                ["Required XP", formatNumber(profile.requiredXP)],
+                ["Gems", formatNumber(profile.gems)],
+                ["Playtime (raw)", formatNumber(profile.playtime)],
+                ["Role", roleName],
+                ["Role ID", formatNumber(roleID)]
+            ];
+
+            fields.forEach(function(field) {
+                const row = document.createElement("div");
+                row.className = "profile-details-row";
+
+                const label = document.createElement("span");
+                label.className = "profile-details-label";
+                label.textContent = field[0];
+
+                const value = document.createElement("span");
+                value.className = "profile-details-value";
+                value.textContent =
+                    field[1] === null || field[1] === undefined
+                        ? "—"
+                        : String(field[1]);
+
+                row.appendChild(label);
+                row.appendChild(value);
+                container.appendChild(row);
+            });
+
+            const createdAt = Number(profile.accountCreatedAt);
+
+            if (Number.isFinite(createdAt) && createdAt > 0) {
+                const row = document.createElement("div");
+                row.className = "profile-details-row";
+
+                const label = document.createElement("span");
+                label.className = "profile-details-label";
+                label.textContent = "Account Created";
+
+                const value = document.createElement("span");
+                value.className = "profile-details-value";
+
+                value.textContent = new Date(
+                    createdAt * 1000
+                ).toLocaleString("id-ID");
+
+                row.appendChild(label);
+                row.appendChild(value);
+                container.appendChild(row);
+            }
+
+            const note = document.createElement("p");
+            note.textContent =
+                "Playtime ditampilkan sesuai nilai mentah dari server. " +
+                "Satuannya belum dikonfirmasi.";
+
+            note.style.fontSize = "11px";
+            note.style.color = "#7186A4";
+
+            container.appendChild(note);
+        }
+
+
+        /* =========================================
+           PROFILE ERROR
+        ========================================= */
+
+        function showProfileError(message) {
+            const errorBox = document.getElementById("profileError");
+            const errorMessage = document.getElementById("profileErrorMessage");
+
+            errorMessage.textContent = message;
+            errorBox.classList.remove("hidden");
+
+            document.getElementById("profileDetails").replaceChildren();
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Profile API Error";
+            heading.style.color = "#FF8585";
+
+            const detail = document.createElement("p");
+            detail.textContent = message;
+
+            document.getElementById("profileDetails").appendChild(heading);
+            document.getElementById("profileDetails").appendChild(detail);
+
+            setPlayerStatus("Gagal memuat profil", "#FF8585");
+            setProfileStatus("Gagal memuat profil", "#FF8585");
+        }
+
+
+        /* =========================================
+           FETCH PLAYER PROFILE
+        ========================================= */
+
+        async function fetchPlayerProfile() {
+            const token = sessionStorage.getItem("growera_token");
+
+            if (!token) {
+                showProfileError(
+                    "Token login tidak ditemukan. Silakan login kembali."
+                );
+                return;
+            }
+
+            const requestID = ++profileRequestID;
+
+            resetProfileDisplay();
+
+            try {
+                const response = await fetch(API_PROFILE_URL, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json"
+                    },
+                    cache: "no-store"
+                });
+
+                const data = await readJSONResponse(response);
+
+                if (requestID !== profileRequestID) {
+                    return;
+                }
+
+                if (response.status === 401) {
+                    showProfileError(
+                        "Sesi tidak valid atau telah berakhir. " +
+                        "Silakan keluar lalu login kembali."
+                    );
+                    return;
+                }
+
+                if (!response.ok || data.success !== true) {
+                    throw new Error(
+                        data.message ||
+                        "Gagal mengambil profil. HTTP " + response.status
+                    );
+                }
+
+                if (!data.user || typeof data.user !== "object") {
+                    throw new Error(
+                        "Respons API tidak memiliki data user."
+                    );
+                }
+
+                const profile = data.user;
+
+                if (!profile.username) {
+                    throw new Error(
+                        "Username tidak ditemukan pada data profil."
+                    );
+                }
+
+                currentProfile = profile;
+
+                const username = String(profile.username);
+                const initial = getInitial(username);
+
+                document.getElementById("headerUsername").textContent = username;
+                document.getElementById("welcomeUsername").textContent = username;
+                document.getElementById("playerUsername").textContent = username;
+                document.getElementById("profileUsername").textContent = username;
+
+                document.getElementById("headerAvatar").textContent = initial;
+                document.getElementById("playerAvatar").textContent = initial;
+
+                // Level
+                document.getElementById("playerLevel").textContent =
+                    formatNumber(profile.level);
+
+                // Gems
+                document.getElementById("statGems").textContent =
+                    formatNumber(profile.gems);
+
+                document.getElementById("statGemsNote").textContent =
+                    "Gems dari akun GTPS";
+
+                // Playtime
+                document.getElementById("statPlaytime").textContent =
+                    formatNumber(profile.playtime);
+
+                document.getElementById("statPlaytimeNote").textContent =
+                    "Nilai playtime dari server";
+
+                // Profil lengkap
+                renderProfileDetails(profile);
+
+                document.getElementById("profileError").classList.add("hidden");
+
+                setPlayerStatus("Profil berhasil dimuat", "#58FFAD");
+                setProfileStatus("Profil berhasil dimuat", "#58FFAD");
+
+            } catch (error) {
+                if (requestID !== profileRequestID) {
+                    return;
+                }
+
+                console.error("[GROWERA PROFILE ERROR]", error);
+
+                showProfileError(
+                    error.message ||
+                    "Tidak dapat mengambil data profil dari server."
+                );
+            }
+        }
+
+
+        /* =========================================
            PAGE NAVIGATION
-        ========================= */
+        ========================================= */
 
         function navigateTo(pageName) {
-
             const validPages = [
                 "home",
                 "profile",
@@ -1307,52 +1476,29 @@
             ];
 
             if (!validPages.includes(pageName)) {
-                console.warn(
-                    "Halaman tidak ditemukan:",
-                    pageName
-                );
-
                 pageName = "home";
             }
 
-            // Sembunyikan seluruh halaman
             document.querySelectorAll(".app-page").forEach(
                 function(page) {
                     page.classList.add("hidden");
                 }
             );
 
-            // PENTING:
-            // id HTML menggunakan huruf kecil di awal:
-            // homePage, profilePage, rewardsPage, morePage
-            let targetPage =
-                document.getElementById(pageName + "Page");
+            let targetPage = document.getElementById(pageName + "Page");
 
-            /*
-             * Halaman events dan history belum dibuat.
-             * Untuk sementara, fallback ke halaman More.
-             */
+            // Events dan History belum tersedia.
             if (!targetPage) {
                 pageName = "more";
-                targetPage =
-                    document.getElementById("morePage");
+                targetPage = document.getElementById("morePage");
             }
 
             if (!targetPage) {
-                console.error(
-                    "Elemen halaman tidak ditemukan:",
-                    pageName + "Page"
-                );
                 return;
             }
 
             targetPage.classList.remove("hidden");
 
-            /*
-             * Perbarui status aktif HANYA untuk tombol
-             * bottom-nav, supaya quick-card di halaman Home
-             * tidak ikut "menyala".
-             */
             document.querySelectorAll(
                 ".bottom-nav .nav-button"
             ).forEach(function(button) {
@@ -1368,169 +1514,173 @@
             });
         }
 
-
-        /*
-         * Satu mekanisme navigasi saja:
-         * pasang listener ke semua elemen ber-attribute
-         * data-page (bottom-nav, View Profile, quick-card).
-         * JANGAN tambahkan onclick di HTML agar tidak
-         * terjadi pemanggilan ganda.
-         */
         document.querySelectorAll("[data-page]").forEach(
             function(button) {
-
                 button.addEventListener("click", function() {
-
                     navigateTo(button.dataset.page);
-
                 });
-
             }
         );
 
 
-        /* =========================
+        /* =========================================
            HANDLE LOGIN
-        ========================= */
+        ========================================= */
 
-        loginForm.addEventListener(
-            "submit",
-            async function(event) {
+        loginForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
 
-                event.preventDefault();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
 
-                const username =
-                    usernameInput.value.trim();
-
-                const password =
-                    passwordInput.value;
-
-                if (!username || !password) {
-
-                    showLoginMessage(
-                        "Username dan password wajib diisi.",
-                        "#FF8585"
-                    );
-
-                    return;
-                }
-
-                loginButton.disabled = true;
-
-                loginButton.textContent =
-                    "SIGNING IN...";
-
+            if (!username || !password) {
                 showLoginMessage(
-                    "Memeriksa kredensial akun...",
-                    "#65E7FF"
+                    "Username dan password wajib diisi.",
+                    "#FF8585"
                 );
-
-                try {
-
-                    const result = await loginRequest(
-                        username,
-                        password
-                    );
-
-                    /*
-                     * Penyimpanan ini hanya untuk prototipe.
-                     * Token belum diverifikasi ulang pada saat
-                     * halaman dimuat.
-                     */
-                    sessionStorage.setItem(
-                        "growera_token",
-                        result.token
-                    );
-
-                    sessionStorage.setItem(
-                        "growera_username",
-                        result.username
-                    );
-
-                    sessionStorage.setItem(
-                        "growera_expires_at",
-                        String(result.expiresAt || "")
-                    );
-
-                    passwordInput.value = "";
-
-                    showDashboard(result.username);
-
-                } catch (error) {
-
-                    console.error(
-                        "[GROWERA LOGIN ERROR]",
-                        error
-                    );
-
-                    showLoginMessage(
-                        error.message ||
-                        "Tidak dapat menghubungi API GROWERA.",
-                        "#FF8585"
-                    );
-
-                } finally {
-
-                    loginButton.disabled = false;
-
-                    loginButton.textContent =
-                        "SIGN IN";
-
-                }
-
+                return;
             }
-        );
 
-
-        /* =========================
-           LOGOUT
-        ========================= */
-
-        document.getElementById(
-            "logoutButton"
-        ).addEventListener("click", function() {
-
-            /*
-             * Ini baru menghapus token dari browser.
-             * Pencabutan token pada server membutuhkan
-             * endpoint logout di backend.
-             */
-
-            sessionStorage.removeItem("growera_token");
-            sessionStorage.removeItem("growera_username");
-            sessionStorage.removeItem("growera_expires_at");
-
-            dashboardScreen.classList.add("hidden");
-            loginScreen.classList.remove("hidden");
-
-            loginForm.reset();
+            loginButton.disabled = true;
+            loginButton.textContent = "SIGNING IN...";
 
             showLoginMessage(
-                "Kamu telah keluar dari dashboard.",
+                "Memeriksa kredensial akun...",
                 "#65E7FF"
             );
 
-            window.scrollTo({
-                top: 0,
-                behavior: "instant"
-            });
+            try {
+                const result = await loginRequest(username, password);
 
+                sessionStorage.setItem(
+                    "growera_token",
+                    result.token
+                );
+
+                sessionStorage.setItem(
+                    "growera_username",
+                    result.username
+                );
+
+                sessionStorage.setItem(
+                    "growera_expires_at",
+                    String(result.expiresAt || "")
+                );
+
+                passwordInput.value = "";
+
+                showDashboard(result.username);
+
+                // Ambil profil setelah login berhasil.
+                await fetchPlayerProfile();
+
+            } catch (error) {
+                console.error("[GROWERA LOGIN ERROR]", error);
+
+                showLoginMessage(
+                    error.message ||
+                    "Tidak dapat menghubungi API GROWERA.",
+                    "#FF8585"
+                );
+
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "SIGN IN";
+            }
         });
 
 
-        /* =========================
+        /* =========================================
+           RETRY PROFILE
+        ========================================= */
+
+        document.getElementById("retryProfileButton").addEventListener(
+            "click",
+            function() {
+                fetchPlayerProfile();
+            }
+        );
+
+
+        /* =========================================
+           ACCOUNT BUTTON
+        ========================================= */
+
+        document.getElementById("accountButton").addEventListener(
+            "click",
+            function() {
+                navigateTo("profile");
+            }
+        );
+
+
+        /* =========================================
+           LOGOUT
+        ========================================= */
+
+        document.getElementById("logoutButton").addEventListener(
+            "click",
+            async function() {
+                const token = sessionStorage.getItem("growera_token");
+
+                // Batalkan respons profil yang mungkin masih berjalan.
+                profileRequestID++;
+                currentProfile = null;
+
+                /*
+                 * Mencoba logout pada server.
+                 * Token lokal tetap dihapus jika request gagal.
+                 */
+                if (token) {
+                    try {
+                        await fetch(API_LOGOUT_URL, {
+                            method: "POST",
+                            headers: {
+                                "Authorization": "Bearer " + token,
+                                "Accept": "application/json"
+                            },
+                            cache: "no-store"
+                        });
+                    } catch (error) {
+                        console.warn(
+                            "[GROWERA LOGOUT] Request server gagal."
+                        );
+                    }
+                }
+
+                sessionStorage.removeItem("growera_token");
+                sessionStorage.removeItem("growera_username");
+                sessionStorage.removeItem("growera_expires_at");
+
+                dashboardScreen.classList.add("hidden");
+                loginScreen.classList.remove("hidden");
+
+                loginForm.reset();
+
+                showLoginMessage(
+                    "Kamu telah keluar dari dashboard.",
+                    "#65E7FF"
+                );
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "auto"
+                });
+            }
+        );
+
+
+        /* =========================================
            INITIAL PAGE
-        ========================= */
+        ========================================= */
 
         /*
-         * Belum memulihkan sesi secara otomatis.
-         * Kita akan menambahkan validasi token dengan
-         * endpoint server pada tahap keamanan berikutnya.
+         * Pemulihan sesi otomatis sengaja belum diaktifkan.
+         * Pengguna harus login untuk membuka dashboard.
          */
 
         loginScreen.classList.remove("hidden");
         dashboardScreen.classList.add("hidden");
-
     </script>
 
 </body>
