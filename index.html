@@ -159,13 +159,9 @@
 
         #dashboardScreen {
             min-height: 100vh;
-            padding-bottom: 90px;
         }
 
         .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -597,68 +593,383 @@
             text-align: center;
         }
 
-        /* BOTTOM NAVIGATION */
+        /* =====================================================
+           GROWERA - FIXED THREE COLUMN LAYOUT
+           Sidebar kiri | Konten tengah | Panel kanan
+        ===================================================== */
 
-        .bottom-nav {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 20;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            padding: 9px 8px calc(9px + env(safe-area-inset-bottom));
-            border-top: 1px solid var(--border);
-            background: rgba(8, 13, 25, 0.96);
-            backdrop-filter: blur(15px);
+        :root {
+            --sidebar-width: 230px;
+            --right-panel-width: 280px;
         }
 
-        .nav-button {
+        #dashboardScreen {
+            position: relative;
+            display: grid;
+            grid-template-columns:
+                var(--sidebar-width)
+                minmax(0, 1fr)
+                var(--right-panel-width);
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            min-height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            right: var(--right-panel-width);
+            left: var(--sidebar-width);
+            height: 72px;
+            padding: 12px 26px;
+            z-index: 30;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 40;
+
+            display: flex;
+            flex-direction: column;
+
+            width: var(--sidebar-width);
+            height: 100vh;
+            height: 100dvh;
+
+            padding: 24px 15px;
+
+            border-right: 1px solid var(--border);
+            background: rgba(8, 13, 25, 0.98);
+        }
+
+        .sidebar-brand {
+            padding: 5px 10px 28px;
+            color: var(--cyan);
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-brand small {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: normal;
+            letter-spacing: 3px;
+        }
+
+        .sidebar-label {
+            margin: 10px 10px 12px;
+            color: #60738F;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .sidebar-nav .nav-button {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 13px;
+
+            width: 100%;
+            min-height: 45px;
+            padding: 0 13px;
+
+            border: 1px solid transparent;
+            border-radius: 11px;
+
+            color: #8293AE;
+            background: transparent;
+
+            font-size: 12px;
+            text-align: left;
+
+            transition:
+                color 0.2s,
+                background 0.2s,
+                border-color 0.2s;
+        }
+
+        .sidebar-nav .nav-button .nav-icon {
+            width: 22px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .sidebar-nav .nav-button:hover {
+            color: var(--text);
+            background: rgba(101, 231, 255, 0.06);
+        }
+
+        .sidebar-nav .nav-button.active {
+            color: var(--cyan);
+            border-color: rgba(101, 231, 255, 0.15);
+            background: rgba(101, 231, 255, 0.10);
+        }
+
+        .sidebar-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .content {
+            grid-column: 2;
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            min-height: 0;
+
+            margin: 0;
+            padding: 100px 26px 35px;
+
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior-y: contain;
+            scrollbar-width: thin;
+            scrollbar-color: #314363 transparent;
+        }
+
+        .right-panel {
+            position: fixed;
+            inset: 72px 0 0 auto;
+            z-index: 20;
+
+            width: var(--right-panel-width);
+            height: calc(100vh - 72px);
+            height: calc(100dvh - 72px);
+
+            padding: 22px 17px;
+
+            overflow-y: auto;
+            overscroll-behavior: contain;
+
+            border-left: 1px solid var(--border);
+            background: rgba(8, 13, 25, 0.96);
+            scrollbar-width: thin;
+            scrollbar-color: #314363 transparent;
+        }
+
+        .right-panel-card {
+            margin-bottom: 17px;
+            padding: 17px;
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at 100% 0%,
+                    rgba(155, 123, 255, 0.12),
+                    transparent 50%
+                ),
+                var(--surface);
+        }
+
+        .right-panel-title {
+            margin: 0 0 15px;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .right-player {
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 5px;
-            min-height: 48px;
-            border: 0;
-            color: #7186A4;
-            background: transparent;
-            font-size: 10px;
+            gap: 11px;
         }
 
-        .nav-button .nav-icon {
+        .right-player .player-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
             font-size: 19px;
         }
 
-        .nav-button.active {
-            color: var(--cyan);
+        .right-player-name {
+            min-width: 0;
+            font-size: 12px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
         }
 
-        @media (min-width: 760px) {
+        .right-player-role {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .right-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(130, 160, 210, 0.09);
+        }
+
+        .right-stat:last-child {
+            padding-bottom: 0;
+            border-bottom: 0;
+        }
+
+        .right-stat-label {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .right-stat-value {
+            max-width: 60%;
+            color: var(--cyan);
+            font-size: 12px;
+            font-weight: bold;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .bottom-nav {
+            display: none !important;
+        }
+
+        @media (max-width: 1100px) {
+            :root {
+                --sidebar-width: 190px;
+                --right-panel-width: 230px;
+            }
+
             .content {
-                padding: 35px 30px;
+                padding-right: 19px;
+                padding-left: 19px;
             }
 
-            .stats-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
+            .topbar {
+                padding-right: 19px;
+                padding-left: 19px;
             }
 
-            .quick-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
+            .right-panel {
+                padding: 18px 12px;
+            }
+        }
+
+        @media (max-width: 850px) {
+            #dashboardScreen {
+                display: block;
+            }
+
+            .right-panel {
+                display: none;
+            }
+
+            .topbar {
+                right: 0;
+                left: var(--sidebar-width);
+            }
+
+            .content {
+                width: auto;
+                height: 100%;
+                margin-left: var(--sidebar-width);
+                padding: 100px 22px 30px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            :root {
+                --sidebar-width: 68px;
+            }
+
+            .sidebar {
+                padding: 18px 8px;
+            }
+
+            .sidebar-brand {
+                padding: 5px 0 24px;
+                font-size: 0;
+                text-align: center;
+            }
+
+            .sidebar-brand::first-letter {
+                font-size: 25px;
+            }
+
+            .sidebar-brand small,
+            .sidebar-label,
+            .nav-text {
+                display: none;
+            }
+
+            .sidebar-nav .nav-button {
+                justify-content: center;
+                gap: 0;
+                padding: 0;
+            }
+
+            .sidebar-nav .nav-button .nav-icon {
+                width: auto;
+                font-size: 20px;
+            }
+
+            .sidebar-bottom .nav-button {
+                justify-content: center;
+            }
+
+            .topbar {
+                height: 64px;
+                padding: 10px 12px;
+            }
+
+            .brand {
+                font-size: 16px;
+            }
+
+            .brand small {
+                font-size: 8px;
+            }
+
+            .account-button {
+                padding: 6px;
+            }
+
+            .account-name {
+                max-width: 75px;
+            }
+
+            .content {
+                padding: 85px 13px 25px;
             }
 
             .player-card {
-                padding: 30px;
+                padding: 18px;
             }
 
-            .bottom-nav {
-                right: auto;
-                left: 50%;
-                bottom: 20px;
-                width: min(460px, calc(100% - 30px));
-                border: 1px solid var(--border);
-                border-radius: 17px;
-                transform: translateX(-50%);
+            .page-panel {
+                padding: 17px;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            .stats-grid,
+            .quick-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
     </style>
@@ -727,6 +1038,52 @@
     <!-- DASHBOARD -->
 
     <section id="dashboardScreen" class="hidden">
+
+        <!-- FIXED LEFT SIDEBAR -->
+
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                💎 GROWERA
+                <small>CRYSTAL ERA</small>
+            </div>
+
+            <div class="sidebar-label">MAIN MENU</div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-button active" data-page="home" type="button">
+                    <span class="nav-icon">⌂</span>
+                    <span class="nav-text">Home</span>
+                </button>
+
+                <button class="nav-button" data-page="profile" type="button">
+                    <span class="nav-icon">♙</span>
+                    <span class="nav-text">Profile</span>
+                </button>
+
+                <button class="nav-button" data-page="rewards" type="button">
+                    <span class="nav-icon">✧</span>
+                    <span class="nav-text">Rewards</span>
+                </button>
+
+                <button class="nav-button" data-page="more" type="button">
+                    <span class="nav-icon">▤</span>
+                    <span class="nav-text">More</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <button class="nav-button" data-page="more" type="button">
+                    <span class="nav-icon">⚙</span>
+                    <span class="nav-text">Settings</span>
+                </button>
+
+                <button class="nav-button" id="sidebarLogoutButton" type="button">
+                    <span class="nav-icon">↪</span>
+                    <span class="nav-text">Logout</span>
+                </button>
+            </div>
+        </aside>
+
 
         <header class="topbar">
             <div class="brand">
@@ -991,29 +1348,73 @@
             </div>
         </main>
 
-        <!-- BOTTOM NAV -->
 
-        <nav class="bottom-nav">
-            <button class="nav-button active" data-page="home" type="button">
-                <span class="nav-icon">⌂</span>
-                <span>Home</span>
-            </button>
+        <!-- FIXED RIGHT PANEL -->
 
-            <button class="nav-button" data-page="profile" type="button">
-                <span class="nav-icon">♙</span>
-                <span>Profile</span>
-            </button>
+        <aside class="right-panel">
 
-            <button class="nav-button" data-page="rewards" type="button">
-                <span class="nav-icon">✧</span>
-                <span>Rewards</span>
-            </button>
+            <section class="right-panel-card">
+                <h2 class="right-panel-title">Player Information</h2>
 
-            <button class="nav-button" data-page="more" type="button">
-                <span class="nav-icon">☰</span>
-                <span>More</span>
-            </button>
-        </nav>
+                <div class="right-player">
+                    <div class="player-avatar" id="rightPlayerAvatar">P</div>
+
+                    <div>
+                        <div class="right-player-name" id="rightPlayerUsername">
+                            Player
+                        </div>
+
+                        <div class="right-player-role" id="rightPlayerRole">
+                            Memuat role...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-stat">
+                    <span class="right-stat-label">Level</span>
+                    <span class="right-stat-value" id="rightPlayerLevel">—</span>
+                </div>
+
+                <div class="right-stat">
+                    <span class="right-stat-label">User ID</span>
+                    <span class="right-stat-value" id="rightPlayerUserID">—</span>
+                </div>
+            </section>
+
+            <section class="right-panel-card">
+                <h2 class="right-panel-title">Statistics</h2>
+
+                <div class="right-stat">
+                    <span class="right-stat-label">💎 Gems</span>
+                    <span class="right-stat-value" id="rightPlayerGems">—</span>
+                </div>
+
+                <div class="right-stat">
+                    <span class="right-stat-label">⏱ Playtime</span>
+                    <span class="right-stat-value" id="rightPlayerPlaytime">—</span>
+                </div>
+
+                <div class="right-stat">
+                    <span class="right-stat-label">🏆 Achievements</span>
+                    <span class="right-stat-value">—</span>
+                </div>
+            </section>
+
+            <section class="right-panel-card">
+                <h2 class="right-panel-title">GROWERA</h2>
+
+                <p style="
+                    margin: 0;
+                    color: var(--muted);
+                    font-size: 11px;
+                    line-height: 1.8;
+                ">
+                    Explore the Crystal Era and discover what's waiting for you.
+                </p>
+            </section>
+
+        </aside>
+
     </section>
 
 
@@ -1225,6 +1626,20 @@
 
             setPlayerStatus("Memuat profil pemain...", "#65E7FF");
             setProfileStatus("Memuat profil pemain...", "#65E7FF");
+
+            // Reset panel kanan.
+            document.getElementById("rightPlayerUsername").textContent =
+                "Memuat...";
+
+            document.getElementById("rightPlayerRole").textContent =
+                "Memuat role...";
+
+            document.getElementById("rightPlayerAvatar").textContent = "P";
+
+            document.getElementById("rightPlayerLevel").textContent = "—";
+            document.getElementById("rightPlayerUserID").textContent = "—";
+            document.getElementById("rightPlayerGems").textContent = "—";
+            document.getElementById("rightPlayerPlaytime").textContent = "—";
         }
 
 
@@ -1341,6 +1756,10 @@
 
             setPlayerStatus("Gagal memuat profil", "#FF8585");
             setProfileStatus("Gagal memuat profil", "#FF8585");
+
+            // Panel kanan menandai error.
+            document.getElementById("rightPlayerRole").textContent =
+                "Gagal memuat profil";
         }
 
 
@@ -1409,6 +1828,33 @@
 
                 currentProfile = profile;
 
+                // Sinkronkan profil ke panel kanan yang tetap terlihat.
+                const roleName = profile.role && profile.role.name
+                    ? profile.role.name
+                    : "Player";
+
+                document.getElementById("rightPlayerUsername").textContent =
+                    profile.username || "Player";
+
+                document.getElementById("rightPlayerRole").textContent =
+                    roleName;
+
+                document.getElementById("rightPlayerAvatar").textContent =
+                    getInitial(profile.username);
+
+                document.getElementById("rightPlayerLevel").textContent =
+                    formatNumber(profile.level);
+
+                document.getElementById("rightPlayerUserID").textContent =
+                    formatNumber(profile.userID);
+
+                document.getElementById("rightPlayerGems").textContent =
+                    formatNumber(profile.gems);
+
+                document.getElementById("rightPlayerPlaytime").textContent =
+                    formatNumber(profile.playtime);
+
+                // Update identitas utama.
                 const username = String(profile.username);
                 const initial = getInitial(username);
 
@@ -1500,7 +1946,7 @@
             targetPage.classList.remove("hidden");
 
             document.querySelectorAll(
-                ".bottom-nav .nav-button"
+                ".sidebar-nav .nav-button, .sidebar-bottom .nav-button"
             ).forEach(function(button) {
                 button.classList.toggle(
                     "active",
@@ -1508,10 +1954,15 @@
                 );
             });
 
-            window.scrollTo({
-                top: 0,
-                behavior: "auto"
-            });
+            // Konten utama scroll ke atas saat ganti halaman.
+            const content = document.querySelector(".content");
+
+            if (content) {
+                content.scrollTo({
+                    top: 0,
+                    behavior: "auto"
+                });
+            }
         }
 
         document.querySelectorAll("[data-page]").forEach(
@@ -1666,6 +2117,18 @@
                     top: 0,
                     behavior: "auto"
                 });
+            }
+        );
+
+
+        /* =========================================
+           SIDEBAR LOGOUT BUTTON
+        ========================================= */
+
+        document.getElementById("sidebarLogoutButton").addEventListener(
+            "click",
+            function() {
+                document.getElementById("logoutButton").click();
             }
         );
 
