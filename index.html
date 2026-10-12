@@ -1331,6 +1331,172 @@
             color: var(--gold);
             font-family: monospace;
         }
+
+        /* =====================================================
+           NEWS DETAIL MODAL
+        ===================================================== */
+
+        .news-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 210;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+        }
+
+        .news-modal.open {
+            display: flex;
+        }
+
+        .news-modal-content {
+            width: 100%;
+            max-width: 680px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .news-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            background:
+                radial-gradient(
+                    circle at 100% 0%,
+                    rgba(155, 123, 255, 0.18),
+                    transparent 60%
+                ),
+                rgba(8, 13, 25, 0.7);
+        }
+
+        .news-modal-header h2 {
+            margin: 0;
+            font-size: 17px;
+            overflow-wrap: anywhere;
+        }
+
+        .news-modal-close-btn {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--muted);
+            background: transparent;
+            font-size: 18px;
+            line-height: 1;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .news-modal-close-btn:hover {
+            color: var(--text);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .news-modal-body {
+            padding: 24px 26px 28px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+
+        .news-detail-badge {
+            display: inline-block;
+            padding: 4px 11px;
+            margin-bottom: 12px;
+            border-radius: 999px;
+            background: rgba(101, 231, 255, 0.15);
+            color: var(--cyan);
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .news-detail-title {
+            margin: 0 0 8px;
+            font-size: 22px;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+
+        .news-detail-meta {
+            margin: 0 0 20px;
+            color: #7186A4;
+            font-size: 11px;
+        }
+
+        .news-detail-body p {
+            margin: 0 0 14px;
+            color: #C8D2E3;
+            font-size: 13.5px;
+            line-height: 1.85;
+            overflow-wrap: anywhere;
+        }
+
+        .news-detail-body p strong {
+            color: var(--text);
+        }
+
+        .news-detail-body h3 {
+            margin: 22px 0 10px;
+            font-size: 15px;
+            color: var(--cyan);
+            letter-spacing: 0.5px;
+        }
+
+        .news-detail-list {
+            margin: 0 0 16px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .news-detail-list li {
+            position: relative;
+            padding: 9px 0 9px 24px;
+            color: #C8D2E3;
+            font-size: 13px;
+            line-height: 1.7;
+            border-bottom: 1px solid rgba(130, 160, 210, 0.08);
+        }
+
+        .news-detail-list li:last-child {
+            border-bottom: 0;
+        }
+
+        .news-detail-list li::before {
+            content: "◆";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            color: var(--cyan);
+            font-size: 10px;
+        }
+
+        .news-detail-highlight {
+            margin: 18px 0;
+            padding: 14px 18px;
+            border-left: 3px solid var(--cyan);
+            border-radius: 10px;
+            background: rgba(101, 231, 255, 0.06);
+            color: #D9E6F5;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .news-detail-highlight strong {
+            color: var(--cyan);
+        }
     </style>
 </head>
 
@@ -1397,8 +1563,6 @@
     <!-- DASHBOARD -->
 
     <section id="dashboardScreen" class="hidden">
-
-        <!-- FIXED LEFT SIDEBAR (narrow, tanpa player overview) -->
 
         <aside class="sidebar">
             <div class="sidebar-brand">
@@ -1836,6 +2000,121 @@
             </div>
         </div>
 
+
+        <!-- NEWS DETAIL MODAL -->
+
+        <div class="news-modal" id="newsModal">
+            <div class="news-modal-content">
+
+                <div class="news-modal-header">
+                    <h2>📰 GROWERA News</h2>
+
+                    <button
+                        class="news-modal-close-btn"
+                        id="newsModalCloseBtn"
+                        type="button"
+                        aria-label="Close"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <div class="news-modal-body">
+                    <div class="news-detail-badge">CRYSTAL ERA</div>
+
+                    <h1 class="news-detail-title">
+                        Selamat Datang di GROWERA Crystal Era
+                    </h1>
+
+                    <p class="news-detail-meta">
+                        Dipublikasikan oleh Tim GROWERA · Update terbaru
+                    </p>
+
+                    <div class="news-detail-body">
+
+                        <p>
+                            <strong>GROWERA Crystal Era</strong> secara resmi
+                            dibuka untuk seluruh pemain. Ini adalah portal
+                            pemain yang terhubung langsung ke server GTPS
+                            kami, memberi kamu akses ke profil, inventory,
+                            dan informasi seputar dunia Crystal Era — semua
+                            dari satu tempat.
+                        </p>
+
+                        <div class="news-detail-highlight">
+                            <strong>Fitur baru:</strong> Cek profile dan
+                            inventory langsung dari browser, tanpa perlu
+                            login ke game.
+                        </div>
+
+                        <h3>Apa yang Baru?</h3>
+
+                        <ul class="news-detail-list">
+                            <li>
+                                <strong>Player Portal</strong> — dashboard
+                                pribadi dengan level, gems, XP progress,
+                                dan playtime secara real-time.
+                            </li>
+                            <li>
+                                <strong>Inventory Viewer</strong> — lihat
+                                seluruh item yang kamu miliki lengkap dengan
+                                ikon dan jumlah. Data di-sync otomatis saat
+                                kamu login, pindah world, atau keluar game.
+                            </li>
+                            <li>
+                                <strong>Level Progress</strong> — pantau XP
+                                saat ini, XP yang dibutuhkan, dan berapa
+                                lagi untuk naik level berikutnya.
+                            </li>
+                            <li>
+                                <strong>Session Aman</strong> — login sekali,
+                                akses dashboard kapan saja. Sesi bertahan
+                                selama 24 jam sejak login terakhir.
+                            </li>
+                        </ul>
+
+                        <h3>Event yang Akan Datang</h3>
+
+                        <p>
+                            Sepanjang bulan ini, kami akan menyelenggarakan
+                            beberapa event seru:
+                        </p>
+
+                        <ul class="news-detail-list">
+                            <li><strong>Weekly BFG Tournament</strong> — setiap Sabtu malam, hadiah sampai 500 DL</li>
+                            <li><strong>Item Giveaway</strong> — hadiah harian untuk pemain aktif</li>
+                            <li><strong>Custom World Contest</strong> — lomba desain world terbaik</li>
+                            <li><strong>Community Meetup</strong> — ngobrol santai bareng admin dan mod</li>
+                        </ul>
+
+                        <div class="news-detail-highlight">
+                            Jangan lewatkan update selanjutnya. Pantau
+                            halaman ini dan komunitas resmi GROWERA untuk
+                            info terbaru.
+                        </div>
+
+                        <h3>Cara Menggunakan Portal</h3>
+
+                        <ul class="news-detail-list">
+                            <li>Login dengan username dan password akun GROWERA kamu</li>
+                            <li>Dashboard akan menampilkan statistik dan profile secara otomatis</li>
+                            <li>Buka halaman <strong>Profile</strong> untuk melihat detail lengkap akun</li>
+                            <li>Tekan <strong>View Inventory</strong> di halaman Profile untuk melihat semua item</li>
+                            <li>Klik <strong>Logout</strong> jika ingin keluar dari sesi ini</li>
+                        </ul>
+
+                        <p>
+                            Selamat menjelajahi Crystal Era. Kalau ada
+                            pertanyaan atau kendala, langsung hubungi tim
+                            kami melalui komunitas resmi GROWERA.
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </section>
 
 
@@ -1851,6 +2130,12 @@
 
         const SERVER_ID = "1791";
 
+        const STORAGE_KEYS = {
+            token: "growera_token",
+            username: "growera_username",
+            expiresAt: "growera_expires_at"
+        };
+
         const loginScreen = document.getElementById("loginScreen");
         const dashboardScreen = document.getElementById("dashboardScreen");
         const loginForm = document.getElementById("loginForm");
@@ -1862,6 +2147,36 @@
         let profileRequestID = 0;
         let inventoryRequestID = 0;
         let currentProfile = null;
+
+
+        /* =========================================
+           STORAGE HELPERS
+        ========================================= */
+
+        function saveSession(token, username, expiresAt) {
+            // Pakai localStorage supaya bertahan meskipun browser
+            // atau tab ditutup.
+            localStorage.setItem(STORAGE_KEYS.token, token);
+            localStorage.setItem(STORAGE_KEYS.username, username);
+            localStorage.setItem(
+                STORAGE_KEYS.expiresAt,
+                String(expiresAt || "")
+            );
+        }
+
+        function loadSession() {
+            return {
+                token: localStorage.getItem(STORAGE_KEYS.token),
+                username: localStorage.getItem(STORAGE_KEYS.username),
+                expiresAt: localStorage.getItem(STORAGE_KEYS.expiresAt)
+            };
+        }
+
+        function clearSession() {
+            localStorage.removeItem(STORAGE_KEYS.token);
+            localStorage.removeItem(STORAGE_KEYS.username);
+            localStorage.removeItem(STORAGE_KEYS.expiresAt);
+        }
 
 
         /* =========================================
@@ -1952,6 +2267,20 @@
 
 
         /* =========================================
+           SCREEN SWITCHERS
+        ========================================= */
+
+        function showLoginScreen() {
+            loginScreen.classList.remove("hidden");
+            dashboardScreen.classList.add("hidden");
+        }
+
+        function hideLoginScreen() {
+            loginScreen.classList.add("hidden");
+        }
+
+
+        /* =========================================
            LOGIN REQUEST
         ========================================= */
 
@@ -2012,7 +2341,7 @@
             document.getElementById("headerAvatar").textContent = initial;
             document.getElementById("playerAvatar").textContent = initial;
 
-            loginScreen.classList.add("hidden");
+            hideLoginScreen();
             dashboardScreen.classList.remove("hidden");
 
             window.scrollTo({
@@ -2152,7 +2481,7 @@
 
 
         /* =========================================
-           PLAYER OVERVIEW (di bawah news)
+           PLAYER OVERVIEW
         ========================================= */
 
         function resetPlayerOverview() {
@@ -2249,16 +2578,17 @@
 
         /* =========================================
            FETCH PLAYER PROFILE
+           Return true kalau sukses, false kalau gagal.
         ========================================= */
 
         async function fetchPlayerProfile() {
-            const token = sessionStorage.getItem("growera_token");
+            const session = loadSession();
 
-            if (!token) {
+            if (!session.token) {
                 showProfileError(
                     "Token login tidak ditemukan. Silakan login kembali."
                 );
-                return;
+                return false;
             }
 
             const requestID = ++profileRequestID;
@@ -2269,24 +2599,28 @@
                 const response = await fetch(API_PROFILE_URL, {
                     method: "GET",
                     headers: {
-                        "Authorization": "Bearer " + token,
+                        "Authorization": "Bearer " + session.token,
                         "Accept": "application/json"
                     },
                     cache: "no-store"
                 });
 
-                const data = await readJSONResponse(response);
-
                 if (requestID !== profileRequestID) {
-                    return;
+                    return false;
                 }
 
                 if (response.status === 401) {
                     showProfileError(
                         "Sesi tidak valid atau telah berakhir. " +
-                        "Silakan keluar lalu login kembali."
+                        "Silakan login kembali."
                     );
-                    return;
+                    return false;
+                }
+
+                const data = await readJSONResponse(response);
+
+                if (requestID !== profileRequestID) {
+                    return false;
                 }
 
                 if (!response.ok || data.success !== true) {
@@ -2361,9 +2695,11 @@
                 setPlayerStatus("Profil berhasil dimuat", "#58FFAD");
                 setProfileStatus("Profil berhasil dimuat", "#58FFAD");
 
+                return true;
+
             } catch (error) {
                 if (requestID !== profileRequestID) {
-                    return;
+                    return false;
                 }
 
                 console.error("[GROWERA PROFILE ERROR]", error);
@@ -2372,6 +2708,8 @@
                     error.message ||
                     "Tidak dapat mengambil data profil dari server."
                 );
+
+                return false;
             }
         }
 
@@ -2416,8 +2754,9 @@
 
             note.textContent = "Menghubungi server...";
 
-            const token = sessionStorage.getItem("growera_token");
-            if (!token) {
+            const session = loadSession();
+
+            if (!session.token) {
                 note.textContent =
                     "Token tidak ditemukan. Silakan login ulang.";
                 grid.replaceChildren();
@@ -2430,7 +2769,7 @@
                 const response = await fetch(API_INVENTORY_URL, {
                     method: "GET",
                     headers: {
-                        "Authorization": "Bearer " + token,
+                        "Authorization": "Bearer " + session.token,
                         "Accept": "application/json"
                     },
                     cache: "no-store"
@@ -2558,6 +2897,24 @@
 
 
         /* =========================================
+           NEWS MODAL
+        ========================================= */
+
+        function openNewsModal() {
+            const modal = document.getElementById("newsModal");
+            if (!modal) return;
+
+            modal.classList.add("open");
+        }
+
+        function closeNewsModal() {
+            const modal = document.getElementById("newsModal");
+            if (!modal) return;
+            modal.classList.remove("open");
+        }
+
+
+        /* =========================================
            PAGE NAVIGATION
         ========================================= */
 
@@ -2651,11 +3008,10 @@
             try {
                 const result = await loginRequest(username, password);
 
-                sessionStorage.setItem("growera_token", result.token);
-                sessionStorage.setItem("growera_username", result.username);
-                sessionStorage.setItem(
-                    "growera_expires_at",
-                    String(result.expiresAt || "")
+                saveSession(
+                    result.token,
+                    result.username,
+                    result.expiresAt
                 );
 
                 passwordInput.value = "";
@@ -2705,15 +3061,25 @@
 
 
         /* =========================================
-           NEWS READ MORE (placeholder)
+           NEWS EVENTS
         ========================================= */
 
         document.getElementById("newsReadMoreBtn").addEventListener(
             "click",
-            function() {
-                alert(
-                    "Halaman detail berita akan segera tersedia."
-                );
+            openNewsModal
+        );
+
+        document.getElementById("newsModalCloseBtn").addEventListener(
+            "click",
+            closeNewsModal
+        );
+
+        document.getElementById("newsModal").addEventListener(
+            "click",
+            function (event) {
+                if (event.target === event.currentTarget) {
+                    closeNewsModal();
+                }
             }
         );
 
@@ -2741,9 +3107,15 @@
             }
         );
 
+
+        /* =========================================
+           GLOBAL KEYDOWN (Escape closes modals)
+        ========================================= */
+
         document.addEventListener("keydown", function (event) {
             if (event.key === "Escape") {
                 closeInventoryModal();
+                closeNewsModal();
             }
         });
 
@@ -2755,18 +3127,18 @@
         document.getElementById("logoutButton").addEventListener(
             "click",
             async function() {
-                const token = sessionStorage.getItem("growera_token");
+                const session = loadSession();
 
                 profileRequestID++;
                 inventoryRequestID++;
                 currentProfile = null;
 
-                if (token) {
+                if (session.token) {
                     try {
                         await fetch(API_LOGOUT_URL, {
                             method: "POST",
                             headers: {
-                                "Authorization": "Bearer " + token,
+                                "Authorization": "Bearer " + session.token,
                                 "Accept": "application/json"
                             },
                             cache: "no-store"
@@ -2778,11 +3150,10 @@
                     }
                 }
 
-                sessionStorage.removeItem("growera_token");
-                sessionStorage.removeItem("growera_username");
-                sessionStorage.removeItem("growera_expires_at");
+                clearSession();
 
                 closeInventoryModal();
+                closeNewsModal();
 
                 dashboardScreen.classList.add("hidden");
                 loginScreen.classList.remove("hidden");
@@ -2815,11 +3186,38 @@
 
 
         /* =========================================
-           INITIAL PAGE
+           BOOTSTRAP / AUTO-RESTORE SESSION
         ========================================= */
 
-        loginScreen.classList.remove("hidden");
-        dashboardScreen.classList.add("hidden");
+        async function bootstrap() {
+            const session = loadSession();
+
+            if (!session.token || !session.username) {
+                // Tidak ada sesi → tampilkan login
+                showLoginScreen();
+                return;
+            }
+
+            // Ada sesi → tampilkan dashboard dulu, lalu validasi
+            // ke server. Kalau gagal, kita tendang kembali ke login.
+            showDashboard(session.username);
+
+            const ok = await fetchPlayerProfile();
+
+            if (!ok) {
+                // Sesi kedaluwarsa / tidak valid → bersihkan
+                clearSession();
+                showLoginScreen();
+                showLoginMessage(
+                    "Sesi sebelumnya telah berakhir. Silakan login kembali.",
+                    "#FF8585"
+                );
+            }
+        }
+
+        // Jalankan bootstrap saat halaman selesai dimuat.
+        bootstrap();
+
     </script>
 
 </body>
