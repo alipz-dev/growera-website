@@ -1,8 +1,7 @@
-
 /* =========================================
    GROWERA — REWARDS MODULE STYLES
-   Semua gaya kartu, modal, rarity, dan editor
-   khusus halaman Rewards.
+   Semua gaya kartu, modal, rarity, milestone
+   track, dan editor khusus halaman Rewards.
 ========================================= */
 
 
@@ -260,8 +259,6 @@
     transform: translateX(4px);
 }
 
-
-/* --- VARIANT: MILESTONE (ungu + emas) --- */
 .rewards-card[data-variant="milestone"] {
     border-color: rgba(155, 123, 255, 0.3);
     background:
@@ -275,8 +272,6 @@
 }
 .rewards-card[data-variant="milestone"] .rewards-card-action { color: var(--gold); }
 
-
-/* --- VARIANT: DAILY LOGIN (cyan) --- */
 .rewards-card[data-variant="daily-login"] {
     border-color: rgba(101, 231, 255, 0.3);
     background:
@@ -291,8 +286,6 @@
 }
 .rewards-card[data-variant="daily-login"] .rewards-card-action { color: var(--cyan); }
 
-
-/* --- VARIANT: DAILY QUEST (electric blue) --- */
 .rewards-card[data-variant="daily-quest"] {
     border-color: rgba(80, 160, 255, 0.32);
     background:
@@ -306,8 +299,6 @@
 }
 .rewards-card[data-variant="daily-quest"] .rewards-card-action { color: #7FB9FF; }
 
-
-/* --- VARIANT: WEEKLY QUEST (indigo + violet) --- */
 .rewards-card[data-variant="weekly-quest"] {
     border-color: rgba(120, 100, 240, 0.35);
     background:
@@ -321,8 +312,6 @@
 }
 .rewards-card[data-variant="weekly-quest"] .rewards-card-action { color: #B8A6FF; }
 
-
-/* --- VARIANT: MONTHLY QUEST (gold + royal) --- */
 .rewards-card[data-variant="monthly-quest"] {
     grid-column: span 2;
     border: 2px solid transparent;
@@ -963,6 +952,387 @@
 
 
 /* =========================================
+   MILESTONE TRACK (Starlight Pass style)
+========================================= */
+
+.milestone-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* --- HEADER (progress summary) --- */
+
+.milestone-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background:
+        linear-gradient(135deg,
+            rgba(155, 123, 255, 0.14),
+            rgba(216, 182, 106, 0.08));
+    border: 1px solid rgba(155, 123, 255, 0.35);
+}
+
+.milestone-header-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.milestone-header-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #C7B8FF;
+    margin-bottom: 8px;
+}
+
+.milestone-progress-bar {
+    position: relative;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.milestone-progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    background: linear-gradient(90deg, #9B7BFF, #F1CC78);
+    box-shadow: 0 0 14px rgba(155, 123, 255, 0.55);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 999px;
+}
+
+.milestone-header-count {
+    color: var(--gold);
+    font-size: 15px;
+    font-weight: 900;
+    font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-shadow: 0 0 12px rgba(241, 204, 120, 0.4);
+}
+
+/* --- TRACK SCROLL --- */
+
+.milestone-track-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 4px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: #4B5F8A transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.milestone-track-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+.milestone-track-scroll::-webkit-scrollbar-thumb {
+    background: #4B5F8A;
+    border-radius: 999px;
+}
+.milestone-track-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.milestone-track {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    min-width: min-content;
+    padding: 4px 8px;
+}
+
+/* --- NODE --- */
+
+.milestone-node {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    width: 92px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    color: var(--text);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.milestone-node:hover {
+    transform: translateY(-2px);
+}
+
+.milestone-node:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.milestone-node-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    font-size: 26px;
+    line-height: 1;
+    border: 2px solid rgba(155, 123, 255, 0.4);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(155, 123, 255, 0.22), transparent 70%),
+        linear-gradient(145deg, #1A1430, #0D0F1F);
+    transition:
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Locked state */
+.milestone-node.locked .milestone-node-box {
+    border-color: rgba(130, 160, 210, 0.25);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(130, 160, 210, 0.08), transparent 70%),
+        linear-gradient(145deg, #161B2B, #0A0F1C);
+    opacity: 0.7;
+    filter: grayscale(0.4);
+}
+
+/* Unlocked state */
+.milestone-node.unlocked .milestone-node-box {
+    border-color: rgba(216, 182, 106, 0.7);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(241, 204, 120, 0.25), transparent 70%),
+        linear-gradient(145deg, #2A1F14, #1A1430);
+    box-shadow:
+        0 0 22px rgba(241, 204, 120, 0.35),
+        inset 0 0 14px rgba(241, 204, 120, 0.1);
+}
+
+/* Active (dipilih) state */
+.milestone-node.active .milestone-node-box {
+    transform: scale(1.1);
+    border-color: var(--cyan) !important;
+    box-shadow:
+        0 0 0 4px rgba(101, 231, 255, 0.18),
+        0 0 28px rgba(101, 231, 255, 0.45);
+}
+
+/* Locked icon (sudut kanan bawah) */
+.milestone-node-lock {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #0A0F1C;
+    border: 1.5px solid rgba(130, 160, 210, 0.45);
+    font-size: 10px;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.milestone-node.unlocked .milestone-node-lock {
+    display: none;
+}
+
+/* Rarity borders override */
+.milestone-node.rarity-common .milestone-node-box {
+    border-color: rgba(140, 160, 192, 0.5);
+}
+.milestone-node.rarity-rare .milestone-node-box {
+    border-color: rgba(101, 231, 255, 0.55);
+    box-shadow: 0 0 16px rgba(101, 231, 255, 0.2);
+}
+.milestone-node.rarity-epic .milestone-node-box {
+    border-color: rgba(155, 123, 255, 0.6);
+    box-shadow: 0 0 16px rgba(155, 123, 255, 0.22);
+}
+.milestone-node.rarity-legendary .milestone-node-box {
+    border-color: rgba(241, 204, 120, 0.7);
+    box-shadow: 0 0 20px rgba(241, 204, 120, 0.28);
+}
+
+.milestone-node.rarity-divine .milestone-node-box {
+    border: 2px solid transparent;
+    background:
+        linear-gradient(145deg, #1A1228, #0A0D18) padding-box,
+        linear-gradient(135deg, #FF5C8A, #FFB347, #58FFAD, #65E7FF, #9B7BFF) border-box;
+    background-size: auto, 200% 200%;
+    animation: monthlyBorderShift 6s linear infinite;
+}
+
+.milestone-node-label {
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+}
+
+.milestone-node.active .milestone-node-label {
+    color: var(--cyan);
+}
+
+.milestone-node.unlocked .milestone-node-label {
+    color: var(--gold);
+}
+
+/* --- CONNECTOR --- */
+
+.milestone-connector {
+    flex-shrink: 0;
+    width: 24px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg,
+        rgba(130, 160, 210, 0.3),
+        rgba(130, 160, 210, 0.15));
+    align-self: flex-start;
+    margin-top: 34px;
+}
+
+.milestone-connector.done {
+    background: linear-gradient(90deg, #9B7BFF, #F1CC78);
+    box-shadow: 0 0 10px rgba(155, 123, 255, 0.55);
+}
+
+/* --- DETAIL PANEL --- */
+
+.milestone-detail {
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid rgba(155, 123, 255, 0.35);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(216, 182, 106, 0.12), transparent 55%),
+        linear-gradient(145deg, #171127, #0D1020);
+    min-height: 150px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.milestone-detail.rarity-common {
+    border-color: rgba(140, 160, 192, 0.4);
+}
+.milestone-detail.rarity-rare {
+    border-color: rgba(101, 231, 255, 0.45);
+    box-shadow: 0 0 20px rgba(101, 231, 255, 0.1);
+}
+.milestone-detail.rarity-epic {
+    border-color: rgba(155, 123, 255, 0.45);
+    box-shadow: 0 0 20px rgba(155, 123, 255, 0.12);
+}
+.milestone-detail.rarity-legendary {
+    border-color: rgba(241, 204, 120, 0.55);
+    box-shadow: 0 0 22px rgba(241, 204, 120, 0.18);
+}
+
+.milestone-detail.rarity-divine {
+    border: 2px solid transparent;
+    background:
+        linear-gradient(145deg, #1A1228, #0A0D18) padding-box,
+        linear-gradient(135deg, #FF5C8A, #FFB347, #58FFAD, #65E7FF, #9B7BFF) border-box;
+    background-size: auto, 200% 200%;
+    animation: monthlyBorderShift 6s linear infinite;
+}
+
+.milestone-detail-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--rarity-color, rgba(130, 160, 210, 0.35));
+    color: var(--rarity-color, var(--muted));
+    margin-bottom: 10px;
+}
+
+.milestone-detail-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+.milestone-detail-desc {
+    margin: 0 0 14px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.milestone-detail-reward {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(88, 255, 173, 0.06);
+    border: 1px solid rgba(88, 255, 173, 0.28);
+    color: var(--success);
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    overflow-wrap: anywhere;
+}
+
+.milestone-detail-reward-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.milestone-detail-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.milestone-detail-status.locked {
+    background: rgba(130, 160, 210, 0.1);
+    border: 1px solid rgba(130, 160, 210, 0.3);
+    color: var(--muted);
+}
+
+.milestone-detail-status.unlocked {
+    background: rgba(88, 255, 173, 0.12);
+    border: 1px solid rgba(88, 255, 173, 0.4);
+    color: var(--success);
+    box-shadow: 0 0 12px rgba(88, 255, 173, 0.2);
+}
+
+
+/* =========================================
    REWARDS EMPTY / LOADING STATE
 ========================================= */
 
@@ -1115,6 +1485,65 @@
     .rewards-modal-title { font-size: 13px; letter-spacing: 1px; }
     .rewards-modal-subtitle { font-size: 10.5px; }
     .rewards-modal-body { padding: 16px 16px 22px; }
+
+    /* Milestone mobile */
+    .milestone-header {
+        padding: 12px 14px;
+    }
+
+    .milestone-header-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+    }
+
+    .milestone-header-count {
+        font-size: 13px;
+    }
+
+    .milestone-node {
+        width: 76px;
+    }
+
+    .milestone-node-box {
+        width: 54px;
+        height: 54px;
+        font-size: 22px;
+        border-radius: 12px;
+    }
+
+    .milestone-node-lock {
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+    }
+
+    .milestone-node-label {
+        font-size: 8.5px;
+        letter-spacing: 0.5px;
+    }
+
+    .milestone-connector {
+        width: 16px;
+        margin-top: 28px;
+    }
+
+    .milestone-detail {
+        padding: 14px 16px;
+        min-height: 130px;
+    }
+
+    .milestone-detail-title {
+        font-size: 16px;
+    }
+
+    .milestone-detail-desc {
+        font-size: 11.5px;
+    }
+
+    .milestone-detail-reward {
+        font-size: 11px;
+        padding: 8px 12px;
+    }
 }
 
 
@@ -1136,6 +1565,9 @@
     .rewards-monthly-hero::after,
     .rewards-monthly-hero-title,
     .rewards-monthly-hero-emblem,
+    .milestone-progress-fill,
+    .milestone-node.rarity-divine .milestone-node-box,
+    .milestone-detail.rarity-divine,
     .rarity-divine .reward-item-icon,
     .rarity-divine .reward-item-rarity {
         animation: none !important;
