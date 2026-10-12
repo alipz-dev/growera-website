@@ -218,7 +218,7 @@ input:focus {
 
 
 /* =========================================
-   CONTENT
+   CONTENT (base — default flow)
 ========================================= */
 
 .content {
@@ -355,7 +355,7 @@ input:focus {
 
 .news-list-section {
     margin-bottom: 24px;
-    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: pageEnter 0.3s ease-out both;
 }
 
 .news-list-heading {
@@ -895,13 +895,13 @@ input:focus {
     left: var(--sidebar-width);
     height: 72px;
     padding: 12px 26px;
-    z-index: 30;
+    z-index: 100;
 }
 
 .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
-    z-index: 40;
+    z-index: 120;
 
     display: flex;
     flex-direction: column;
@@ -1048,19 +1048,23 @@ input:focus {
     min-height: 0;
 
     margin: 0;
-    padding: 96px 26px 35px;
+    padding: 108px 26px 35px;
 
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scrollbar-width: thin;
     scrollbar-color: #314363 transparent;
+
+    /* FIX: cegah scroll anchoring + containing block sendiri */
+    position: relative;
+    overflow-anchor: none;
 }
 
 .right-panel {
     position: fixed;
     inset: 72px 0 0 auto;
-    z-index: 20;
+    z-index: 90;
 
     width: var(--right-panel-width);
     height: calc(100vh - 72px);
@@ -1189,7 +1193,7 @@ input:focus {
         width: auto;
         height: 100%;
         margin-left: var(--sidebar-width);
-        padding: 96px 22px 30px;
+        padding: 108px 22px 30px;
     }
 }
 
@@ -1253,7 +1257,7 @@ input:focus {
     }
 
     .content {
-        padding: 78px 12px 25px;
+        padding: 90px 12px 25px;
     }
 
     .page-panel {
@@ -1813,7 +1817,7 @@ img.inventory-item-icon {
 }
 
 .topup-tab-panel {
-    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: pageEnter 0.3s ease-out both;
 }
 
 .topup-placeholder {
@@ -2430,19 +2434,14 @@ button:focus-visible {
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
+/* FIX: page transition hanya fade, tanpa transform */
 .app-page {
-    animation: pageEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: pageEnter 0.25s ease-out both;
 }
 
 @keyframes pageEnter {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .sidebar-nav .nav-button,
@@ -2578,6 +2577,9 @@ button:focus-visible {
     transform: scale(1) translateY(0);
 }
 
+/* NOTE: scroll-behavior: smooth sudah DIHAPUS dari .content
+   karena menyebabkan race condition dengan page swap. */
+
 
 /* =========================================
    BETA TESTER MARQUEE
@@ -2589,7 +2591,7 @@ button:focus-visible {
     left: var(--sidebar-width);
     right: var(--right-panel-width);
     height: 24px;
-    z-index: 28;
+    z-index: 95;
     overflow: hidden;
     pointer-events: none;
     background: linear-gradient(
@@ -2651,10 +2653,6 @@ button:focus-visible {
 @keyframes betaTesterRainbow {
     0% { background-position: 0% 50%; }
     100% { background-position: 200% 50%; }
-}
-
-.content {
-    scroll-behavior: smooth;
 }
 
 .status-dot {
@@ -2901,7 +2899,7 @@ button:focus-visible {
 ========================================= */
 
 .editor-view {
-    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: pageEnter 0.25s ease-out both;
 }
 
 .editor-view.hidden { display: none !important; }
