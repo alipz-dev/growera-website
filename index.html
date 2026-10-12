@@ -107,6 +107,11 @@
                     <span class="nav-text">Rewards</span>
                 </button>
 
+                <button class="nav-button" data-page="topup" type="button">
+                    <span class="nav-icon">💎</span>
+                    <span class="nav-text">Top Up</span>
+                </button>
+
                 <button class="nav-button" data-page="more" type="button">
                     <span class="nav-icon">▤</span>
                     <span class="nav-text">More</span>
@@ -294,11 +299,11 @@
                             </span>
                         </button>
 
-                        <button class="quick-card" data-page="events" type="button">
-                            <span class="quick-icon">🎉</span>
+                        <button class="quick-card" data-page="topup" type="button">
+                            <span class="quick-icon">💎</span>
                             <span>
-                                <span class="quick-title">Events</span>
-                                <div class="quick-description">Informasi event</div>
+                                <span class="quick-title">Top Up</span>
+                                <div class="quick-description">Isi ulang gems</div>
                             </span>
                         </button>
 
@@ -384,6 +389,89 @@
                         reward yang tersedia.
                     </p>
                 </div>
+            </section>
+
+
+            <!-- TOP UP -->
+
+            <section class="app-page hidden" id="topupPage">
+
+                <div class="topup-header">
+                    <div class="eyebrow">CRYSTAL STORE</div>
+                    <h1 class="topup-title">Top Up Gems</h1>
+                    <p class="topup-subtitle">
+                        Isi ulang gems GROWERA kamu. Gems bisa dipakai untuk
+                        belanja item, event eksklusif, dan fitur premium.
+                    </p>
+                </div>
+
+                <div class="topup-balance">
+                    <div>
+                        <div class="topup-balance-label">SALDO SAAT INI</div>
+                        <div class="topup-balance-value" id="topupBalance">—</div>
+                    </div>
+                    <div class="topup-balance-icon">💎</div>
+                </div>
+
+                <div class="topup-grid" id="topupGrid"></div>
+
+                <section class="topup-section">
+                    <h2 class="topup-section-heading">
+                        🚀 Cara Top Up
+                    </h2>
+
+                    <div class="topup-steps">
+                        <div class="topup-step">
+                            <div class="topup-step-num">1</div>
+                            <div class="topup-step-text">
+                                <strong>Pilih paket</strong><br>
+                                Klik tombol "Beli" pada paket yang kamu inginkan.
+                            </div>
+                        </div>
+
+                        <div class="topup-step">
+                            <div class="topup-step-num">2</div>
+                            <div class="topup-step-text">
+                                <strong>Lakukan pembayaran</strong><br>
+                                Ikuti instruksi pembayaran dari metode yang kamu pilih.
+                            </div>
+                        </div>
+
+                        <div class="topup-step">
+                            <div class="topup-step-num">3</div>
+                            <div class="topup-step-text">
+                                <strong>Gems otomatis masuk</strong><br>
+                                Setelah pembayaran diverifikasi, gems langsung masuk ke akunmu.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="topup-section">
+                    <h2 class="topup-section-heading">
+                        💳 Metode Pembayaran
+                        <span>Semua metode aman & terverifikasi</span>
+                    </h2>
+
+                    <div class="topup-payments">
+                        <span class="topup-payment">QRIS</span>
+                        <span class="topup-payment">GoPay</span>
+                        <span class="topup-payment">OVO</span>
+                        <span class="topup-payment">Dana</span>
+                        <span class="topup-payment">ShopeePay</span>
+                        <span class="topup-payment">Transfer Bank</span>
+                        <span class="topup-payment">Virtual Account</span>
+                    </div>
+
+                    <div class="topup-note">
+                        <strong style="color: var(--cyan);">Catatan:</strong>
+                        Pembayaran otomatis akan tersedia setelah integrasi
+                        payment gateway selesai. Untuk saat ini, hubungi
+                        admin melalui komunitas resmi GROWERA untuk proses
+                        top up manual.
+                    </div>
+                </section>
+
             </section>
 
 
