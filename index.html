@@ -1555,6 +1555,15 @@
 
             <div class="login-footer">
                 GROWERA © Crystal Era
+                <div
+                    id="sessionDebug"
+                    style="
+                        margin-top: 8px;
+                        color: #4d5a72;
+                        font-size: 10px;
+                        line-height: 1.5;
+                    "
+                ></div>
             </div>
         </main>
     </section>
@@ -1626,8 +1635,6 @@
 
             <section class="app-page" id="homePage">
 
-                <!-- NEWS SHORTCUT -->
-
                 <section class="news-card">
                     <div class="news-badge">GROWERA NEWS</div>
 
@@ -1655,8 +1662,6 @@
                         </button>
                     </div>
                 </section>
-
-                <!-- PLAYER OVERVIEW (tepat di bawah news) -->
 
                 <section class="player-card">
                     <div class="card-label">PLAYER OVERVIEW</div>
@@ -1718,8 +1723,6 @@
                     </div>
                 </section>
 
-                <!-- PLAYER STATISTICS -->
-
                 <section class="section">
                     <div class="section-heading">
                         <h2>Player Statistics</h2>
@@ -1757,8 +1760,6 @@
 
                     </div>
                 </section>
-
-                <!-- QUICK ACCESS -->
 
                 <section class="section">
                     <div class="section-heading">
@@ -2154,28 +2155,73 @@
         ========================================= */
 
         function saveSession(token, username, expiresAt) {
-            // Pakai localStorage supaya bertahan meskipun browser
-            // atau tab ditutup.
-            localStorage.setItem(STORAGE_KEYS.token, token);
-            localStorage.setItem(STORAGE_KEYS.username, username);
-            localStorage.setItem(
-                STORAGE_KEYS.expiresAt,
-                String(expiresAt || "")
-            );
+            const t = String(token || "");
+            const u = String(username || "");
+            const e = String(expiresAt || "");
+
+            try {
+                localStorage.setItem(STORAGE_KEYS.token, t);
+                localStorage.setItem(STORAGE_KEYS.username, u);
+                localStorage.setItem(STORAGE_KEYS.expiresAt, e);
+            } catch (error) {
+                console.warn("[GROWERA] localStorage gagal:", error);
+            }
+
+            try {
+                sessionStorage.setItem(STORAGE_KEYS.token, t);
+                sessionStorage.setItem(STORAGE_KEYS.username, u);
+                sessionStorage.setItem(STORAGE_KEYS.expiresAt, e);
+            } catch (error) {
+                console.warn("[GROWERA] sessionStorage gagal:", error);
+            }
         }
 
         function loadSession() {
+            let token = null;
+            let username = null;
+            let expiresAt = null;
+
+            try {
+                token = localStorage.getItem(STORAGE_KEYS.token);
+                username = localStorage.getItem(STORAGE_KEYS.username);
+                expiresAt = localStorage.getItem(STORAGE_KEYS.expiresAt);
+            } catch (error) {
+                console.warn("[GROWERA] Baca localStorage gagal:", error);
+            }
+
+            if (!token || !username) {
+                try {
+                    token = token || sessionStorage.getItem(STORAGE_KEYS.token);
+                    username = username || sessionStorage.getItem(STORAGE_KEYS.username);
+                    expiresAt = expiresAt || sessionStorage.getItem(STORAGE_KEYS.expiresAt);
+                } catch (error) {
+                    console.warn("[GROWERA] Baca sessionStorage gagal:", error);
+                }
+            }
+
             return {
-                token: localStorage.getItem(STORAGE_KEYS.token),
-                username: localStorage.getItem(STORAGE_KEYS.username),
-                expiresAt: localStorage.getItem(STORAGE_KEYS.expiresAt)
+                token: token,
+                username: username,
+                expiresAt: expiresAt
             };
         }
 
         function clearSession() {
-            localStorage.removeItem(STORAGE_KEYS.token);
-            localStorage.removeItem(STORAGE_KEYS.username);
-            localStorage.removeItem(STORAGE_KEYS.expiresAt);
+            try {
+                localStorage.removeItem(STORAGE_KEYS.token);
+                localStorage.removeItem(STORAGE_KEYS.username);
+                localStorage.removeItem(STORAGE_KEYS.expiresAt);
+            } catch (error) {
+                console.warn("[GROWERA] Hapus localStorage gagal:", error);
+            }
+
+            try {
+                sessionStorage.removeItem(STORAGE_KEYS.token);
+                sessionStorage.removeItem(STORAGE_KEYS.username);
+                sessionStorage.removeItem(STORAGE_KEYS.expiresAt);
+            } catch (error) {
+                console.warn("[GROWERA] Hapus sessionStorage gagal:", error);
+            }
         }
 
 
@@ -2578,7 +2624,10 @@
 
         /* =========================================
            FETCH PLAYER PROFILE
-           Return true kalau sukses, false kalau gagal.
+           Return:
+             "ok"           → berhasil
+             "unauthorized" → 401 / token tidak ada
+             "error"        → network / server error (JANGAN hapus sesi)
         ========================================= */
 
         async function fetchPlayerProfile() {
@@ -2588,7 +2637,7 @@
                 showProfileError(
                     "Token login tidak ditemukan. Silakan login kembali."
                 );
-                return false;
+                return "unauthorized";
             }
 
             const requestID = ++profileRequestID;
@@ -2606,7 +2655,7 @@
                 });
 
                 if (requestID !== profileRequestID) {
-                    return false;
+                    return "error";
                 }
 
                 if (response.status === 401) {
@@ -2614,13 +2663,13 @@
                         "Sesi tidak valid atau telah berakhir. " +
                         "Silakan login kembali."
                     );
-                    return false;
+                    return "unauthorized";
                 }
 
                 const data = await readJSONResponse(response);
 
                 if (requestID !== profileRequestID) {
-                    return false;
+                    return "error";
                 }
 
                 if (!response.ok || data.success !== true) {
@@ -2695,11 +2744,11 @@
                 setPlayerStatus("Profil berhasil dimuat", "#58FFAD");
                 setProfileStatus("Profil berhasil dimuat", "#58FFAD");
 
-                return true;
+                return "ok";
 
             } catch (error) {
                 if (requestID !== profileRequestID) {
-                    return false;
+                    return "error";
                 }
 
                 console.error("[GROWERA PROFILE ERROR]", error);
@@ -2709,7 +2758,7 @@
                     "Tidak dapat mengambil data profil dari server."
                 );
 
-                return false;
+                return "error";
             }
         }
 
@@ -3191,31 +3240,54 @@
 
         async function bootstrap() {
             const session = loadSession();
+            const dbg = document.getElementById("sessionDebug");
 
             if (!session.token || !session.username) {
-                // Tidak ada sesi → tampilkan login
+                if (dbg) {
+                    dbg.textContent =
+                        "Tidak ada sesi tersimpan di browser.";
+                }
                 showLoginScreen();
                 return;
             }
 
-            // Ada sesi → tampilkan dashboard dulu, lalu validasi
-            // ke server. Kalau gagal, kita tendang kembali ke login.
+            if (dbg) {
+                dbg.textContent =
+                    "Sesi ditemukan untuk: " + session.username +
+                    " · mencoba memulihkan...";
+            }
+
             showDashboard(session.username);
 
-            const ok = await fetchPlayerProfile();
+            const result = await fetchPlayerProfile();
 
-            if (!ok) {
-                // Sesi kedaluwarsa / tidak valid → bersihkan
+            if (result === "unauthorized") {
+                // Sesi benar-benar tidak valid (401 atau token kosong).
                 clearSession();
                 showLoginScreen();
                 showLoginMessage(
                     "Sesi sebelumnya telah berakhir. Silakan login kembali.",
                     "#FF8585"
                 );
+                if (dbg) {
+                    dbg.textContent =
+                        "Sesi ditolak oleh server (401).";
+                }
+            } else if (result === "error") {
+                // Network / server error. JANGAN hapus sesi.
+                if (dbg) {
+                    dbg.textContent =
+                        "Sesi tersimpan, tapi server tidak merespons. " +
+                        "Coba refresh lagi nanti.";
+                }
+            } else {
+                // "ok"
+                if (dbg) {
+                    dbg.textContent = "Sesi valid: " + session.username;
+                }
             }
         }
 
-        // Jalankan bootstrap saat halaman selesai dimuat.
         bootstrap();
 
     </script>
