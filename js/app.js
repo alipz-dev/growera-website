@@ -1,7 +1,8 @@
 /* =========================================
    GROWERA — CORE
    Login, session, navigasi, admin check,
-   editor view switcher, helper global.
+   editor view switcher, helper global,
+   scroll reset helper (anti bug).
 
    Modul terpisah:
    - news.js     : News home + editor
@@ -12,7 +13,7 @@
    Helper global yang dipakai modul lain:
    - loadSession(), readJSONResponse()
    - formatNumber(), formatRupiah(), formatDateTime()
-   - getInitial(), showEditorView()
+   - getInitial(), showEditorView(), resetContentScroll()
    - setStatusElement(), setPlayerStatus(), setProfileStatus()
 ========================================= */
 
@@ -185,6 +186,30 @@ function setProfileStatus(message, color) {
 
 
 /* =========================================
+   SCROLL RESET HELPER (ANTI BUG)
+   Double requestAnimationFrame: tunggu DOM + layout
+   selesai update dulu, baru reset scroll. Mencegah
+   konten "ketarik ke atas" saat page switch atau
+   saat render data besar selesai.
+========================================= */
+
+function resetContentScroll() {
+    const content = document.querySelector(".content");
+    if (!content) return;
+
+    // Pass 1: langsung, cegah flash
+    content.scrollTop = 0;
+
+    // Pass 2: setelah 2 frame, saat layout sudah settle
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            content.scrollTop = 0;
+        });
+    });
+}
+
+
+/* =========================================
    SCREEN SWITCHERS
 ========================================= */
 
@@ -327,8 +352,8 @@ function showEditorView(viewName) {
         el.classList.toggle("hidden", key !== viewName);
     });
 
-    const content = document.querySelector(".content");
-    if (content) content.scrollTo({ top: 0, behavior: "auto" });
+    // ANTI BUG: pakai helper, bukan scrollTo langsung
+    resetContentScroll();
 }
 
 
@@ -382,8 +407,8 @@ function navigateTo(pageName) {
         window.GroweraShop.onNavigate();
     }
 
-    const content = document.querySelector(".content");
-    if (content) content.scrollTo({ top: 0, behavior: "auto" });
+    // ANTI BUG: pakai helper, bukan scrollTo langsung
+    resetContentScroll();
 }
 
 document.querySelectorAll("[data-page]").forEach(function(button) {
