@@ -9,6 +9,41 @@ const API_INVENTORY_URL = "/api/growera/inventory";
 
 const SERVER_ID = "1791";
 
+
+/* =========================================
+   STORE CATEGORY CONFIG
+========================================= */
+
+const STORE_CATEGORIES = {
+    topup: {
+        eyebrow: "CRYSTAL STORE",
+        title: "CRYSTAL STORE",
+        subtitle: "Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.",
+        currencyIcon: "💎",
+        currencyName: "GEMS",
+        variant: "crystal",
+        showBalance: true
+    },
+    assets: {
+        eyebrow: "ASSETS STORE",
+        title: "ASSETS STORE",
+        subtitle: "Perkuat koleksimu dan temukan berbagai aset berharga untuk perjalananmu di Crystal Era.",
+        currencyIcon: "🟠",
+        currencyName: "ASSETS CURRENCY",
+        variant: "assets",
+        showBalance: false
+    },
+    items: {
+        eyebrow: "ITEMS STORE",
+        title: "ITEMS STORE",
+        subtitle: "Temukan item pilihan, koleksi eksklusif, dan berbagai perlengkapan untuk petualanganmu.",
+        currencyIcon: "🟣",
+        currencyName: "ITEMS CURRENCY",
+        variant: "items",
+        showBalance: false
+    }
+};
+
 const STORAGE_KEYS = {
     token: "growera_token",
     username: "growera_username",
@@ -476,7 +511,7 @@ function updatePlayerOverview(profile) {
 
 
 /* =========================================
-   TOP UP PAGE
+   TOP UP PAGE — CRYSTAL STORE
 ========================================= */
 
 const TOPUP_PACKAGES = [
@@ -513,20 +548,20 @@ const TOPUP_PACKAGES = [
         badge: "🔥 BEST VALUE"
     },
     {
-        id: "premium",
+        id: "mega",
         gems: 5000,
         bonusPercent: 25,
         price: 500000,
-        tier: "premium",
-        badge: null
+        tier: "mega",
+        badge: "🟠 MEGA PACK"
     },
     {
-        id: "mega",
-        gems: 12000,
-        bonusPercent: 30,
-        price: 1000000,
-        tier: "mega",
-        badge: "💠 MEGA PACK"
+        id: "divine",
+        gems: 35000,
+        bonusPercent: 40,
+        price: 1500000,
+        tier: "divine",
+        badge: "🌈 DIVINE PACK"
     }
 ];
 
@@ -543,16 +578,27 @@ function renderTopupPackages() {
         if (pkg.tier === "popular" || pkg.tier === "best") {
             card.classList.add("featured");
         }
+
         if (pkg.tier === "mega") {
-            card.classList.add("mega");
+            card.classList.add("tier-mega");
+        }
+
+        if (pkg.tier === "divine") {
+            card.classList.add("tier-divine");
         }
 
         if (pkg.badge) {
             const badge = document.createElement("div");
             badge.className = "topup-card-badge";
+
             if (pkg.tier === "mega") {
                 badge.classList.add("mega");
             }
+
+            if (pkg.tier === "divine") {
+                badge.classList.add("divine");
+            }
+
             badge.textContent = pkg.badge;
             card.appendChild(badge);
         }
@@ -604,14 +650,14 @@ function renderTopupPackages() {
         const total = document.createElement("div");
         total.className = "topup-card-total";
         total.innerHTML =
-            "Total diterima <strong>" +
+            "Total <strong>" +
             formatNumber(totalReceived) + " 💎</strong>";
         card.appendChild(total);
 
         const buyBtn = document.createElement("button");
         buyBtn.className = "topup-buy-btn";
         buyBtn.type = "button";
-        buyBtn.textContent = "Beli Sekarang";
+        buyBtn.textContent = "Beli";
         buyBtn.addEventListener("click", function () {
             handleTopupBuy(pkg);
         });
@@ -635,11 +681,40 @@ function updateTopupBalance(profile) {
 
 function handleTopupBuy(pkg) {
     alert(
-        "Paket: " + pkg.gems + " Gems (" +
+        "Paket: " + formatNumber(pkg.gems) + " Gems (" +
         formatRupiah(pkg.price) + ")\n\n" +
         "Pembayaran otomatis akan segera tersedia. " +
         "Silakan hubungi admin untuk proses manual."
     );
+}
+
+
+/* =========================================
+   STORE HEADER SWITCHER
+========================================= */
+
+function updateStoreHeader(categoryKey) {
+    const cat = STORE_CATEGORIES[categoryKey];
+    if (!cat) return;
+
+    const header = document.getElementById("storeHeader");
+    const eyebrow = document.getElementById("storeEyebrow");
+    const title = document.getElementById("storeTitle");
+    const subtitle = document.getElementById("storeSubtitle");
+    const currencyIcon = document.getElementById("storeCurrencyIcon");
+    const currencyName = document.getElementById("storeCurrencyName");
+    const balanceWrap = document.getElementById("topupBalanceWrap");
+
+    if (header) header.dataset.variant = cat.variant;
+    if (eyebrow) eyebrow.textContent = cat.eyebrow;
+    if (title) title.textContent = cat.title;
+    if (subtitle) subtitle.textContent = cat.subtitle;
+    if (currencyIcon) currencyIcon.textContent = cat.currencyIcon;
+    if (currencyName) currencyName.textContent = cat.currencyName;
+
+    if (balanceWrap) {
+        balanceWrap.classList.toggle("hidden", !cat.showBalance);
+    }
 }
 
 
@@ -651,12 +726,10 @@ document.querySelectorAll("[data-topup-tab]").forEach(function (tab) {
     tab.addEventListener("click", function () {
         const target = tab.dataset.topupTab;
 
-        // Update active tab button
         document.querySelectorAll("[data-topup-tab]").forEach(function (t) {
             t.classList.toggle("active", t.dataset.topupTab === target);
         });
 
-        // Show/hide panels
         const panels = {
             topup: "topupPanelTopup",
             assets: "topupPanelAssets",
@@ -668,6 +741,13 @@ document.querySelectorAll("[data-topup-tab]").forEach(function (tab) {
             if (!el) return;
             el.classList.toggle("hidden", key !== target);
         });
+
+        updateStoreHeader(target);
+
+        const content = document.querySelector(".content");
+        if (content) {
+            content.scrollTo({ top: 0, behavior: "auto" });
+        }
     });
 });
 
@@ -707,10 +787,6 @@ function showProfileError(message) {
 
 /* =========================================
    FETCH PLAYER PROFILE
-   Return:
-     "ok"           → berhasil
-     "unauthorized" → 401 / token tidak ada
-     "error"        → network / server error (JANGAN hapus sesi)
 ========================================= */
 
 async function fetchPlayerProfile() {
@@ -1327,8 +1403,9 @@ async function bootstrap() {
     const session = loadSession();
     const dbg = document.getElementById("sessionDebug");
 
-    // Render paket top up sekali di awal (statis, tidak butuh API).
+    // Render paket top up sekali di awal (statis, tidak butuh API)
     renderTopupPackages();
+    updateStoreHeader("topup");
 
     if (!session.token || !session.username) {
         if (dbg) {
