@@ -949,3 +949,631 @@ async function fetchInventory() {
         renderInventory(items);
     } catch (error) {
         if (requestID !== inventoryRequestID) return;
+        console.error("[GROWERA INVENTORY ERROR]", error);
+        note.textContent = "Gagal memuat inventory: " + (error.message || "unknown");
+        grid.replaceChildren();
+        const errorLine = document.createElement("p");
+        errorLine.textContent = "Tidak dapat mengambil inventory dari server.";
+        errorLine.style.color = "var(--danger)";
+        errorLine.style.fontSize = "12px";
+        grid.appendChild(errorLine);
+    }
+}
+
+function renderInventory(items) {
+    const grid = document.getElementById("inventoryGrid");
+    if (!grid) return;
+    grid.replaceChildren();
+
+    if (!Array.isArray(items) || items.length === 0) {
+        const empty = document.createElement("p");
+        empty.textContent = "Inventory kosong.";
+        empty.style.color = "var(--muted)";
+        empty.style.fontSize = "12px";
+        grid.appendChild(empty);
+        return;
+    }
+
+    items.forEach(function (item) {
+        const itemID = Number(item.id);
+        const itemName = String(item.name || ("Item #" + itemID));
+        const itemCount = Number(item.count) || 0;
+
+        const card = document.createElement("div");
+        card.className = "inventory-item";
+        card.title = itemName + " (ID: " + itemID + ")";
+
+        const icon = document.createElement("img");
+        icon.className = "inventory-item-icon";
+        icon.alt = itemName;
+        icon.loading = "lazy";
+        icon.src = itemTextureURL(itemID);
+
+        icon.addEventListener("error", function () {
+            const fallback = document.createElement("span");
+            fallback.className = "inventory-item-icon";
+            fallback.textContent = "📦";
+            fallback.title = "Texture tidak tersedia";
+            if (icon.parentNode === card) card.replaceChild(fallback, icon);
+        });
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "inventory-item-name";
+        nameEl.textContent = itemName;
+
+        const countEl = document.createElement("div");
+        countEl.className = "inventory-item-count";
+        countEl.textContent = "× " + formatNumber(itemCount);
+
+        card.appendChild(icon);
+        card.appendChild(nameEl);
+        card.appendChild(countEl);
+        grid.appendChild(card);
+    });
+}
+
+
+/* =========================================
+   NEWS EDITOR
+========================================= */
+
+function showEditorView(viewName) {
+    const views = {
+        roadmap: "editorViewRoadmap",
+        list: "editorViewNewsList",
+        form: "editorViewNewsForm"
+    };
+
+    Object.keys(views).forEach(function (key) {
+        const el = document.getElementById(views[key]);
+        if (!el) return;
+        el.classList.toggle("hidden", key !== viewName);
+    });
+
+    newsState.view = viewName;
+
+    const content = document.querySelector(".content");
+    if (content) content.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function resetNewsForm() {
+    document.getElementById("newsFormTitleInput").value = "";
+    document.getElementById("newsFormBadge").value = "GROWERA NEWS";
+    document.getElementById("newsFormExcerpt").value = "";
+    document.getElementById("newsFormBody").value = "";
+    newsState.mode = "create";
+    newsState.editingId = null;
+    document.getElementById("newsFormTitle").textContent = "Buat Artikel Baru";
+}
+
+function fillNewsForm(article) {
+    document.getElementById("newsFormTitleInput").value = article.title || "";
+    document.getElementById("newsFormBadge").value = article.badge || "GROWERA NEWS";
+    document.getElementById("newsFormExcerpt").value = article.excerpt || "";
+    document.getElementById("newsFormBody").value = article.body || "";
+    newsState.mode = "edit";
+    newsState.editingId = article.id;
+    document.getElementById("newsFormTitle").textContent = "Edit Artikel";
+}
+
+async function loadNewsList() {
+    const container = document.getElementById("newsListContainer");
+    if (!container) return;
+
+    container.innerHTML = '<p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Memuat artikel...</p>';
+
+    const session = loadSession();
+    if (!session.token) {
+        container.innerHTML = '<p style="color:var(--danger);font-size:12px">Token tidak ditemukan.</p>';
+        return;
+    }
+
+    try {
+        const response = await fetch(API_NEWS_ADMIN_URL, {
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
+
+        const data = await readJSONResponse(response);
+
+        if (!response.ok || data.success !== true) {
+            throw new Error(data.message || "HTTP " + response.status);
+        }
+
+        newsState.articles = Array.isArray(data.articles) ? data.articles : [];
+        renderNewsList(newsState.articles);
+    } catch (err) {
+        container.innerHTML = '<p style="color:var(--danger);font-size:12px;text-align:center;padding:20px">Gagal memuat: ' + err.message + '</p>';
+    }
+}
+
+function renderNewsList(articles) {
+    const container = document.getElementById("newsListContainer");
+    if (!container) return;
+
+    if (articles.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);font-size:12px;text-align:center;padding:30px">Belum ada artikel.<br>Klik "+ Baru" untuk mulai.</p>';
+        return;
+    }
+
+    container.innerHTML = "";
+
+    articles.forEach(function (article) {
+        const item = document.createElement("div");
+        item.className = "news-list-item";
+
+        const content = document.createElement("div");
+        content.className = "news-list-item-content";
+
+        const header = document.createElement("div");
+        header.className = "news-list-item-header";
+
+        const badge = document.createElement("span");
+        badge.className = "news-status-badge " +
+            (article.status === "published" ? "published" : "draft");
+        badge.textContent = article.status;
+
+        const title = document.createElement("h3");
+        title.className = "news-list-item-title";
+        title.textContent = article.title;
+
+        header.appendChild(badge);
+        header.appendChild(title);
+
+        const excerpt = document.createElement("p");
+        excerpt.className = "news-list-item-excerpt";
+        excerpt.textContent = article.excerpt || "(tanpa excerpt)";
+
+        const meta = document.createElement("div");
+        meta.className = "news-list-item-meta";
+
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = formatDateTime(article.updatedAt);
+
+        const sep = document.createElement("span");
+        sep.textContent = "·";
+
+        const authorSpan = document.createElement("span");
+        authorSpan.textContent = article.author || "unknown";
+
+        meta.appendChild(dateSpan);
+        meta.appendChild(sep);
+        meta.appendChild(authorSpan);
+
+        content.appendChild(header);
+        content.appendChild(excerpt);
+        content.appendChild(meta);
+
+        const actions = document.createElement("div");
+        actions.className = "news-list-item-actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "news-action-btn edit";
+        editBtn.type = "button";
+        editBtn.textContent = "Edit";
+        editBtn.addEventListener("click", function () {
+            editNews(article.id);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "news-action-btn delete";
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "Hapus";
+        deleteBtn.addEventListener("click", function () {
+            deleteNews(article.id, article.title);
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(content);
+        item.appendChild(actions);
+
+        container.appendChild(item);
+    });
+}
+
+async function editNews(id) {
+    const session = loadSession();
+    if (!session.token) return;
+
+    try {
+        const response = await fetch(API_NEWS_ADMIN_URL + "/" + id, {
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
+
+        const data = await readJSONResponse(response);
+
+        if (!response.ok || data.success !== true) {
+            throw new Error(data.message || "HTTP " + response.status);
+        }
+
+        fillNewsForm(data.article);
+        showEditorView("form");
+    } catch (err) {
+        alert("Gagal memuat artikel: " + err.message);
+    }
+}
+
+async function deleteNews(id, title) {
+    if (!confirm('Hapus artikel "' + title + '"?\n\nTindakan ini tidak bisa dibatalkan.')) {
+        return;
+    }
+
+    const session = loadSession();
+    if (!session.token) return;
+
+    try {
+        const response = await fetch(API_NEWS_ADMIN_URL + "/" + id, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
+
+        const data = await readJSONResponse(response);
+
+        if (!response.ok || data.success !== true) {
+            throw new Error(data.message || "HTTP " + response.status);
+        }
+
+        alert("Artikel dihapus.");
+        await loadNewsList();
+        await loadHomeNews();
+    } catch (err) {
+        alert("Gagal menghapus: " + err.message);
+    }
+}
+
+async function saveNews(status) {
+    const title = document.getElementById("newsFormTitleInput").value.trim();
+    const badge = document.getElementById("newsFormBadge").value.trim() || "GROWERA NEWS";
+    const excerpt = document.getElementById("newsFormExcerpt").value.trim();
+    const body = document.getElementById("newsFormBody").value.trim();
+
+    if (!title) {
+        alert("Title wajib diisi.");
+        return;
+    }
+
+    const session = loadSession();
+    if (!session.token) return;
+
+    const payload = { title, badge, excerpt, body, status };
+
+    const isEdit = newsState.mode === "edit";
+    const url = isEdit
+        ? API_NEWS_ADMIN_URL + "/" + newsState.editingId
+        : API_NEWS_ADMIN_URL;
+
+    const method = isEdit ? "PUT" : "POST";
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(payload),
+            cache: "no-store"
+        });
+
+        const data = await readJSONResponse(response);
+
+        if (!response.ok || data.success !== true) {
+            throw new Error(data.message || "HTTP " + response.status);
+        }
+
+        alert(status === "published"
+            ? "Artikel dipublikasikan."
+            : "Draft tersimpan.");
+
+        showEditorView("list");
+        await loadNewsList();
+        await loadHomeNews();
+    } catch (err) {
+        alert("Gagal menyimpan: " + err.message);
+    }
+}
+
+/* Wire news editor buttons */
+
+function initNewsEditor() {
+    const roadmapNewsBtn = document.querySelector('[data-editor-module="news"]');
+    if (roadmapNewsBtn) {
+        roadmapNewsBtn.addEventListener("click", function () {
+            showEditorView("list");
+            loadNewsList();
+        });
+    }
+
+    const backToRoadmap = document.getElementById("newsBackToRoadmap");
+    if (backToRoadmap) {
+        backToRoadmap.addEventListener("click", function () {
+            showEditorView("roadmap");
+        });
+    }
+
+    const createBtn = document.getElementById("newsCreateBtn");
+    if (createBtn) {
+        createBtn.addEventListener("click", function () {
+            resetNewsForm();
+            showEditorView("form");
+        });
+    }
+
+    const formBack = document.getElementById("newsFormBack");
+    if (formBack) {
+        formBack.addEventListener("click", function () {
+            showEditorView("list");
+            loadNewsList();
+        });
+    }
+
+    const formCancel = document.getElementById("newsFormCancel");
+    if (formCancel) {
+        formCancel.addEventListener("click", function () {
+            showEditorView("list");
+            loadNewsList();
+        });
+    }
+
+    const saveDraft = document.getElementById("newsFormSaveDraft");
+    if (saveDraft) {
+        saveDraft.addEventListener("click", function () {
+            saveNews("draft");
+        });
+    }
+
+    const publish = document.getElementById("newsFormPublish");
+    if (publish) {
+        publish.addEventListener("click", function () {
+            saveNews("published");
+        });
+    }
+}
+
+
+/* =========================================
+   PAGE NAVIGATION
+========================================= */
+
+function navigateTo(pageName) {
+    const validPages = [
+        "home", "profile", "rewards", "topup", "editor",
+        "events", "history", "more"
+    ];
+
+    if (!validPages.includes(pageName)) pageName = "home";
+
+    if (pageName === "editor" && !currentUserIsAdmin) {
+        console.warn("[GROWERA] Akses editor ditolak.");
+        pageName = "more";
+    }
+
+    document.querySelectorAll(".app-page").forEach(function(page) {
+        page.classList.add("hidden");
+    });
+
+    let targetPage = document.getElementById(pageName + "Page");
+
+    if (!targetPage) {
+        pageName = "more";
+        targetPage = document.getElementById("morePage");
+    }
+
+    if (!targetPage) return;
+
+    targetPage.classList.remove("hidden");
+
+    document.querySelectorAll(
+        ".sidebar-nav .nav-button, .sidebar-bottom .nav-button"
+    ).forEach(function(button) {
+        button.classList.toggle("active", button.dataset.page === pageName);
+    });
+
+    // Reset editor to roadmap view when entering
+    if (pageName === "editor") {
+        showEditorView("roadmap");
+    }
+
+    const content = document.querySelector(".content");
+    if (content) content.scrollTo({ top: 0, behavior: "auto" });
+}
+
+document.querySelectorAll("[data-page]").forEach(function(button) {
+    button.addEventListener("click", function() {
+        navigateTo(button.dataset.page);
+    });
+});
+
+
+/* =========================================
+   LOGIN HANDLER
+========================================= */
+
+loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) {
+        showLoginMessage("Username dan password wajib diisi.", "#FF8585");
+        return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.textContent = "SIGNING IN...";
+    showLoginMessage("Memeriksa kredensial akun...", "#65E7FF");
+
+    try {
+        const result = await loginRequest(username, password);
+
+        saveSession(result.token, result.username, result.expiresAt);
+        passwordInput.value = "";
+
+        showDashboard(result.username);
+        await fetchPlayerProfile();
+        await checkAdminStatus();
+        await loadHomeNews();
+    } catch (error) {
+        console.error("[GROWERA LOGIN ERROR]", error);
+        showLoginMessage(
+            error.message || "Tidak dapat menghubungi API GROWERA.",
+            "#FF8585"
+        );
+    } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "SIGN IN";
+    }
+});
+
+
+/* =========================================
+   BUTTON EVENTS
+========================================= */
+
+document.getElementById("retryProfileButton").addEventListener("click", function() {
+    fetchPlayerProfile();
+});
+
+document.getElementById("accountButton").addEventListener("click", function() {
+    navigateTo("profile");
+});
+
+document.getElementById("newsReadMoreBtn").addEventListener("click", openNewsModal);
+
+document.getElementById("newsModalCloseBtn").addEventListener("click", closeNewsModal);
+
+document.getElementById("newsModal").addEventListener("click", function (event) {
+    if (event.target === event.currentTarget) closeNewsModal();
+});
+
+document.getElementById("viewInventoryBtn").addEventListener("click", openInventoryModal);
+
+document.getElementById("inventoryCloseBtn").addEventListener("click", closeInventoryModal);
+
+document.getElementById("inventoryModal").addEventListener("click", function (event) {
+    if (event.target === event.currentTarget) closeInventoryModal();
+});
+
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        closeInventoryModal();
+        closeNewsModal();
+    }
+});
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+document.getElementById("logoutButton").addEventListener("click", async function() {
+    const session = loadSession();
+
+    profileRequestID++;
+    inventoryRequestID++;
+    currentProfile = null;
+
+    if (session.token) {
+        try {
+            await fetch(API_LOGOUT_URL, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + session.token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
+            });
+        } catch (error) {
+            console.warn("[GROWERA LOGOUT] Request server gagal.");
+        }
+    }
+
+    clearSession();
+
+    currentUserIsAdmin = false;
+    updateAdminUI();
+
+    closeInventoryModal();
+    closeNewsModal();
+
+    dashboardScreen.classList.add("hidden");
+    loginScreen.classList.remove("hidden");
+
+    loginForm.reset();
+
+    showLoginMessage("Kamu telah keluar dari dashboard.", "#65E7FF");
+
+    window.scrollTo({ top: 0, behavior: "auto" });
+});
+
+document.getElementById("sidebarLogoutButton").addEventListener("click", function() {
+    document.getElementById("logoutButton").click();
+});
+
+
+/* =========================================
+   BOOTSTRAP
+========================================= */
+
+async function bootstrap() {
+    const session = loadSession();
+    const dbg = document.getElementById("sessionDebug");
+
+    renderTopupPackages();
+    updateStoreHeader("topup");
+    initNewsEditor();
+
+    if (!session.token || !session.username) {
+        if (dbg) dbg.textContent = "Tidak ada sesi tersimpan di browser.";
+        showLoginScreen();
+        return;
+    }
+
+    if (dbg) {
+        dbg.textContent = "Sesi ditemukan untuk: " + session.username +
+            " · mencoba memulihkan...";
+    }
+
+    showDashboard(session.username);
+
+    const result = await fetchPlayerProfile();
+
+    if (result === "unauthorized") {
+        clearSession();
+        showLoginScreen();
+        showLoginMessage(
+            "Sesi sebelumnya telah berakhir. Silakan login kembali.",
+            "#FF8585"
+        );
+        if (dbg) dbg.textContent = "Sesi ditolak oleh server (401).";
+        return;
+    }
+
+    if (result === "error") {
+        if (dbg) dbg.textContent =
+            "Sesi tersimpan, tapi server tidak merespons.";
+        return;
+    }
+
+    if (dbg) dbg.textContent = "Sesi valid: " + session.username;
+
+    await checkAdminStatus();
+    await loadHomeNews();
+}
+
+bootstrap();
