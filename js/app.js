@@ -644,6 +644,35 @@ function handleTopupBuy(pkg) {
 
 
 /* =========================================
+   TOP UP CATEGORY TABS
+========================================= */
+
+document.querySelectorAll("[data-topup-tab]").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+        const target = tab.dataset.topupTab;
+
+        // Update active tab button
+        document.querySelectorAll("[data-topup-tab]").forEach(function (t) {
+            t.classList.toggle("active", t.dataset.topupTab === target);
+        });
+
+        // Show/hide panels
+        const panels = {
+            topup: "topupPanelTopup",
+            assets: "topupPanelAssets",
+            items: "topupPanelItems"
+        };
+
+        Object.keys(panels).forEach(function (key) {
+            const el = document.getElementById(panels[key]);
+            if (!el) return;
+            el.classList.toggle("hidden", key !== target);
+        });
+    });
+});
+
+
+/* =========================================
    PROFILE ERROR
 ========================================= */
 
