@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/news.css">
     <link rel="stylesheet" href="/css/shop.css">
     <link rel="stylesheet" href="/css/rewards.css">
+    <link rel="stylesheet" href="/css/profile.css">
 </head>
 
 <body>
@@ -336,54 +337,109 @@
             <!-- PROFILE -->
 
             <section class="app-page hidden" id="profilePage">
+
                 <div class="welcome">
                     <div class="eyebrow">PLAYER ACCOUNT</div>
                     <h1>My Profile</h1>
                     <p>Informasi akun pemainmu dari server GROWERA.</p>
                 </div>
 
-                <div class="page-panel">
-                    <h2 id="profileUsername">Player</h2>
+                <!-- HERO -->
+                <div class="profile-hero">
+                    <div class="profile-hero-avatar" id="profileHeroAvatar">P</div>
 
-                    <div id="profileStatusMessage" class="player-status">
-                        <span class="status-dot"></span>
-                        Menunggu data profil...
+                    <div class="profile-hero-info">
+                        <h2 class="profile-hero-name" id="profileUsername">Player</h2>
+                        <div class="profile-hero-role" id="profileHeroRole">Memuat role...</div>
+                        <div id="profileStatusMessage" class="player-status">
+                            <span class="status-dot"></span>
+                            Menunggu data profil...
+                        </div>
                     </div>
 
-                    <div id="profileError" class="error-panel hidden">
-                        <p id="profileErrorMessage"></p>
-
-                        <button
-                            id="retryProfileButton"
-                            class="profile-button"
-                            type="button"
-                        >
-                            Coba Lagi
-                        </button>
+                    <div class="profile-hero-badges">
+                        <div class="profile-hero-badge" id="profileOnlineBadge">
+                            <span class="profile-badge-label">STATUS</span>
+                            <span class="profile-badge-value" id="profileOnlineValue">—</span>
+                        </div>
+                        <div class="profile-hero-badge" id="profilePingBadge">
+                            <span class="profile-badge-label">PING</span>
+                            <span class="profile-badge-value" id="profilePingValue">—</span>
+                        </div>
                     </div>
+                </div>
 
+                <!-- ERROR -->
+                <div id="profileError" class="error-panel hidden">
+                    <p id="profileErrorMessage"></p>
+                    <button id="retryProfileButton" class="profile-button" type="button">
+                        Coba Lagi
+                    </button>
+                </div>
+
+                <!-- STATS -->
+                <div class="profile-stats-grid">
+                    <div class="profile-stat">
+                        <div class="profile-stat-label">LEVEL</div>
+                        <div class="profile-stat-value" id="profileStatLevel">—</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-label">GEMS</div>
+                        <div class="profile-stat-value gold" id="profileStatGems">—</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-label">USER ID</div>
+                        <div class="profile-stat-value" id="profileStatUserID">—</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-label">PLAYTIME</div>
+                        <div class="profile-stat-value" id="profileStatPlaytime">—</div>
+                    </div>
+                </div>
+
+                <!-- ACCOUNT INFO -->
+                <div class="profile-section">
+                    <div class="profile-section-heading">
+                        <span class="profile-section-icon">👤</span>
+                        <h3>Account Information</h3>
+                    </div>
                     <div id="profileDetails" class="profile-details">
                         <p>Data profil akan muncul setelah berhasil diambil dari API.</p>
                     </div>
+                </div>
 
-                    <button
-                        class="profile-button"
-                        id="viewInventoryBtn"
-                        type="button"
-                        style="margin-top:20px; margin-right:8px;"
-                    >
+                <!-- WORLDS -->
+                <div class="profile-section" id="profileWorldsSection">
+                    <div class="profile-section-heading">
+                        <span class="profile-section-icon">🌍</span>
+                        <h3>Worlds</h3>
+                    </div>
+                    <div id="profileWorldsGrid" class="profile-worlds">
+                        <p class="profile-loading">Menunggu data...</p>
+                    </div>
+                </div>
+
+                <!-- SECURITY -->
+                <div class="profile-section" id="profileSecuritySection">
+                    <div class="profile-section-heading">
+                        <span class="profile-section-icon">🔒</span>
+                        <h3>Security & History</h3>
+                    </div>
+                    <div id="profileSecurityContent">
+                        <p class="profile-loading">Menunggu data...</p>
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="profile-actions">
+                    <button class="profile-button" id="viewInventoryBtn" type="button">
                         🎒 View Inventory
                     </button>
-
-                    <button
-                        class="profile-button"
-                        data-page="home"
-                        type="button"
-                        style="margin-top:20px"
-                    >
+                    <button class="profile-button" data-page="home" type="button">
                         ← Back to Home
                     </button>
                 </div>
+
             </section>
 
 
@@ -690,16 +746,16 @@
                                 </div>
                             </button>
 
-                            <div class="editor-roadmap-item locked">
+                            <button class="editor-roadmap-item" data-editor-module="topup" type="button">
                                 <div class="editor-roadmap-icon">💎</div>
                                 <div class="editor-roadmap-content">
                                     <h3>Top Up Packages</h3>
                                     <p>Kelola paket top up, harga, dan badge.</p>
-                                    <span class="editor-roadmap-badge">
-                                        Coming Soon
+                                    <span class="editor-roadmap-badge active-badge">
+                                        Aktif
                                     </span>
                                 </div>
-                            </div>
+                            </button>
 
                             <div class="editor-roadmap-item locked">
                                 <div class="editor-roadmap-icon">🎨</div>
@@ -955,6 +1011,118 @@
                             </button>
                             <button class="primary-button" id="rewardsFormPublish" type="button" style="width:auto">
                                 Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOPUP LIST -->
+
+                <div class="editor-view hidden" id="editorViewTopupList">
+                    <div class="page-panel">
+
+                        <div class="editor-view-header">
+                            <h2>💎 Top Up Packages</h2>
+
+                            <div class="editor-view-actions">
+                                <button class="profile-button" id="topupBackToRoadmap" type="button">
+                                    ← Back
+                                </button>
+                                <button class="primary-button" id="topupCreateBtn" type="button" style="width:auto">
+                                    + Baru
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="topupAdminList">
+                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
+                                Memuat paket...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOPUP FORM -->
+
+                <div class="editor-view hidden" id="editorViewTopupForm">
+                    <div class="page-panel">
+
+                        <div class="editor-view-header">
+                            <h2 id="topupFormTitle">Buat Paket Baru</h2>
+
+                            <button class="profile-button" id="topupFormBack" type="button">
+                                ← Back
+                            </button>
+                        </div>
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="topupFormKey">Package Key</label>
+                                <input class="editor-input" id="topupFormKey" type="text"
+                                       maxlength="40" placeholder="starter" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="topupFormTier">Tier</label>
+                                <select class="editor-input" id="topupFormTier">
+                                    <option value="starter">Starter</option>
+                                    <option value="basic">Basic</option>
+                                    <option value="popular">Popular ⭐</option>
+                                    <option value="best">Best Value 🔥</option>
+                                    <option value="mega">Mega 🟠</option>
+                                    <option value="divine">Divine 🌈</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="topupFormGems">Gems</label>
+                                <input class="editor-input" id="topupFormGems" type="number"
+                                       min="0" placeholder="100" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="topupFormBonus">Bonus (%)</label>
+                                <input class="editor-input" id="topupFormBonus" type="number"
+                                       min="0" max="100" placeholder="0" />
+                            </div>
+                        </div>
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="topupFormPrice">Harga (Rp)</label>
+                                <input class="editor-input" id="topupFormPrice" type="number"
+                                       min="0" placeholder="15000" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="topupFormOrder">Order</label>
+                                <input class="editor-input" id="topupFormOrder" type="number"
+                                       min="0" placeholder="0" />
+                            </div>
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="topupFormBadge">Badge (opsional)</label>
+                            <input class="editor-input" id="topupFormBadge" type="text"
+                                   maxlength="40" placeholder="⭐ POPULER" />
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="topupFormActive">Status</label>
+                            <select class="editor-input" id="topupFormActive">
+                                <option value="1">Aktif (tampil di store)</option>
+                                <option value="0">Nonaktif (disembunyikan)</option>
+                            </select>
+                        </div>
+
+                        <div class="editor-form-actions">
+                            <button class="profile-button" id="topupFormCancel" type="button">
+                                Cancel
+                            </button>
+                            <button class="primary-button" id="topupFormSave" type="button" style="width:auto">
+                                Save
                             </button>
                         </div>
                     </div>
