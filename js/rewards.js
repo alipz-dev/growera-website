@@ -1,18 +1,6 @@
 /* =========================================
    GROWERA — REWARDS MODULE
-   Rewards page (5 kategori kartu + modal),
-   admin rewards & quest editor, dan milestone track
-   ala Starlight Pass ML.
-
-   Dependensi (dari app.js):
-   - loadSession(), readJSONResponse()
-   - formatDateTime(), showEditorView()
-
-   Public API (window.GroweraRewards):
-   - init()          : wire event listener (auto dijalankan)
-   - loadPublic()    : fetch rewards publik
-   - onNavigate()    : dipanggil saat user buka halaman rewards
-   - closeModal()    : tutup modal
+   + QUEST CLAIM support
 ========================================= */
 
 (function () {
@@ -24,8 +12,10 @@
     ========================================= */
 
     const API_REWARDS_PUBLIC_URL = "/api/growera/rewards";
-    const API_REWARDS_ADMIN_URL = "/api/growera/admin/rewards";
-    const API_QUEST_CONFIG_URL = "/api/growera/admin/quest-config";
+    const API_REWARDS_ADMIN_URL  = "/api/growera/admin/rewards";
+    const API_QUEST_CONFIG_URL   = "/api/growera/admin/quest-config";
+    const API_QUESTS_URL         = "/api/growera/quests";
+    const API_QUEST_CLAIM_URL    = "/api/growera/quests/claim";
 
 
     /* =========================================
@@ -34,71 +24,53 @@
 
     const REWARD_CATEGORIES = {
         "milestone": {
-            key: "milestone",
-            eyebrow: "MILESTONE REWARDS",
-            title: "Milestone",
+            key: "milestone", eyebrow: "MILESTONE REWARDS", title: "Milestone",
             subtitle: "Reach new milestones and unlock your legacy.",
-            icon: "💠",
-            variant: "milestone",
+            icon: "💠", variant: "milestone",
             actionLabel: "View Rewards",
             modalSubtitle: "Every achievement tells a story."
         },
         "daily-login": {
-            key: "daily-login",
-            eyebrow: "DAILY LOGIN",
-            title: "Daily Login",
+            key: "daily-login", eyebrow: "DAILY LOGIN", title: "Daily Login",
             subtitle: "Return every day. Discover new rewards.",
-            icon: "🎁",
-            variant: "daily-login",
+            icon: "🎁", variant: "daily-login",
             actionLabel: "View Rewards",
             modalSubtitle: "Return every day. Discover new rewards."
         },
         "daily-quest": {
-            key: "daily-quest",
-            eyebrow: "DAILY QUEST",
-            title: "Daily Quest",
+            key: "daily-quest", eyebrow: "DAILY QUEST", title: "Daily Quest",
             subtitle: "Complete your daily challenges.",
-            icon: "⚔️",
-            variant: "daily-quest",
-            actionLabel: "View Quests",
-            modalSubtitle: "Crystal Challenges"
+            icon: "⚔️", variant: "daily-quest",
+            actionLabel: "View Quests", modalSubtitle: "Crystal Challenges"
         },
         "weekly-quest": {
-            key: "weekly-quest",
-            eyebrow: "WEEKLY QUEST",
-            title: "Weekly Quest",
+            key: "weekly-quest", eyebrow: "WEEKLY QUEST", title: "Weekly Quest",
             subtitle: "Take on greater challenges every week.",
-            icon: "📅",
-            variant: "weekly-quest",
-            actionLabel: "View Quests",
-            modalSubtitle: "Weekly Trials"
+            icon: "📅", variant: "weekly-quest",
+            actionLabel: "View Quests", modalSubtitle: "Weekly Trials"
         },
         "monthly-quest": {
-            key: "monthly-quest",
-            eyebrow: "MONTHLY QUEST",
-            title: "Monthly Quest",
+            key: "monthly-quest", eyebrow: "MONTHLY QUEST", title: "Monthly Quest",
             subtitle: "One month. Greater challenges. Legendary rewards.",
-            icon: "👑",
-            variant: "monthly-quest",
-            actionLabel: "Explore Monthly",
-            modalSubtitle: "Legendary Trials"
+            icon: "👑", variant: "monthly-quest",
+            actionLabel: "Explore Monthly", modalSubtitle: "Legendary Trials"
         }
     };
 
     const RARITY_LABELS = {
-        common:    "Common",
-        rare:      "Rare",
-        epic:      "Epic",
-        legendary: "Legendary",
-        divine:    "Divine"
+        common: "Common", rare: "Rare", epic: "Epic",
+        legendary: "Legendary", divine: "Divine"
     };
 
     const rewardsState = {
-        items: [],
-        editingId: null,
-        mode: "create",
-        filter: "all",
-        loaded: false
+        items: [], editingId: null, mode: "create",
+        filter: "all", loaded: false
+    };
+
+    const questState = {
+        progressByRewardId: {},
+        loaded: false,
+        loading: false
     };
 
 
@@ -116,6 +88,11 @@
         return el ? String(el.value).trim() : "";
     }
 
+    function getProgressFor(rewardId) {
+        if (!rewardId) return null;
+        return questState.progressByRewardId[rewardId] || null;
+    }
+
 
     /* =========================================
        PUBLIC PAGE — CARD GRID
@@ -124,7 +101,6 @@
     function renderRewardsCards() {
         const grid = document.getElementById("rewardsGrid");
         if (!grid) return;
-
         grid.replaceChildren();
 
         Object.values(REWARD_CATEGORIES).forEach(function (cat) {
@@ -182,21 +158,170 @@
             const response = await fetch(API_REWARDS_PUBLIC_URL, {
                 cache: "no-store"
             });
-
             const data = await readJSONResponse(response);
-
             if (!response.ok || data.success !== true) {
                 rewardsState.items = [];
                 rewardsState.loaded = true;
                 return;
             }
-
             rewardsState.items = Array.isArray(data.rewards) ? data.rewards : [];
             rewardsState.loaded = true;
         } catch (err) {
             console.warn("[GROWERA REWARDS] Load public rewards failed:", err);
             rewardsState.items = [];
             rewardsState.loaded = true;
+        }
+    }
+
+
+    /* =========================================
+       QUEST PROGRESS LOADER
+    ========================================= */
+
+    async function loadPlayerQuests() {
+        const session = loadSession();
+        if (!session || !session.token) {
+            questState.progressByRewardId = {};
+            questState.loaded = true;
+            return;
+        }
+
+        if (questState.loading) return;
+        questState.loading = true;
+
+        try {
+            const response = await fetch(API_QUESTS_URL, {
+                headers: {
+                    "Authorization": "Bearer " + session.token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
+            });
+            const data = await readJSONResponse(response);
+
+            if (!response.ok || data.success !== true) {
+                questState.progressByRewardId = {};
+                questState.loaded = true;
+                return;
+            }
+
+            const map = {};
+            (data.quests || []).forEach(function (q) {
+                map[q.id] = {
+                    current: Number(q.current) || 0,
+                    completed: q.completed === true,
+                    claimed: q.claimed === true,
+                    targetValue: Number(q.targetValue) || 0
+                };
+            });
+
+            questState.progressByRewardId = map;
+            questState.loaded = true;
+        } catch (err) {
+            console.warn("[GROWERA REWARDS] Load player quests failed:", err);
+            questState.progressByRewardId = {};
+            questState.loaded = true;
+        } finally {
+            questState.loading = false;
+        }
+    }
+
+
+    /* =========================================
+       CLAIM BUTTON
+    ========================================= */
+
+    function buildClaimButton(item) {
+        const p = getProgressFor(item.id);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "reward-claim-btn";
+
+        // Sudah claim
+        if (p && p.claimed) {
+            btn.classList.add("claimed");
+            btn.disabled = true;
+            btn.textContent = "✓ Claimed";
+            return btn;
+        }
+
+        // Selesai, belum claim
+        if (p && p.completed) {
+            btn.classList.add("ready");
+            btn.textContent = "🎁 Claim";
+            btn.addEventListener("click", function (ev) {
+                ev.stopPropagation();
+                claimQuest(item.id, btn);
+            });
+            return btn;
+        }
+
+        // Belum selesai
+        btn.classList.add("locked");
+        btn.disabled = true;
+
+        const target = Number(item.targetValue)
+            || Number(p && p.targetValue)
+            || Number(item.progress)
+            || 0;
+        const current = p ? Number(p.current) || 0 : 0;
+
+        btn.textContent = target > 0
+            ? (current + " / " + target)
+            : "🔒 Locked";
+
+        return btn;
+    }
+
+    async function claimQuest(rewardId, btn) {
+        const session = loadSession();
+        if (!session || !session.token) return;
+
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = "…";
+        }
+
+        try {
+            const response = await fetch(API_QUEST_CLAIM_URL, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + session.token,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ rewardId: rewardId }),
+                cache: "no-store"
+            });
+
+            const data = await readJSONResponse(response);
+            if (!response.ok || data.success !== true) {
+                throw new Error(data.message || ("HTTP " + response.status));
+            }
+
+            // Refresh progress
+            await loadPlayerQuests();
+
+            // Re-render modal yang sedang terbuka
+            const modal = document.getElementById("rewardsModal");
+            const content = document.getElementById("rewardsModalContent");
+            if (modal && modal.classList.contains("open") && content) {
+                openRewardsModal(content.dataset.variant);
+            }
+
+            alert(data.message || "Reward diklaim!");
+        } catch (err) {
+            alert("Gagal klaim: " + err.message);
+            if (btn) {
+                // Restore state
+                const p = getProgressFor(rewardId);
+                if (p && p.completed && !p.claimed) {
+                    btn.disabled = false;
+                    btn.textContent = "🎁 Claim";
+                } else {
+                    btn.disabled = true;
+                }
+            }
         }
     }
 
@@ -225,7 +350,6 @@
         renderRewardsModalBody(categoryKey);
 
         modal.classList.add("open");
-
         const body = document.getElementById("rewardsModalBody");
         if (body) body.scrollTop = 0;
     }
@@ -239,9 +363,8 @@
     function getPublishedRewardsByCategory(categoryKey) {
         return rewardsState.items
             .filter(function (it) {
-                return it &&
-                    it.category === categoryKey &&
-                    (it.status === "published" || !it.status);
+                return it && it.category === categoryKey
+                    && (it.status === "published" || !it.status);
             })
             .sort(function (a, b) {
                 const oa = Number(a.order) || 0;
@@ -254,7 +377,6 @@
     function renderRewardsModalBody(categoryKey) {
         const body = document.getElementById("rewardsModalBody");
         if (!body) return;
-
         body.replaceChildren();
 
         const items = getPublishedRewardsByCategory(categoryKey);
@@ -268,12 +390,10 @@
             renderMilestoneBody(body, items);
             return;
         }
-
         if (categoryKey === "daily-login") {
             renderDailyLoginBody(body, items);
             return;
         }
-
         if (categoryKey === "monthly-quest") {
             renderMonthlyQuestBody(body, items);
             return;
@@ -304,7 +424,6 @@
         wrap.appendChild(icon);
         wrap.appendChild(line1);
         wrap.appendChild(line2);
-
         return wrap;
     }
 
@@ -352,43 +471,70 @@
         desc.className = "reward-item-desc";
         desc.textContent = item.description || "";
 
+        // Progress bar
+        const p = getProgressFor(item.id);
+        const targetVal = Number(item.targetValue) || Number(item.progress) || 0;
+        if (targetVal > 0) {
+            const progWrap = document.createElement("div");
+            progWrap.className = "reward-item-progress-wrap";
+
+            const bar = document.createElement("div");
+            bar.className = "reward-item-progress-bar";
+
+            const fill = document.createElement("div");
+            fill.className = "reward-item-progress-fill";
+            const current = p ? Number(p.current) || 0 : 0;
+            const pct = Math.min(100, (current / targetVal) * 100);
+            fill.style.width = pct + "%";
+
+            if (p && p.claimed) fill.classList.add("claimed");
+            else if (p && p.completed) fill.classList.add("completed");
+
+            bar.appendChild(fill);
+
+            const txt = document.createElement("div");
+            txt.className = "reward-item-progress-text";
+            txt.textContent = current + " / " + targetVal;
+
+            progWrap.appendChild(bar);
+            progWrap.appendChild(txt);
+            content.appendChild(name);
+            if (item.description) content.appendChild(desc);
+            content.appendChild(progWrap);
+        } else {
+            content.appendChild(name);
+            if (item.description) content.appendChild(desc);
+        }
+
         const footer = document.createElement("div");
         footer.className = "reward-item-footer";
 
         const left = document.createElement("div");
-        left.style.display = "flex";
-        left.style.gap = "6px";
-        left.style.alignItems = "center";
-        left.style.flexWrap = "wrap";
+        left.className = "reward-item-footer-left";
 
         const rarityBadge = document.createElement("span");
         rarityBadge.className = "reward-item-rarity";
         rarityBadge.textContent = RARITY_LABELS[rarity] || "Common";
         left.appendChild(rarityBadge);
 
-        if (item.progress) {
-            const prog = document.createElement("span");
-            prog.className = "reward-item-progress";
-            prog.textContent = "TARGET " + item.progress;
-            left.appendChild(prog);
-        }
-
-        footer.appendChild(left);
+        const right = document.createElement("div");
+        right.className = "reward-item-footer-right";
 
         if (item.reward) {
             const rewardEl = document.createElement("span");
             rewardEl.className = "reward-item-reward";
             rewardEl.textContent = "🎁 " + item.reward;
-            footer.appendChild(rewardEl);
+            right.appendChild(rewardEl);
         }
 
-        content.appendChild(name);
-        if (item.description) content.appendChild(desc);
+        right.appendChild(buildClaimButton(item));
+
+        footer.appendChild(left);
+        footer.appendChild(right);
         content.appendChild(footer);
 
         row.appendChild(icon);
         row.appendChild(content);
-
         return row;
     }
 
@@ -430,10 +576,15 @@
             rarityEl.className = "rewards-login-day-rarity";
             rarityEl.textContent = RARITY_LABELS[rarity] || "Common";
 
+            const claimWrap = document.createElement("div");
+            claimWrap.className = "rewards-login-day-claim";
+            claimWrap.appendChild(buildClaimButton(item));
+
             day.appendChild(labelEl);
             day.appendChild(iconEl);
             day.appendChild(nameEl);
             day.appendChild(rarityEl);
+            day.appendChild(claimWrap);
 
             grid.appendChild(day);
         });
@@ -446,7 +597,7 @@
         note.style.fontSize = "11px";
         note.style.lineHeight = "1.6";
         note.style.textAlign = "center";
-        note.textContent = "Kalender di atas masih dalam tahap desain. Sistem klaim harian belum aktif.";
+        note.textContent = "Login streak dihitung otomatis saat kamu masuk server.";
         body.appendChild(note);
     }
 
@@ -474,10 +625,15 @@
             emblem.className = "rewards-monthly-hero-emblem";
             emblem.textContent = heroItem.icon || "👑";
 
+            const claimWrap = document.createElement("div");
+            claimWrap.style.marginTop = "14px";
+            claimWrap.appendChild(buildClaimButton(heroItem));
+
             hero.appendChild(label);
             hero.appendChild(title);
             if (heroItem.description) hero.appendChild(desc);
             hero.appendChild(emblem);
+            hero.appendChild(claimWrap);
 
             body.appendChild(hero);
         }
@@ -496,7 +652,7 @@
 
 
     /* =========================================
-       MILESTONE TRACK (Starlight Pass style)
+       MILESTONE TRACK
     ========================================= */
 
     function renderMilestoneBody(body, items) {
@@ -508,10 +664,12 @@
         const panel = document.createElement("div");
         panel.className = "milestone-panel";
 
-        // --- HEADER (progress summary) ---
-        const unlockedCount = items.filter(function (it) {
-            return it.unlocked === true || it.claimed === true;
-        }).length;
+        // Hitung unlocked
+        let unlockedCount = 0;
+        items.forEach(function (it) {
+            const p = getProgressFor(it.id);
+            if (p && (p.completed || p.claimed)) unlockedCount++;
+        });
 
         const header = document.createElement("div");
         header.className = "milestone-header";
@@ -543,7 +701,7 @@
         header.appendChild(count);
         panel.appendChild(header);
 
-        // --- TRACK (horizontal scroll) ---
+        // Track
         const scroll = document.createElement("div");
         scroll.className = "milestone-track-scroll";
 
@@ -560,7 +718,8 @@
             if (idx < items.length - 1) {
                 const connector = document.createElement("div");
                 connector.className = "milestone-connector";
-                if (item.unlocked === true || item.claimed === true) {
+                const p = getProgressFor(item.id);
+                if (p && (p.completed || p.claimed)) {
                     connector.classList.add("done");
                 }
                 track.appendChild(connector);
@@ -570,7 +729,7 @@
         scroll.appendChild(track);
         panel.appendChild(scroll);
 
-        // --- DETAIL PANEL ---
+        // Detail panel
         const detail = document.createElement("div");
         detail.className = "milestone-detail";
         panel.appendChild(detail);
@@ -581,11 +740,10 @@
             });
             renderMilestoneDetail(detail, items[index]);
 
-            // Auto-scroll node ke center (khusus mobile)
             const node = nodeRefs[index];
             if (node && scroll.scrollWidth > scroll.clientWidth) {
-                const targetLeft = node.offsetLeft -
-                    (scroll.clientWidth / 2) + (node.offsetWidth / 2);
+                const targetLeft = node.offsetLeft
+                    - (scroll.clientWidth / 2) + (node.offsetWidth / 2);
                 scroll.scrollTo({
                     left: Math.max(0, targetLeft),
                     behavior: "smooth"
@@ -598,19 +756,22 @@
         });
 
         showDetail(0);
-
         body.appendChild(panel);
     }
 
     function buildMilestoneNode(item, index) {
         const rarity = item.rarity || "common";
         const rarityClass = rewardRarityClass(rarity);
-        const unlocked = item.unlocked === true || item.claimed === true;
+        const p = getProgressFor(item.id);
+
+        const unlocked = (p && (p.completed || p.claimed));
+        const claimable = p && p.completed && !p.claimed;
 
         const node = document.createElement("button");
         node.type = "button";
-        node.className = "milestone-node " + rarityClass +
-            (unlocked ? " unlocked" : " locked");
+        node.className = "milestone-node " + rarityClass
+            + (unlocked ? " unlocked" : " locked")
+            + (claimable ? " claimable" : "");
         node.setAttribute("aria-label",
             "Milestone " + (index + 1) + ": " + (item.name || "Reward"));
 
@@ -641,7 +802,8 @@
         const rarityClass = rewardRarityClass(rarity);
         container.className = "milestone-detail " + rarityClass;
 
-        const unlocked = item.unlocked === true || item.claimed === true;
+        const p = getProgressFor(item.id);
+        const unlocked = p && (p.completed || p.claimed);
 
         const badge = document.createElement("span");
         badge.className = "milestone-detail-badge";
@@ -660,6 +822,33 @@
             container.appendChild(desc);
         }
 
+        // Progress bar kalau ada target
+        const targetVal = Number(item.targetValue) || 0;
+        if (targetVal > 0) {
+            const progWrap = document.createElement("div");
+            progWrap.className = "reward-item-progress-wrap";
+
+            const bar = document.createElement("div");
+            bar.className = "reward-item-progress-bar";
+
+            const fill = document.createElement("div");
+            fill.className = "reward-item-progress-fill";
+            const current = p ? Number(p.current) || 0 : 0;
+            fill.style.width = Math.min(100, (current / targetVal) * 100) + "%";
+            if (p && p.claimed) fill.classList.add("claimed");
+            else if (p && p.completed) fill.classList.add("completed");
+
+            bar.appendChild(fill);
+
+            const txt = document.createElement("div");
+            txt.className = "reward-item-progress-text";
+            txt.textContent = current + " / " + targetVal;
+
+            progWrap.appendChild(bar);
+            progWrap.appendChild(txt);
+            container.appendChild(progWrap);
+        }
+
         if (item.reward) {
             const rewardWrap = document.createElement("div");
             rewardWrap.className = "milestone-detail-reward";
@@ -676,16 +865,22 @@
             container.appendChild(rewardWrap);
         }
 
+        const statusRow = document.createElement("div");
+        statusRow.className = "milestone-detail-status-row";
+
         const status = document.createElement("span");
-        status.className = "milestone-detail-status " +
-            (unlocked ? "unlocked" : "locked");
+        status.className = "milestone-detail-status "
+            + (unlocked ? "unlocked" : "locked");
         status.textContent = unlocked ? "✓ Unlocked" : "🔒 Locked";
-        container.appendChild(status);
+
+        statusRow.appendChild(status);
+        statusRow.appendChild(buildClaimButton(item));
+        container.appendChild(statusRow);
     }
 
 
     /* =========================================
-       ADMIN EDITOR — QUEST CONFIG (dropdown type)
+       ADMIN — QUEST CONFIG
     ========================================= */
 
     async function loadQuestConfig() {
@@ -732,7 +927,7 @@
 
 
     /* =========================================
-       ADMIN EDITOR — LIST
+       ADMIN — LIST
     ========================================= */
 
     async function loadAdminRewards() {
@@ -759,7 +954,6 @@
             });
 
             const data = await readJSONResponse(response);
-
             if (!response.ok || data.success !== true) {
                 throw new Error(data.message || "HTTP " + response.status);
             }
@@ -768,8 +962,8 @@
             renderAdminRewardsList();
         } catch (err) {
             container.innerHTML =
-                '<p style="color:var(--danger);font-size:12px;text-align:center;padding:20px">Gagal memuat: ' +
-                err.message + '</p>';
+                '<p style="color:var(--danger);font-size:12px;text-align:center;padding:20px">Gagal memuat: '
+                + err.message + '</p>';
         }
     }
 
@@ -779,9 +973,7 @@
 
         const filter = rewardsState.filter || "all";
         const list = rewardsState.items
-            .filter(function (it) {
-                return filter === "all" || it.category === filter;
-            })
+            .filter(function (it) { return filter === "all" || it.category === filter; })
             .sort(function (a, b) {
                 const ca = String(a.category || "");
                 const cb = String(b.category || "");
@@ -793,9 +985,8 @@
 
         if (list.length === 0) {
             container.innerHTML =
-                '<p style="color:var(--muted);font-size:12px;text-align:center;padding:30px">' +
-                'Belum ada reward untuk kategori ini.<br>Klik "+ Baru" untuk mulai.' +
-                '</p>';
+                '<p style="color:var(--muted);font-size:12px;text-align:center;padding:30px">'
+                + 'Belum ada reward untuk kategori ini.<br>Klik "+ Baru" untuk mulai.</p>';
             return;
         }
 
@@ -816,8 +1007,8 @@
             header.className = "news-list-item-header";
 
             const statusBadge = document.createElement("span");
-            statusBadge.className = "news-status-badge " +
-                (item.status === "published" ? "published" : "draft");
+            statusBadge.className = "news-status-badge "
+                + (item.status === "published" ? "published" : "draft");
             statusBadge.textContent = item.status || "draft";
 
             const catBadge = document.createElement("span");
@@ -858,13 +1049,13 @@
             const meta = document.createElement("div");
             meta.className = "news-list-item-meta";
 
-            const targetText = "target " + (item.targetName || "*") +
-                " × " + (item.targetValue || 1);
+            const targetText = "target " + (item.targetName || "*")
+                + " × " + (item.targetValue || 1);
             const rewardText = item.reward ? (" · 🎁 " + item.reward) : "";
 
             meta.appendChild(document.createTextNode(
-                "order " + (item.order || 0) + " · " + targetText +
-                rewardText + " · " + formatDateTime(item.updatedAt)
+                "order " + (item.order || 0) + " · " + targetText
+                + rewardText + " · " + formatDateTime(item.updatedAt)
             ));
 
             content.appendChild(header);
@@ -899,7 +1090,7 @@
 
 
     /* =========================================
-       ADMIN EDITOR — FORM
+       ADMIN — FORM
     ========================================= */
 
     function resetRewardsForm() {
@@ -920,7 +1111,6 @@
 
         rewardsState.mode = "create";
         rewardsState.editingId = null;
-
         document.getElementById("rewardsFormTitle").textContent = "Buat Reward Baru";
     }
 
@@ -943,7 +1133,6 @@
 
         rewardsState.mode = "edit";
         rewardsState.editingId = item.id;
-
         document.getElementById("rewardsFormTitle").textContent = "Edit Reward";
     }
 
@@ -961,7 +1150,6 @@
             });
 
             const data = await readJSONResponse(response);
-
             if (!response.ok || data.success !== true) {
                 throw new Error(data.message || "HTTP " + response.status);
             }
@@ -993,7 +1181,6 @@
             });
 
             const data = await readJSONResponse(response);
-
             if (!response.ok || data.success !== true) {
                 throw new Error(data.message || "HTTP " + response.status);
             }
@@ -1016,16 +1203,10 @@
         const orderRaw = getVal("rewardsFormOrder");
         const formStatus = getVal("rewardsFormStatus");
 
-        if (!name) {
-            alert("Name wajib diisi.");
-            return;
-        }
+        if (!name) { alert("Name wajib diisi."); return; }
 
         const targetValue = Number(getVal("rewardsFormTargetValue")) || 1;
-        if (targetValue < 1) {
-            alert("Jumlah target minimal 1.");
-            return;
-        }
+        if (targetValue < 1) { alert("Jumlah target minimal 1."); return; }
 
         const session = loadSession();
         if (!session.token) return;
@@ -1055,7 +1236,6 @@
         const url = isEdit
             ? API_REWARDS_ADMIN_URL + "/" + rewardsState.editingId
             : API_REWARDS_ADMIN_URL;
-
         const method = isEdit ? "PUT" : "POST";
 
         try {
@@ -1071,15 +1251,11 @@
             });
 
             const data = await readJSONResponse(response);
-
             if (!response.ok || data.success !== true) {
                 throw new Error(data.message || "HTTP " + response.status);
             }
 
-            alert(status === "published"
-                ? "Reward dipublikasikan."
-                : "Draft tersimpan.");
-
+            alert(status === "published" ? "Reward dipublikasikan." : "Draft tersimpan.");
             showEditorView("rewards-list");
             await loadAdminRewards();
             await loadPublicRewards();
@@ -1090,7 +1266,7 @@
 
 
     /* =========================================
-       INIT & EVENT WIRING
+       INIT
     ========================================= */
 
     function init() {
@@ -1149,16 +1325,12 @@
 
         const saveDraft = document.getElementById("rewardsFormSaveDraft");
         if (saveDraft) {
-            saveDraft.addEventListener("click", function () {
-                saveReward("draft");
-            });
+            saveDraft.addEventListener("click", function () { saveReward("draft"); });
         }
 
         const publish = document.getElementById("rewardsFormPublish");
         if (publish) {
-            publish.addEventListener("click", function () {
-                saveReward("published");
-            });
+            publish.addEventListener("click", function () { saveReward("published"); });
         }
 
         const modal = document.getElementById("rewardsModal");
@@ -1169,9 +1341,7 @@
         }
 
         const closeBtn = document.getElementById("rewardsModalCloseBtn");
-        if (closeBtn) {
-            closeBtn.addEventListener("click", closeRewardsModal);
-        }
+        if (closeBtn) closeBtn.addEventListener("click", closeRewardsModal);
 
         renderRewardsCards();
     }
@@ -1185,6 +1355,13 @@
         if (!rewardsState.loaded) {
             loadPublicRewards();
         }
+        loadPlayerQuests().then(function () {
+            const modal = document.getElementById("rewardsModal");
+            const content = document.getElementById("rewardsModalContent");
+            if (modal && modal.classList.contains("open") && content) {
+                openRewardsModal(content.dataset.variant);
+            }
+        });
     }
 
 
@@ -1195,12 +1372,13 @@
     window.GroweraRewards = {
         init: init,
         loadPublic: loadPublicRewards,
+        loadQuests: loadPlayerQuests,
         onNavigate: onNavigate,
         closeModal: closeRewardsModal,
         _state: rewardsState,
+        _questState: questState,
         _categories: REWARD_CATEGORIES
     };
 
     init();
-
 })();
