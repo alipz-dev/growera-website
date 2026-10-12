@@ -966,11 +966,14 @@
                             </div>
                         </div>
 
+                        <!-- QUEST CONFIG -->
+
                         <div class="editor-form-row">
                             <div class="editor-form-group">
-                                <label for="rewardsFormProgress">Progress (opsional)</label>
-                                <input class="editor-input" id="rewardsFormProgress" type="text"
-                                       maxlength="40" placeholder="-- / --" />
+                                <label for="rewardsFormQuestType">Quest Type</label>
+                                <select class="editor-input" id="rewardsFormQuestType">
+                                    <option value="custom">Custom Trigger</option>
+                                </select>
                             </div>
 
                             <div class="editor-form-group">
@@ -980,10 +983,40 @@
                             </div>
                         </div>
 
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="rewardsFormTarget">Target (nama item/block, kosong = semua)</label>
+                                <input class="editor-input" id="rewardsFormTarget" type="text"
+                                       maxlength="80" placeholder="Dirt atau *" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="rewardsFormTargetValue">Jumlah Target</label>
+                                <input class="editor-input" id="rewardsFormTargetValue" type="number"
+                                       min="1" placeholder="100" />
+                            </div>
+                        </div>
+
+                        <!-- REWARD CONFIG -->
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="rewardsFormRewardItem">Reward Item</label>
+                                <input class="editor-input" id="rewardsFormRewardItem" type="text"
+                                       maxlength="80" placeholder="World Lock" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="rewardsFormRewardCount">Jumlah Item</label>
+                                <input class="editor-input" id="rewardsFormRewardCount" type="number"
+                                       min="0" placeholder="1" />
+                            </div>
+                        </div>
+
                         <div class="editor-form-group">
-                            <label for="rewardsFormReward">Reward Preview</label>
-                            <input class="editor-input" id="rewardsFormReward" type="text"
-                                   maxlength="120" placeholder="💎 Coming Soon" />
+                            <label for="rewardsFormRewardGems">Reward Gems</label>
+                            <input class="editor-input" id="rewardsFormRewardGems" type="number"
+                                   min="0" placeholder="0" />
                         </div>
 
                         <div class="editor-form-row">
