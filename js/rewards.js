@@ -1,7 +1,8 @@
 /* =========================================
    GROWERA — REWARDS MODULE
    Rewards page (5 kategori kartu + modal),
-   dan admin rewards editor.
+   admin rewards editor, dan milestone track
+   ala Starlight Pass ML.
 
    Dependensi (dari app.js):
    - loadSession(), readJSONResponse()
@@ -247,6 +248,11 @@
             return;
         }
 
+        if (categoryKey === "milestone") {
+            renderMilestoneBody(body, items);
+            return;
+        }
+
         if (categoryKey === "daily-login") {
             renderDailyLoginBody(body, items);
             return;
@@ -470,6 +476,195 @@
                 body.appendChild(buildRewardItemRow(item));
             });
         }
+    }
+
+
+    /* =========================================
+       MILESTONE TRACK (Starlight Pass style)
+    ========================================= */
+
+    function renderMilestoneBody(body, items) {
+        if (!items.length) {
+            body.appendChild(renderRewardsEmptyState());
+            return;
+        }
+
+        const panel = document.createElement("div");
+        panel.className = "milestone-panel";
+
+        // --- HEADER (progress summary) ---
+        const unlockedCount = items.filter(function (it) {
+            return it.unlocked === true || it.claimed === true;
+        }).length;
+
+        const header = document.createElement("div");
+        header.className = "milestone-header";
+
+        const left = document.createElement("div");
+        left.className = "milestone-header-left";
+
+        const hTitle = document.createElement("div");
+        hTitle.className = "milestone-header-title";
+        hTitle.textContent = "MILESTONE PROGRESS";
+
+        const bar = document.createElement("div");
+        bar.className = "milestone-progress-bar";
+
+        const fill = document.createElement("div");
+        fill.className = "milestone-progress-fill";
+        const pct = items.length > 0 ? (unlockedCount / items.length) * 100 : 0;
+        fill.style.width = pct + "%";
+
+        bar.appendChild(fill);
+        left.appendChild(hTitle);
+        left.appendChild(bar);
+
+        const count = document.createElement("div");
+        count.className = "milestone-header-count";
+        count.textContent = unlockedCount + " / " + items.length;
+
+        header.appendChild(left);
+        header.appendChild(count);
+        panel.appendChild(header);
+
+        // --- TRACK (horizontal scroll) ---
+        const scroll = document.createElement("div");
+        scroll.className = "milestone-track-scroll";
+
+        const track = document.createElement("div");
+        track.className = "milestone-track";
+
+        const nodeRefs = [];
+
+        items.forEach(function (item, idx) {
+            const node = buildMilestoneNode(item, idx);
+            nodeRefs.push(node);
+            track.appendChild(node);
+
+            if (idx < items.length - 1) {
+                const connector = document.createElement("div");
+                connector.className = "milestone-connector";
+                if (item.unlocked === true || item.claimed === true) {
+                    connector.classList.add("done");
+                }
+                track.appendChild(connector);
+            }
+        });
+
+        scroll.appendChild(track);
+        panel.appendChild(scroll);
+
+        // --- DETAIL PANEL ---
+        const detail = document.createElement("div");
+        detail.className = "milestone-detail";
+        panel.appendChild(detail);
+
+        function showDetail(index) {
+            nodeRefs.forEach(function (n, i) {
+                n.classList.toggle("active", i === index);
+            });
+            renderMilestoneDetail(detail, items[index]);
+
+            // Auto-scroll node ke center (khusus mobile)
+            const node = nodeRefs[index];
+            if (node && scroll.scrollWidth > scroll.clientWidth) {
+                const targetLeft = node.offsetLeft -
+                    (scroll.clientWidth / 2) + (node.offsetWidth / 2);
+                scroll.scrollTo({
+                    left: Math.max(0, targetLeft),
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        nodeRefs.forEach(function (n, i) {
+            n.addEventListener("click", function () { showDetail(i); });
+        });
+
+        showDetail(0);
+
+        body.appendChild(panel);
+    }
+
+    function buildMilestoneNode(item, index) {
+        const rarity = item.rarity || "common";
+        const rarityClass = rewardRarityClass(rarity);
+        const unlocked = item.unlocked === true || item.claimed === true;
+
+        const node = document.createElement("button");
+        node.type = "button";
+        node.className = "milestone-node " + rarityClass +
+            (unlocked ? " unlocked" : " locked");
+        node.setAttribute("aria-label",
+            "Milestone " + (index + 1) + ": " + (item.name || "Reward"));
+
+        const box = document.createElement("div");
+        box.className = "milestone-node-box";
+        box.textContent = item.icon || "◇";
+
+        const lock = document.createElement("div");
+        lock.className = "milestone-node-lock";
+        lock.textContent = "🔒";
+        box.appendChild(lock);
+
+        const label = document.createElement("div");
+        label.className = "milestone-node-label";
+        label.textContent = item.progress
+            ? ("Lv " + item.progress)
+            : ("M" + (index + 1));
+
+        node.appendChild(box);
+        node.appendChild(label);
+        return node;
+    }
+
+    function renderMilestoneDetail(container, item) {
+        container.replaceChildren();
+
+        const rarity = item.rarity || "common";
+        const rarityClass = rewardRarityClass(rarity);
+        container.className = "milestone-detail " + rarityClass;
+
+        const unlocked = item.unlocked === true || item.claimed === true;
+
+        const badge = document.createElement("span");
+        badge.className = "milestone-detail-badge";
+        badge.textContent = RARITY_LABELS[rarity] || "Common";
+        container.appendChild(badge);
+
+        const title = document.createElement("h3");
+        title.className = "milestone-detail-title";
+        title.textContent = item.name || "Untitled Milestone";
+        container.appendChild(title);
+
+        if (item.description) {
+            const desc = document.createElement("p");
+            desc.className = "milestone-detail-desc";
+            desc.textContent = item.description;
+            container.appendChild(desc);
+        }
+
+        if (item.reward) {
+            const rewardWrap = document.createElement("div");
+            rewardWrap.className = "milestone-detail-reward";
+
+            const ri = document.createElement("span");
+            ri.className = "milestone-detail-reward-icon";
+            ri.textContent = "🎁";
+
+            const rt = document.createElement("span");
+            rt.textContent = item.reward;
+
+            rewardWrap.appendChild(ri);
+            rewardWrap.appendChild(rt);
+            container.appendChild(rewardWrap);
+        }
+
+        const status = document.createElement("span");
+        status.className = "milestone-detail-status " +
+            (unlocked ? "unlocked" : "locked");
+        status.textContent = unlocked ? "✓ Unlocked" : "🔒 Locked";
+        container.appendChild(status);
     }
 
 
