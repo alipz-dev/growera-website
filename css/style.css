@@ -2004,3 +2004,190 @@ button:focus-visible {
         scroll-behavior: auto !important;
     }
 }
+
+/* =========================================
+   FLOATING QUICK MENU (draggable)
+========================================= */
+
+.floating-quick-btn {
+    position: fixed;
+    top: calc(100vh - 100px);
+    left: calc(100vw - 100px);
+    z-index: 130;
+
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border: 2px solid rgba(101, 231, 255, 0.5);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(101, 231, 255, 0.35), transparent 60%),
+        linear-gradient(145deg, #1A1430, #0D0F1A);
+    color: var(--cyan);
+    font-size: 22px;
+    font-weight: bold;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(101, 231, 255, 0.3),
+        inset 0 0 12px rgba(101, 231, 255, 0.15);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition:
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s,
+        border-color 0.25s;
+}
+
+.floating-quick-btn:hover {
+    transform: scale(1.08);
+    border-color: var(--cyan);
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.5),
+        0 0 32px rgba(101, 231, 255, 0.5),
+        inset 0 0 16px rgba(101, 231, 255, 0.25);
+}
+
+.floating-quick-btn.dragging {
+    cursor: grabbing;
+    transform: scale(1.12);
+    box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(101, 231, 255, 0.6),
+        inset 0 0 20px rgba(101, 231, 255, 0.3);
+    transition: none;
+}
+
+.floating-quick-btn.snapping {
+    transition:
+        left 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+        top 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.2s,
+        box-shadow 0.25s,
+        border-color 0.25s;
+}
+
+.floating-quick-icon {
+    line-height: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 0 6px rgba(101, 231, 255, 0.7));
+}
+
+/* Menu panel */
+.floating-menu {
+    position: fixed;
+    z-index: 129;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid rgba(101, 231, 255, 0.35);
+    border-radius: 14px;
+    background:
+        linear-gradient(145deg, rgba(17, 26, 43, 0.98), rgba(13, 23, 39, 0.98));
+    backdrop-filter: blur(12px);
+    box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.55),
+        0 0 24px rgba(101, 231, 255, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.92) translateY(6px);
+    transform-origin: bottom right;
+    transition:
+        opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0.22s,
+        transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    min-width: 160px;
+}
+
+.floating-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+}
+
+.floating-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: bold;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        color 0.15s,
+        transform 0.15s;
+}
+
+.floating-menu-item:hover {
+    background: rgba(101, 231, 255, 0.1);
+    border-color: rgba(101, 231, 255, 0.3);
+    color: var(--cyan);
+    transform: translateX(2px);
+}
+
+.floating-menu-item .fm-icon {
+    font-size: 15px;
+    line-height: 1;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.floating-menu-item.logout:hover {
+    background: rgba(255, 133, 133, 0.1);
+    border-color: rgba(255, 133, 133, 0.35);
+    color: var(--danger);
+}
+
+.floating-menu-divider {
+    height: 1px;
+    margin: 4px 6px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(130, 160, 210, 0.2),
+        transparent
+    );
+}
+
+@media (max-width: 560px) {
+    .floating-quick-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .floating-menu-item {
+        padding: 9px 12px;
+        font-size: 12px;
+    }
+
+    .floating-menu {
+        min-width: 140px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .floating-quick-btn,
+    .floating-quick-btn.snapping,
+    .floating-menu {
+        transition: none !important;
+    }
+}
