@@ -6,6 +6,7 @@ const API_LOGIN_URL = "/api/growera/login";
 const API_PROFILE_URL = "/api/growera/me";
 const API_LOGOUT_URL = "/api/growera/logout";
 const API_INVENTORY_URL = "/api/growera/inventory";
+const API_ADMIN_CHECK_URL = "/api/growera/admin/check";
 
 const SERVER_ID = "1791";
 
@@ -61,6 +62,9 @@ const passwordInput = document.getElementById("password");
 let profileRequestID = 0;
 let inventoryRequestID = 0;
 let currentProfile = null;
+
+/* FASE 0: admin state */
+let currentUserIsAdmin = false;
 
 
 /* =========================================
@@ -243,6 +247,62 @@ function showLoginScreen() {
 
 function hideLoginScreen() {
     loginScreen.classList.add("hidden");
+}
+
+
+/* =========================================
+   FASE 0: ADMIN CHECK
+========================================= */
+
+function updateAdminUI() {
+    const btn = document.getElementById("adminEditorBtn");
+    if (!btn) return;
+
+    if (currentUserIsAdmin) {
+        btn.classList.remove("hidden");
+    } else {
+        btn.classList.add("hidden");
+    }
+}
+
+async function checkAdminStatus() {
+    const session = loadSession();
+
+    if (!session.token) {
+        currentUserIsAdmin = false;
+        updateAdminUI();
+        return false;
+    }
+
+    try {
+        const response = await fetch(API_ADMIN_CHECK_URL, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + session.token,
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            currentUserIsAdmin = false;
+            updateAdminUI();
+            return false;
+        }
+
+        const data = await readJSONResponse(response);
+        currentUserIsAdmin = data.isAdmin === true;
+        updateAdminUI();
+
+        console.log("[GROWERA ADMIN] isAdmin =", currentUserIsAdmin);
+        return currentUserIsAdmin;
+
+    } catch (error) {
+        console.warn("[GROWERA ADMIN] Check failed:", error);
+        currentUserIsAdmin = false;
+        updateAdminUI();
+        return false;
+    }
 }
 
 
@@ -1133,6 +1193,7 @@ function navigateTo(pageName) {
         "profile",
         "rewards",
         "topup",
+        "editor",
         "events",
         "history",
         "more"
@@ -1140,6 +1201,12 @@ function navigateTo(pageName) {
 
     if (!validPages.includes(pageName)) {
         pageName = "home";
+    }
+
+    // FASE 0: block editor access if not admin
+    if (pageName === "editor" && !currentUserIsAdmin) {
+        console.warn("[GROWERA] Akses editor ditolak.");
+        pageName = "more";
     }
 
     document.querySelectorAll(".app-page").forEach(
@@ -1230,6 +1297,9 @@ loginForm.addEventListener("submit", async function(event) {
 
         await fetchPlayerProfile();
 
+        // FASE 0: check admin status after login
+        await checkAdminStatus();
+
     } catch (error) {
         console.error("[GROWERA LOGIN ERROR]", error);
 
@@ -1319,7 +1389,7 @@ document.getElementById("inventoryModal").addEventListener(
 
 
 /* =========================================
-   GLOBAL KEYDOWN (Escape closes modals)
+   GLOBAL KEYDOWN
 ========================================= */
 
 document.addEventListener("keydown", function (event) {
@@ -1362,6 +1432,10 @@ document.getElementById("logoutButton").addEventListener(
 
         clearSession();
 
+        // FASE 0: reset admin state on logout
+        currentUserIsAdmin = false;
+        updateAdminUI();
+
         closeInventoryModal();
         closeNewsModal();
 
@@ -1403,7 +1477,6 @@ async function bootstrap() {
     const session = loadSession();
     const dbg = document.getElementById("sessionDebug");
 
-    // Render paket top up sekali di awal (statis, tidak butuh API)
     renderTopupPackages();
     updateStoreHeader("topup");
 
@@ -1437,17 +1510,22 @@ async function bootstrap() {
             dbg.textContent =
                 "Sesi ditolak oleh server (401).";
         }
+        return;
     } else if (result === "error") {
         if (dbg) {
             dbg.textContent =
                 "Sesi tersimpan, tapi server tidak merespons. " +
                 "Coba refresh lagi nanti.";
         }
+        return;
     } else {
         if (dbg) {
             dbg.textContent = "Sesi valid: " + session.username;
         }
     }
+
+    // FASE 0: check admin status after successful session restore
+    await checkAdminStatus();
 }
 
 bootstrap();
