@@ -2720,3 +2720,215 @@ button:focus-visible {
         animation: none !important;
     }
 }
+
+/* =====================================================
+   FASE 0: ADMIN EDITOR — Button & Page
+===================================================== */
+
+/* --- Button in More page --- */
+
+.admin-editor-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 16px 18px;
+    border: 1px solid rgba(155, 123, 255, 0.4);
+    border-radius: 14px;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(155, 123, 255, 0.16) 0%,
+            transparent 55%
+        ),
+        linear-gradient(145deg, #1A1430, #0D0F1A);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation;
+}
+
+.admin-editor-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--cyan), var(--violet));
+    border-radius: 3px 0 0 3px;
+}
+
+.admin-editor-button:hover {
+    border-color: rgba(155, 123, 255, 0.7);
+    transform: translateY(-2px);
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.4),
+        0 0 24px rgba(155, 123, 255, 0.22);
+}
+
+.admin-editor-button:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.admin-editor-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: rgba(155, 123, 255, 0.12);
+    border: 1px solid rgba(155, 123, 255, 0.28);
+    color: var(--cyan);
+}
+
+.admin-editor-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-editor-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: bold;
+    color: var(--text);
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.admin-editor-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(216, 182, 106, 0.15);
+    border: 1px solid rgba(216, 182, 106, 0.4);
+    color: var(--gold);
+    font-family: monospace;
+    font-size: 8.5px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.admin-editor-desc {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.admin-editor-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--cyan);
+    transition: transform 0.2s;
+}
+
+.admin-editor-button:hover .admin-editor-arrow {
+    transform: translateX(3px);
+}
+
+.admin-editor-button.hidden {
+    display: none !important;
+}
+
+/* --- Editor Roadmap in editor page --- */
+
+.editor-roadmap {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.editor-roadmap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--surface), #0D1523);
+    transition:
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.editor-roadmap-item:hover {
+    border-color: rgba(101, 231, 255, 0.35);
+    transform: translateY(-2px);
+}
+
+.editor-roadmap-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: rgba(101, 231, 255, 0.08);
+    border: 1px solid rgba(101, 231, 255, 0.2);
+    font-size: 22px;
+}
+
+.editor-roadmap-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.editor-roadmap-content h3 {
+    margin: 0 0 6px;
+    font-size: 13.5px;
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+
+.editor-roadmap-content p {
+    margin: 0 0 10px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.editor-roadmap-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 179, 71, 0.1);
+    border: 1px solid rgba(255, 179, 71, 0.3);
+    color: #FFB347;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+    .admin-editor-button {
+        padding: 14px 14px;
+        gap: 12px;
+    }
+
+    .admin-editor-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .editor-roadmap {
+        grid-template-columns: 1fr;
+    }
+}
