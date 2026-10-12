@@ -1,3 +1,7 @@
+/* =========================================
+   RESET & BASE
+========================================= */
+
 :root {
     --bg: #080D19;
     --surface: #111A2B;
@@ -22,21 +26,15 @@ body {
     font-family: Arial, sans-serif;
     color: var(--text);
     background:
-        radial-gradient(
-            circle at 15% 0%,
-            rgba(39, 103, 170, 0.22),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 90% 15%,
-            rgba(115, 73, 180, 0.12),
-            transparent 30%
-        ),
+        radial-gradient(circle at 15% 0%, rgba(39, 103, 170, 0.22), transparent 35%),
+        radial-gradient(circle at 90% 15%, rgba(115, 73, 180, 0.12), transparent 30%),
         var(--bg);
 }
 
 button,
-input {
+input,
+textarea,
+select {
     font: inherit;
 }
 
@@ -53,7 +51,10 @@ button:disabled {
     display: none !important;
 }
 
-/* LOGIN */
+
+/* =========================================
+   LOGIN
+========================================= */
 
 #loginScreen {
     min-height: 100vh;
@@ -146,7 +147,10 @@ input:focus {
     font-size: 11px;
 }
 
-/* HEADER */
+
+/* =========================================
+   HEADER
+========================================= */
 
 #dashboardScreen {
     min-height: 100vh;
@@ -212,7 +216,10 @@ input:focus {
     white-space: nowrap;
 }
 
-/* CONTENT */
+
+/* =========================================
+   CONTENT
+========================================= */
 
 .content {
     width: 100%;
@@ -247,7 +254,10 @@ input:focus {
     line-height: 1.7;
 }
 
-/* NEWS CARD (shortcut) */
+
+/* =========================================
+   NEWS CARD (hero)
+========================================= */
 
 .news-card {
     position: relative;
@@ -257,11 +267,7 @@ input:focus {
     border: 1px solid rgba(101, 231, 255, 0.22);
     border-radius: 18px;
     background:
-        radial-gradient(
-            circle at 95% 5%,
-            rgba(155, 123, 255, 0.22),
-            transparent 45%
-        ),
+        radial-gradient(circle at 95% 5%, rgba(155, 123, 255, 0.22), transparent 45%),
         linear-gradient(120deg, #0F2338, #14142E);
 }
 
@@ -342,7 +348,112 @@ input:focus {
     border-color: var(--cyan);
 }
 
-/* PLAYER CARD (di content, bawah news) */
+
+/* =========================================
+   NEWS LIST (Berita Lainnya)
+========================================= */
+
+.news-list-section {
+    margin-bottom: 24px;
+    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.news-list-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.news-list-heading::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        rgba(101, 231, 255, 0.25) 0%,
+        transparent 100%
+    );
+}
+
+.news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.news-list-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition:
+        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    width: 100%;
+    font: inherit;
+}
+
+.news-list-mini:hover {
+    border-color: rgba(101, 231, 255, 0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(101, 231, 255, 0.1);
+}
+
+.news-list-mini:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.news-list-mini-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.news-list-mini-title {
+    font-size: 12.5px;
+    font-weight: bold;
+    color: var(--text);
+    overflow-wrap: anywhere;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.news-list-mini-date {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: monospace;
+    letter-spacing: 0.3px;
+}
+
+.news-list-mini-arrow {
+    color: var(--cyan);
+    flex-shrink: 0;
+    font-size: 15px;
+    font-weight: bold;
+    transition: transform 0.15s;
+}
+
+.news-list-mini:hover .news-list-mini-arrow {
+    transform: translateX(3px);
+}
+
+
+/* =========================================
+   PLAYER CARD
+========================================= */
 
 .player-card {
     position: relative;
@@ -352,11 +463,7 @@ input:focus {
     border: 1px solid rgba(101, 231, 255, 0.25);
     border-radius: 18px;
     background:
-        radial-gradient(
-            circle at 95% 5%,
-            rgba(155, 123, 255, 0.28),
-            transparent 36%
-        ),
+        radial-gradient(circle at 95% 5%, rgba(155, 123, 255, 0.28), transparent 36%),
         linear-gradient(120deg, #112C49, #15152F);
 }
 
@@ -447,8 +554,6 @@ input:focus {
     white-space: nowrap;
 }
 
-/* Level & Gems (2 kotak sejajar) */
-
 .player-inline-stats {
     position: relative;
     z-index: 1;
@@ -484,8 +589,6 @@ input:focus {
     color: var(--cyan);
     font-size: 16px;
 }
-
-/* XP progress */
 
 .player-xp-block {
     position: relative;
@@ -540,7 +643,10 @@ input:focus {
     transition: width 0.6s ease;
 }
 
-/* SECTIONS */
+
+/* =========================================
+   SECTIONS
+========================================= */
 
 .section {
     margin-top: 30px;
@@ -569,7 +675,10 @@ input:focus {
     text-align: right;
 }
 
-/* STATISTICS */
+
+/* =========================================
+   STATISTICS
+========================================= */
 
 .stats-grid {
     display: grid;
@@ -618,7 +727,10 @@ input:focus {
     overflow-wrap: anywhere;
 }
 
-/* QUICK ACCESS */
+
+/* =========================================
+   QUICK ACCESS
+========================================= */
 
 .quick-grid {
     display: grid;
@@ -670,7 +782,10 @@ input:focus {
     line-height: 1.5;
 }
 
-/* PAGES */
+
+/* =========================================
+   PAGES
+========================================= */
 
 .page-panel {
     min-height: 250px;
@@ -748,9 +863,10 @@ input:focus {
     text-align: center;
 }
 
-/* =====================================================
-   GROWERA - FIXED THREE COLUMN LAYOUT
-===================================================== */
+
+/* =========================================
+   FIXED THREE COLUMN LAYOUT
+========================================= */
 
 :root {
     --sidebar-width: 200px;
@@ -969,11 +1085,7 @@ input:focus {
     border-radius: 15px;
 
     background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(155, 123, 255, 0.12),
-            transparent 50%
-        ),
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.12), transparent 50%),
         var(--surface);
 }
 
@@ -1184,9 +1296,10 @@ input:focus {
     }
 }
 
-/* =====================================================
+
+/* =========================================
    INVENTORY MODAL
-===================================================== */
+========================================= */
 
 .inventory-modal {
     position: fixed;
@@ -1323,9 +1436,10 @@ img.inventory-item-icon {
     font-family: monospace;
 }
 
-/* =====================================================
+
+/* =========================================
    NEWS DETAIL MODAL
-===================================================== */
+========================================= */
 
 .news-modal {
     position: fixed;
@@ -1364,11 +1478,7 @@ img.inventory-item-icon {
     padding: 18px 22px;
     border-bottom: 1px solid var(--border);
     background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(155, 123, 255, 0.18),
-            transparent 60%
-        ),
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.18), transparent 60%),
         rgba(8, 13, 25, 0.7);
 }
 
@@ -1433,6 +1543,7 @@ img.inventory-item-icon {
     font-size: 13.5px;
     line-height: 1.85;
     overflow-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 .news-detail-body p strong {
@@ -1489,9 +1600,10 @@ img.inventory-item-icon {
     color: var(--cyan);
 }
 
-/* =====================================================
-   TOP UP PAGE — CRYSTAL STORE
-===================================================== */
+
+/* =========================================
+   TOP UP PAGE
+========================================= */
 
 .topup-tabs {
     display: flex;
@@ -1538,10 +1650,6 @@ img.inventory-item-icon {
     box-shadow: 0 0 14px rgba(101, 231, 255, 0.2);
 }
 
-/* =========================================
-   DYNAMIC CATEGORY HEADER
-========================================= */
-
 .topup-header {
     margin-bottom: 20px;
     transition: opacity 0.2s;
@@ -1572,8 +1680,6 @@ img.inventory-item-icon {
     max-width: 560px;
 }
 
-/* Title variants */
-
 .topup-header[data-variant="crystal"] .topup-title {
     background-image: linear-gradient(
         90deg,
@@ -1601,12 +1707,7 @@ img.inventory-item-icon {
 }
 
 .topup-header[data-variant="assets"] .topup-title {
-    background-image: linear-gradient(
-        90deg,
-        #FFB347 0%,
-        #FF8C42 50%,
-        #FFB347 100%
-    );
+    background-image: linear-gradient(90deg, #FFB347 0%, #FF8C42 50%, #FFB347 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1615,19 +1716,13 @@ img.inventory-item-icon {
 }
 
 .topup-header[data-variant="items"] .topup-title {
-    background-image: linear-gradient(
-        90deg,
-        #9B7BFF 0%,
-        #D8B66A 100%
-    );
+    background-image: linear-gradient(90deg, #9B7BFF 0%, #D8B66A 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
     filter: drop-shadow(0 0 20px rgba(155, 123, 255, 0.3));
 }
-
-/* Currency chip */
 
 .store-currency {
     display: inline-flex;
@@ -1637,9 +1732,7 @@ img.inventory-item-icon {
     border: 1px solid var(--border);
     border-radius: 999px;
     background: rgba(5, 16, 31, 0.5);
-    transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .topup-header[data-variant="crystal"] .store-currency {
@@ -1674,30 +1767,6 @@ img.inventory-item-icon {
     background: rgba(0, 0, 0, 0.3);
 }
 
-.topup-header[data-variant="crystal"] .store-currency-chip {
-    background: linear-gradient(
-        90deg,
-        rgba(85, 230, 245, 0.15),
-        rgba(155, 123, 255, 0.15)
-    );
-}
-
-.topup-header[data-variant="assets"] .store-currency-chip {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 179, 71, 0.15),
-        rgba(255, 140, 66, 0.15)
-    );
-}
-
-.topup-header[data-variant="items"] .store-currency-chip {
-    background: linear-gradient(
-        90deg,
-        rgba(155, 123, 255, 0.15),
-        rgba(216, 182, 106, 0.15)
-    );
-}
-
 .store-currency-icon {
     font-size: 12px;
     line-height: 1;
@@ -1711,8 +1780,6 @@ img.inventory-item-icon {
     color: var(--text);
 }
 
-/* Balance pill */
-
 .topup-balance {
     display: inline-flex;
     align-items: center;
@@ -1722,9 +1789,7 @@ img.inventory-item-icon {
     border: 1px solid rgba(101, 231, 255, 0.25);
     border-radius: 999px;
     background: rgba(5, 16, 31, 0.5);
-    transition:
-        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .topup-balance:hover {
@@ -1746,8 +1811,6 @@ img.inventory-item-icon {
     font-family: monospace;
     overflow-wrap: anywhere;
 }
-
-/* Panels */
 
 .topup-tab-panel {
     animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -1793,10 +1856,6 @@ img.inventory-item-icon {
     font-family: monospace;
 }
 
-/* =========================================
-   PACKAGE GRID
-========================================= */
-
 .topup-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1829,25 +1888,15 @@ img.inventory-item-icon {
 .topup-card.featured {
     border-color: rgba(101, 231, 255, 0.55);
     background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(155, 123, 255, 0.25),
-            transparent 55%
-        ),
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.25), transparent 55%),
         linear-gradient(145deg, #112C49, #15152F);
     box-shadow: 0 0 24px rgba(101, 231, 255, 0.15);
 }
 
-/* MEGA — orange frame */
-
 .topup-card.tier-mega {
     border: 2px solid rgba(255, 179, 71, 0.5);
     background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(255, 179, 71, 0.22),
-            transparent 55%
-        ),
+        radial-gradient(circle at 100% 0%, rgba(255, 179, 71, 0.22), transparent 55%),
         linear-gradient(145deg, #2A1F14, #15152F);
     box-shadow:
         0 0 24px rgba(255, 179, 71, 0.15),
@@ -1860,8 +1909,6 @@ img.inventory-item-icon {
         0 14px 32px rgba(0, 0, 0, 0.35),
         0 0 40px rgba(255, 179, 71, 0.3);
 }
-
-/* DIVINE — rainbow neon frame */
 
 .topup-card.tier-divine {
     border: 2px solid transparent;
@@ -1895,8 +1942,6 @@ img.inventory-item-icon {
         0 0 40px rgba(155, 123, 255, 0.4),
         0 0 80px rgba(85, 230, 245, 0.2);
 }
-
-/* Badge */
 
 .topup-card-badge {
     position: absolute;
@@ -1942,8 +1987,6 @@ img.inventory-item-icon {
     0% { background-position: 0% 50%; }
     100% { background-position: 200% 50%; }
 }
-
-/* Gems display */
 
 .topup-card-gems {
     display: flex;
@@ -2084,8 +2127,6 @@ img.inventory-item-icon {
     -webkit-text-fill-color: transparent;
 }
 
-/* Buy button */
-
 .topup-buy-btn {
     width: 100%;
     margin-top: auto;
@@ -2097,11 +2138,7 @@ img.inventory-item-icon {
     font-size: 11px;
     font-weight: bold;
     letter-spacing: 0.3px;
-    transition:
-        background 0.15s,
-        border-color 0.15s,
-        transform 0.15s,
-        box-shadow 0.2s;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.2s;
 }
 
 .topup-buy-btn:hover {
@@ -2159,8 +2196,6 @@ img.inventory-item-icon {
         0 6px 24px rgba(155, 123, 255, 0.5),
         0 0 30px rgba(85, 230, 245, 0.3);
 }
-
-/* Sections */
 
 .topup-section {
     margin-top: 32px;
@@ -2251,8 +2286,6 @@ img.inventory-item-icon {
     line-height: 1.7;
 }
 
-/* Responsive */
-
 @media (max-width: 850px) {
     .topup-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2261,9 +2294,7 @@ img.inventory-item-icon {
 }
 
 @media (max-width: 560px) {
-    .topup-tabs {
-        gap: 4px;
-    }
+    .topup-tabs { gap: 4px; }
 
     .topup-tab {
         padding: 7px 10px;
@@ -2276,33 +2307,16 @@ img.inventory-item-icon {
         letter-spacing: 1.5px;
     }
 
-    .topup-subtitle {
-        font-size: 11.5px;
-    }
+    .topup-subtitle { font-size: 11.5px; }
 
-    .store-currency {
-        padding: 5px 5px 5px 12px;
-    }
+    .store-currency { padding: 5px 5px 5px 12px; }
+    .store-currency-name { font-size: 10px; }
 
-    .store-currency-name {
-        font-size: 10px;
-    }
+    .topup-balance { padding: 6px 12px; }
+    .topup-balance-value { font-size: 12px; }
 
-    .topup-balance {
-        padding: 6px 12px;
-    }
-
-    .topup-balance-value {
-        font-size: 12px;
-    }
-
-    .topup-placeholder {
-        padding: 36px 18px;
-    }
-
-    .topup-placeholder-icon {
-        font-size: 36px;
-    }
+    .topup-placeholder { padding: 36px 18px; }
+    .topup-placeholder-icon { font-size: 36px; }
 
     .topup-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2316,29 +2330,14 @@ img.inventory-item-icon {
     }
 
     .topup-card.tier-mega,
-    .topup-card.tier-divine {
-        border-width: 1.5px;
-    }
+    .topup-card.tier-divine { border-width: 1.5px; }
 
-    .topup-card-gems {
-        gap: 5px;
-    }
+    .topup-card-gems { gap: 5px; }
+    .topup-card-gems-icon { font-size: 16px; }
+    .topup-card-gems-value { font-size: 13px; }
 
-    .topup-card-gems-icon {
-        font-size: 16px;
-    }
-
-    .topup-card-gems-value {
-        font-size: 13px;
-    }
-
-    .topup-card.tier-mega .topup-card-gems-value {
-        font-size: 14px;
-    }
-
-    .topup-card.tier-divine .topup-card-gems-value {
-        font-size: 14px;
-    }
+    .topup-card.tier-mega .topup-card-gems-value { font-size: 14px; }
+    .topup-card.tier-divine .topup-card-gems-value { font-size: 14px; }
 
     .topup-card-gems-unit {
         font-size: 7px;
@@ -2352,9 +2351,7 @@ img.inventory-item-icon {
         letter-spacing: 0;
     }
 
-    .topup-card-price {
-        font-size: 11px;
-    }
+    .topup-card-price { font-size: 11px; }
 
     .topup-card-total {
         font-size: 7.5px;
@@ -2376,9 +2373,10 @@ img.inventory-item-icon {
     }
 }
 
-/* =====================================================
-   GROWERA - VISUAL ENHANCEMENTS
-===================================================== */
+
+/* =========================================
+   VISUAL ENHANCEMENTS
+========================================= */
 
 button {
     transition:
@@ -2580,6 +2578,11 @@ button:focus-visible {
     transform: scale(1) translateY(0);
 }
 
+
+/* =========================================
+   BETA TESTER MARQUEE
+========================================= */
+
 .beta-tester-bar {
     position: fixed;
     top: 72px;
@@ -2637,12 +2640,8 @@ button:focus-visible {
         left: -250px;
         opacity: 0;
     }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
     100% {
         left: calc(100% + 250px);
         opacity: 0;
@@ -2650,12 +2649,8 @@ button:focus-visible {
 }
 
 @keyframes betaTesterRainbow {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 200% 50%;
-    }
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
 }
 
 .content {
@@ -2684,9 +2679,7 @@ button:focus-visible {
 }
 
 @media (max-width: 850px) {
-    .beta-tester-bar {
-        right: 0;
-    }
+    .beta-tester-bar { right: 0; }
 }
 
 @media (max-width: 560px) {
@@ -2702,30 +2695,10 @@ button:focus-visible {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
 
-    .topup-header[data-variant="crystal"] .topup-title,
-    .topup-card.tier-divine,
-    .topup-card.tier-divine .topup-card-gems-value,
-    .topup-card.tier-divine .topup-buy-btn,
-    .topup-card-badge.divine {
-        animation: none !important;
-    }
-}
-
-/* =====================================================
-   FASE 0: ADMIN EDITOR — Button & Page
-===================================================== */
-
-/* --- Button in More page --- */
+/* =========================================
+   ADMIN EDITOR — Button & Roadmap
+========================================= */
 
 .admin-editor-button {
     position: relative;
@@ -2738,11 +2711,7 @@ button:focus-visible {
     border: 1px solid rgba(155, 123, 255, 0.4);
     border-radius: 14px;
     background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(155, 123, 255, 0.16) 0%,
-            transparent 55%
-        ),
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.16) 0%, transparent 55%),
         linear-gradient(145deg, #1A1430, #0D0F1A);
     color: var(--text);
     text-align: left;
@@ -2791,10 +2760,7 @@ button:focus-visible {
     color: var(--cyan);
 }
 
-.admin-editor-content {
-    flex: 1;
-    min-width: 0;
-}
+.admin-editor-content { flex: 1; min-width: 0; }
 
 .admin-editor-title {
     display: flex;
@@ -2836,15 +2802,9 @@ button:focus-visible {
     transition: transform 0.2s;
 }
 
-.admin-editor-button:hover .admin-editor-arrow {
-    transform: translateX(3px);
-}
+.admin-editor-button:hover .admin-editor-arrow { transform: translateX(3px); }
 
-.admin-editor-button.hidden {
-    display: none !important;
-}
-
-/* --- Editor Roadmap in editor page --- */
+.admin-editor-button.hidden { display: none !important; }
 
 .editor-roadmap {
     display: grid;
@@ -2852,122 +2812,6 @@ button:focus-visible {
     gap: 12px;
     margin-top: 20px;
 }
-
-.editor-roadmap-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: linear-gradient(145deg, var(--surface), #0D1523);
-    transition:
-        border-color 0.2s,
-        transform 0.2s;
-}
-
-.editor-roadmap-item:hover {
-    border-color: rgba(101, 231, 255, 0.35);
-    transform: translateY(-2px);
-}
-
-.editor-roadmap-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 12px;
-    background: rgba(101, 231, 255, 0.08);
-    border: 1px solid rgba(101, 231, 255, 0.2);
-    font-size: 22px;
-}
-
-.editor-roadmap-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.editor-roadmap-content h3 {
-    margin: 0 0 6px;
-    font-size: 13.5px;
-    color: var(--text);
-    letter-spacing: 0.2px;
-}
-
-.editor-roadmap-content p {
-    margin: 0 0 10px;
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.55;
-}
-
-.editor-roadmap-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: rgba(255, 179, 71, 0.1);
-    border: 1px solid rgba(255, 179, 71, 0.3);
-    color: #FFB347;
-    font-family: "Rajdhani", sans-serif;
-    font-size: 9px;
-    font-weight: bold;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-}
-
-@media (max-width: 560px) {
-    .admin-editor-button {
-        padding: 14px 14px;
-        gap: 12px;
-    }
-
-    .admin-editor-icon {
-        width: 36px;
-        height: 36px;
-    }
-
-    .editor-roadmap {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* =====================================================
-   FASE 1: NEWS EDITOR
-===================================================== */
-
-.editor-view {
-    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.editor-view.hidden {
-    display: none !important;
-}
-
-.editor-view-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-}
-
-.editor-view-header h2 {
-    margin: 0;
-    font-size: 16px;
-    color: var(--text);
-    overflow-wrap: anywhere;
-}
-
-.editor-view-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-/* Roadmap item as button */
 
 .editor-roadmap-item {
     display: flex;
@@ -3002,13 +2846,87 @@ button:focus-visible {
     box-shadow: none;
 }
 
+.editor-roadmap-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: rgba(101, 231, 255, 0.08);
+    border: 1px solid rgba(101, 231, 255, 0.2);
+    font-size: 22px;
+}
+
+.editor-roadmap-content { flex: 1; min-width: 0; }
+
+.editor-roadmap-content h3 {
+    margin: 0 0 6px;
+    font-size: 13.5px;
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+
+.editor-roadmap-content p {
+    margin: 0 0 10px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.editor-roadmap-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 179, 71, 0.1);
+    border: 1px solid rgba(255, 179, 71, 0.3);
+    color: #FFB347;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
 .editor-roadmap-badge.active-badge {
     background: rgba(88, 255, 173, 0.12);
     border: 1px solid rgba(88, 255, 173, 0.35);
     color: var(--success);
 }
 
-/* News list */
+
+/* =========================================
+   FASE 1: NEWS EDITOR
+========================================= */
+
+.editor-view {
+    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.editor-view.hidden { display: none !important; }
+
+.editor-view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.editor-view-header h2 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+.editor-view-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 
 .news-list-item {
     display: flex;
@@ -3026,10 +2944,7 @@ button:focus-visible {
     border-color: rgba(101, 231, 255, 0.3);
 }
 
-.news-list-item-content {
-    flex: 1;
-    min-width: 0;
-}
+.news-list-item-content { flex: 1; min-width: 0; }
 
 .news-list-item-header {
     display: flex;
@@ -3123,8 +3038,6 @@ button:focus-visible {
     background: rgba(255, 133, 133, 0.1);
 }
 
-/* Form */
-
 .editor-form-group {
     margin-bottom: 16px;
 }
@@ -3179,25 +3092,53 @@ button:focus-visible {
 }
 
 @media (max-width: 560px) {
-    .news-list-item {
-        flex-direction: column;
-    }
+    .news-list-item { flex-direction: column; }
 
     .news-list-item-actions {
         flex-direction: row;
         width: 100%;
     }
 
-    .news-action-btn {
-        flex: 1;
-    }
+    .news-action-btn { flex: 1; }
 
-    .editor-form-actions {
-        flex-direction: column;
-    }
+    .editor-form-actions { flex-direction: column; }
 
     .editor-form-actions .profile-button,
-    .editor-form-actions .primary-button {
-        width: 100%;
+    .editor-form-actions .primary-button { width: 100%; }
+
+    .admin-editor-button {
+        padding: 14px 14px;
+        gap: 12px;
+    }
+
+    .admin-editor-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .editor-roadmap { grid-template-columns: 1fr; }
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .topup-header[data-variant="crystal"] .topup-title,
+    .topup-card.tier-divine,
+    .topup-card.tier-divine .topup-card-gems-value,
+    .topup-card.tier-divine .topup-buy-btn,
+    .topup-card-badge.divine {
+        animation: none !important;
     }
 }
