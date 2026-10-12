@@ -1490,7 +1490,7 @@ img.inventory-item-icon {
 }
 
 /* =====================================================
-   TOP UP PAGE
+   TOP UP PAGE — CRYSTAL STORE
 ===================================================== */
 
 .topup-tabs {
@@ -1501,20 +1501,24 @@ img.inventory-item-icon {
 }
 
 .topup-tab {
-    padding: 7px 14px;
+    padding: 8px 16px;
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 10px;
     color: var(--muted);
     background: var(--surface);
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: bold;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     transition:
         color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
         background 0.15s cubic-bezier(0.4, 0, 0.2, 1),
         border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
         transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
 .topup-tab:hover {
@@ -1528,62 +1532,186 @@ img.inventory-item-icon {
 }
 
 .topup-tab.active {
-    color: var(--cyan);
+    color: var(--text);
     border-color: var(--cyan);
     background: rgba(101, 231, 255, 0.1);
-    box-shadow: 0 0 12px rgba(101, 231, 255, 0.18);
+    box-shadow: 0 0 14px rgba(101, 231, 255, 0.2);
 }
 
-.topup-tab-panel {
-    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.topup-placeholder {
-    padding: 50px 24px;
-    border: 1px dashed var(--border);
-    border-radius: 16px;
-    background: rgba(8, 13, 25, 0.4);
-    text-align: center;
-}
-
-.topup-placeholder-icon {
-    font-size: 44px;
-    margin-bottom: 12px;
-    opacity: 0.5;
-}
-
-.topup-placeholder h3 {
-    margin: 0 0 8px;
-    font-size: 15px;
-    color: var(--text);
-    letter-spacing: 0.5px;
-}
-
-.topup-placeholder p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.7;
-}
+/* =========================================
+   DYNAMIC CATEGORY HEADER
+========================================= */
 
 .topup-header {
     margin-bottom: 20px;
+    transition: opacity 0.2s;
+}
+
+.topup-header .eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
 }
 
 .topup-title {
-    margin: 10px 0 8px;
-    font-size: clamp(24px, 5vw, 34px);
-    line-height: 1.2;
+    margin: 0 0 12px;
+    font-size: clamp(26px, 5.5vw, 38px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
 }
 
 .topup-subtitle {
-    margin: 0;
+    margin: 0 0 16px;
     color: var(--muted);
     font-size: 13px;
     line-height: 1.7;
+    max-width: 560px;
 }
 
-/* Top up balance - compact pill */
+/* Title variants */
+
+.topup-header[data-variant="crystal"] .topup-title {
+    background-image: linear-gradient(
+        90deg,
+        #FF5C8A 0%,
+        #FFB347 14%,
+        #FFE066 28%,
+        #58FFAD 42%,
+        #55E6F5 56%,
+        #9B7BFF 70%,
+        #D8B66A 84%,
+        #FF5C8A 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: crystal-rainbow 6s linear infinite;
+    filter: drop-shadow(0 0 24px rgba(155, 123, 255, 0.35));
+}
+
+@keyframes crystal-rainbow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.topup-header[data-variant="assets"] .topup-title {
+    background-image: linear-gradient(
+        90deg,
+        #FFB347 0%,
+        #FF8C42 50%,
+        #FFB347 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 20px rgba(255, 179, 71, 0.3));
+}
+
+.topup-header[data-variant="items"] .topup-title {
+    background-image: linear-gradient(
+        90deg,
+        #9B7BFF 0%,
+        #D8B66A 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 20px rgba(155, 123, 255, 0.3));
+}
+
+/* Currency chip */
+
+.store-currency {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(5, 16, 31, 0.5);
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+.topup-header[data-variant="crystal"] .store-currency {
+    border-color: rgba(85, 230, 245, 0.3);
+    box-shadow: 0 0 14px rgba(85, 230, 245, 0.12);
+}
+
+.topup-header[data-variant="assets"] .store-currency {
+    border-color: rgba(255, 179, 71, 0.35);
+    box-shadow: 0 0 14px rgba(255, 179, 71, 0.12);
+}
+
+.topup-header[data-variant="items"] .store-currency {
+    border-color: rgba(155, 123, 255, 0.35);
+    box-shadow: 0 0 14px rgba(155, 123, 255, 0.12);
+}
+
+.store-currency-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.store-currency-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.topup-header[data-variant="crystal"] .store-currency-chip {
+    background: linear-gradient(
+        90deg,
+        rgba(85, 230, 245, 0.15),
+        rgba(155, 123, 255, 0.15)
+    );
+}
+
+.topup-header[data-variant="assets"] .store-currency-chip {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 179, 71, 0.15),
+        rgba(255, 140, 66, 0.15)
+    );
+}
+
+.topup-header[data-variant="items"] .store-currency-chip {
+    background: linear-gradient(
+        90deg,
+        rgba(155, 123, 255, 0.15),
+        rgba(216, 182, 106, 0.15)
+    );
+}
+
+.store-currency-icon {
+    font-size: 12px;
+    line-height: 1;
+}
+
+.store-currency-name {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: var(--text);
+}
+
+/* Balance pill */
 
 .topup-balance {
     display: inline-flex;
@@ -1619,7 +1747,55 @@ img.inventory-item-icon {
     overflow-wrap: anywhere;
 }
 
-/* Top up grid - 3 kolom */
+/* Panels */
+
+.topup-tab-panel {
+    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.topup-placeholder {
+    padding: 50px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    background: rgba(8, 13, 25, 0.4);
+    text-align: center;
+}
+
+.topup-placeholder-icon {
+    font-size: 44px;
+    margin-bottom: 12px;
+    opacity: 0.6;
+}
+
+.topup-placeholder h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: 0.5px;
+}
+
+.topup-placeholder p {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.topup-placeholder-hint {
+    font-size: 10px !important;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #5C6078 !important;
+    margin-top: 12px !important;
+    font-family: monospace;
+}
+
+/* =========================================
+   PACKAGE GRID
+========================================= */
 
 .topup-grid {
     display: grid;
@@ -1637,12 +1813,17 @@ img.inventory-item-icon {
     border: 1px solid var(--border);
     border-radius: 16px;
     background: linear-gradient(145deg, var(--surface), #0D1523);
-    transition: border-color 0.2s, transform 0.2s;
+    transition:
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
 .topup-card:hover {
     border-color: rgba(101, 231, 255, 0.4);
     transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
 }
 
 .topup-card.featured {
@@ -1657,26 +1838,75 @@ img.inventory-item-icon {
     box-shadow: 0 0 24px rgba(101, 231, 255, 0.15);
 }
 
-.topup-card.mega {
-    border-color: rgba(241, 204, 120, 0.5);
+/* MEGA — orange frame */
+
+.topup-card.tier-mega {
+    border: 2px solid rgba(255, 179, 71, 0.5);
     background:
         radial-gradient(
             circle at 100% 0%,
-            rgba(241, 204, 120, 0.18),
+            rgba(255, 179, 71, 0.22),
             transparent 55%
         ),
         linear-gradient(145deg, #2A1F14, #15152F);
+    box-shadow:
+        0 0 24px rgba(255, 179, 71, 0.15),
+        inset 0 0 30px rgba(255, 179, 71, 0.04);
 }
+
+.topup-card.tier-mega:hover {
+    border-color: rgba(255, 179, 71, 0.8);
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.35),
+        0 0 40px rgba(255, 179, 71, 0.3);
+}
+
+/* DIVINE — rainbow neon frame */
+
+.topup-card.tier-divine {
+    border: 2px solid transparent;
+    background:
+        linear-gradient(145deg, #1A1228 0%, #0A0D18 100%) padding-box,
+        linear-gradient(
+            135deg,
+            #FF5C8A 0%,
+            #FFB347 16%,
+            #FFE066 32%,
+            #58FFAD 48%,
+            #55E6F5 64%,
+            #9B7BFF 80%,
+            #FF5C8A 100%
+        ) border-box;
+    background-size: auto, 200% 200%;
+    animation: divine-border-shift 6s linear infinite;
+    box-shadow:
+        0 0 24px rgba(155, 123, 255, 0.3),
+        0 0 48px rgba(85, 230, 245, 0.15);
+}
+
+@keyframes divine-border-shift {
+    0% { background-position: 0 0, 0% 50%; }
+    100% { background-position: 0 0, 200% 50%; }
+}
+
+.topup-card.tier-divine:hover {
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.35),
+        0 0 40px rgba(155, 123, 255, 0.4),
+        0 0 80px rgba(85, 230, 245, 0.2);
+}
+
+/* Badge */
 
 .topup-card-badge {
     position: absolute;
     top: -10px;
     right: 10px;
-    padding: 3px 9px;
+    padding: 3px 10px;
     border-radius: 999px;
     font-size: 8px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
     color: #04131E;
     background: linear-gradient(90deg, var(--cyan), var(--violet));
     box-shadow: 0 4px 12px rgba(101, 231, 255, 0.35);
@@ -1684,9 +1914,36 @@ img.inventory-item-icon {
 }
 
 .topup-card-badge.mega {
-    background: linear-gradient(90deg, #F1CC78, #FFB347);
-    box-shadow: 0 4px 12px rgba(241, 204, 120, 0.35);
+    background: linear-gradient(90deg, #FFB347, #FF8C42);
+    color: #1A1408;
+    box-shadow: 0 4px 12px rgba(255, 179, 71, 0.4);
 }
+
+.topup-card-badge.divine {
+    background: linear-gradient(
+        90deg,
+        #FF5C8A 0%,
+        #FFB347 16%,
+        #FFE066 32%,
+        #58FFAD 48%,
+        #55E6F5 64%,
+        #9B7BFF 80%,
+        #FF5C8A 100%
+    );
+    background-size: 200% 100%;
+    animation: rainbow-badge 4s linear infinite;
+    color: #0A0D18;
+    box-shadow:
+        0 4px 12px rgba(155, 123, 255, 0.4),
+        0 0 20px rgba(85, 230, 245, 0.3);
+}
+
+@keyframes rainbow-badge {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* Gems display */
 
 .topup-card-gems {
     display: flex;
@@ -1702,9 +1959,38 @@ img.inventory-item-icon {
 .topup-card-gems-value {
     color: var(--text);
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 900;
     line-height: 1;
     overflow-wrap: anywhere;
+    letter-spacing: -0.3px;
+}
+
+.topup-card.tier-mega .topup-card-gems-value {
+    background: linear-gradient(90deg, #FFB347, #F0D9A0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-size: 20px;
+}
+
+.topup-card.tier-divine .topup-card-gems-value {
+    background: linear-gradient(
+        90deg,
+        #FF5C8A,
+        #FFB347,
+        #FFE066,
+        #58FFAD,
+        #55E6F5,
+        #9B7BFF
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-size: 22px;
+    animation: rainbow-badge 5s linear infinite;
 }
 
 .topup-card-gems-unit {
@@ -1713,6 +1999,14 @@ img.inventory-item-icon {
     letter-spacing: 1px;
     font-weight: bold;
     margin-top: 3px;
+}
+
+.topup-card.tier-mega .topup-card-gems-unit {
+    color: #FFB347;
+}
+
+.topup-card.tier-divine .topup-card-gems-unit {
+    color: #9B7BFF;
 }
 
 .topup-card-bonus {
@@ -1728,10 +2022,30 @@ img.inventory-item-icon {
     align-self: flex-start;
 }
 
+.topup-card.tier-mega .topup-card-bonus {
+    background: rgba(255, 179, 71, 0.1);
+    border-color: rgba(255, 179, 71, 0.35);
+    color: #FFB347;
+}
+
+.topup-card.tier-divine .topup-card-bonus {
+    background: rgba(155, 123, 255, 0.12);
+    border-color: rgba(155, 123, 255, 0.4);
+    color: #C7B8FF;
+}
+
 .topup-card-divider {
     height: 1px;
     background: rgba(130, 160, 210, 0.12);
     margin: 4px 0;
+}
+
+.topup-card.tier-mega .topup-card-divider {
+    background: rgba(255, 179, 71, 0.15);
+}
+
+.topup-card.tier-divine .topup-card-divider {
+    background: rgba(155, 123, 255, 0.2);
 }
 
 .topup-card-price {
@@ -1739,6 +2053,14 @@ img.inventory-item-icon {
     font-size: 14px;
     font-weight: bold;
     font-family: monospace;
+}
+
+.topup-card.tier-mega .topup-card-price {
+    color: #FFB347;
+}
+
+.topup-card.tier-divine .topup-card-price {
+    color: #C7B8FF;
 }
 
 .topup-card-total {
@@ -1751,6 +2073,19 @@ img.inventory-item-icon {
     color: var(--text);
 }
 
+.topup-card.tier-mega .topup-card-total strong {
+    color: #F0D9A0;
+}
+
+.topup-card.tier-divine .topup-card-total strong {
+    background: linear-gradient(90deg, #58FFAD, #55E6F5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Buy button */
+
 .topup-buy-btn {
     width: 100%;
     margin-top: auto;
@@ -1762,12 +2097,21 @@ img.inventory-item-icon {
     font-size: 11px;
     font-weight: bold;
     letter-spacing: 0.3px;
-    transition: background 0.15s, border-color 0.15s;
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        transform 0.15s,
+        box-shadow 0.2s;
 }
 
 .topup-buy-btn:hover {
     background: rgba(101, 231, 255, 0.12);
     border-color: var(--cyan);
+    transform: translateY(-1px);
+}
+
+.topup-buy-btn:active {
+    transform: translateY(0) scale(0.97);
 }
 
 .topup-card.featured .topup-buy-btn {
@@ -1780,15 +2124,43 @@ img.inventory-item-icon {
     filter: brightness(1.08);
 }
 
-.topup-card.mega .topup-buy-btn {
-    color: #04131E;
-    background: linear-gradient(90deg, #F1CC78, #FFB347);
+.topup-card.tier-mega .topup-buy-btn {
+    color: #1A1408;
+    background: linear-gradient(90deg, #FFB347, #FF8C42);
     border: 0;
+    box-shadow: 0 4px 14px rgba(255, 179, 71, 0.3);
 }
 
-.topup-card.mega .topup-buy-btn:hover {
+.topup-card.tier-mega .topup-buy-btn:hover {
     filter: brightness(1.08);
+    box-shadow: 0 6px 20px rgba(255, 179, 71, 0.5);
 }
+
+.topup-card.tier-divine .topup-buy-btn {
+    color: #0A0D18;
+    background: linear-gradient(
+        90deg,
+        #FF5C8A,
+        #FFB347,
+        #FFE066,
+        #58FFAD,
+        #55E6F5,
+        #9B7BFF
+    );
+    background-size: 200% 100%;
+    border: 0;
+    animation: rainbow-badge 5s linear infinite;
+    box-shadow: 0 4px 20px rgba(155, 123, 255, 0.4);
+    font-weight: 900;
+}
+
+.topup-card.tier-divine .topup-buy-btn:hover {
+    box-shadow:
+        0 6px 24px rgba(155, 123, 255, 0.5),
+        0 0 30px rgba(85, 230, 245, 0.3);
+}
+
+/* Sections */
 
 .topup-section {
     margin-top: 32px;
@@ -1879,7 +2251,7 @@ img.inventory-item-icon {
     line-height: 1.7;
 }
 
-/* Top up responsive */
+/* Responsive */
 
 @media (max-width: 850px) {
     .topup-grid {
@@ -1889,10 +2261,31 @@ img.inventory-item-icon {
 }
 
 @media (max-width: 560px) {
+    .topup-tabs {
+        gap: 4px;
+    }
+
     .topup-tab {
-        padding: 6px 11px;
+        padding: 7px 10px;
         font-size: 9px;
         letter-spacing: 1px;
+    }
+
+    .topup-title {
+        font-size: 24px;
+        letter-spacing: 1.5px;
+    }
+
+    .topup-subtitle {
+        font-size: 11.5px;
+    }
+
+    .store-currency {
+        padding: 5px 5px 5px 12px;
+    }
+
+    .store-currency-name {
+        font-size: 10px;
     }
 
     .topup-balance {
@@ -1922,6 +2315,11 @@ img.inventory-item-icon {
         border-radius: 12px;
     }
 
+    .topup-card.tier-mega,
+    .topup-card.tier-divine {
+        border-width: 1.5px;
+    }
+
     .topup-card-gems {
         gap: 5px;
     }
@@ -1932,6 +2330,14 @@ img.inventory-item-icon {
 
     .topup-card-gems-value {
         font-size: 13px;
+    }
+
+    .topup-card.tier-mega .topup-card-gems-value {
+        font-size: 14px;
+    }
+
+    .topup-card.tier-divine .topup-card-gems-value {
+        font-size: 14px;
     }
 
     .topup-card-gems-unit {
@@ -2142,47 +2548,6 @@ button:focus-visible {
     box-shadow: 0 8px 20px rgba(101, 231, 255, 0.18);
 }
 
-.topup-card {
-    transition:
-        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.topup-card:hover {
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
-}
-
-.topup-card.featured:hover {
-    box-shadow:
-        0 14px 32px rgba(0, 0, 0, 0.35),
-        0 0 40px rgba(101, 231, 255, 0.22);
-}
-
-.topup-card.mega:hover {
-    box-shadow:
-        0 14px 32px rgba(0, 0, 0, 0.35),
-        0 0 40px rgba(241, 204, 120, 0.22);
-}
-
-.topup-buy-btn {
-    transition:
-        background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        filter 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.topup-buy-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(101, 231, 255, 0.2);
-}
-
-.topup-buy-btn:active {
-    transform: translateY(0) scale(0.97);
-}
-
 .inventory-modal,
 .news-modal {
     display: flex !important;
@@ -2345,5 +2710,13 @@ button:focus-visible {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .topup-header[data-variant="crystal"] .topup-title,
+    .topup-card.tier-divine,
+    .topup-card.tier-divine .topup-card-gems-value,
+    .topup-card.tier-divine .topup-buy-btn,
+    .topup-card-badge.divine {
+        animation: none !important;
     }
 }
