@@ -388,19 +388,50 @@
             <!-- REWARDS -->
 
             <section class="app-page hidden" id="rewardsPage">
-                <div class="welcome">
-                    <div class="eyebrow">CRYSTAL REWARDS</div>
-                    <h1>Rewards</h1>
-                    <p>Informasi hadiah untuk pemain GROWERA.</p>
-                </div>
 
-                <div class="page-panel">
-                    <h2>Coming Soon</h2>
-                    <p>
-                        Halaman ini akan menampilkan hadiah dan informasi
-                        reward yang tersedia.
+                <div class="rewards-header">
+                    <div class="eyebrow">CRYSTAL REWARDS</div>
+                    <h1 class="rewards-title">Claim Your Glory</h1>
+                    <p class="rewards-subtitle">
+                        Every journey holds a reward. Explore the five paths of the Crystal Era.
                     </p>
                 </div>
+
+                <section class="rewards-overview">
+                    <div class="rewards-overview-glow"></div>
+                    <div class="rewards-overview-crystal">💠</div>
+                    <div class="rewards-overview-content">
+                        <div class="rewards-overview-label">YOUR REWARD JOURNEY</div>
+                        <h2 class="rewards-overview-title">Progress & Achievements</h2>
+                        <p class="rewards-overview-desc">
+                            Ringkasan progres reward, milestone, dan achievement kamu
+                            akan muncul di sini ketika sistem siap.
+                        </p>
+                        <div class="rewards-overview-status">🔒 COMING SOON</div>
+                    </div>
+                </section>
+
+                <div class="section-heading">
+                    <h2>✦ Explore Rewards</h2>
+                    <span>5 kategori hadiah</span>
+                </div>
+
+                <div class="rewards-grid" id="rewardsGrid"></div>
+
+                <section class="rewards-featured" id="rewardsFeatured">
+                    <div class="rewards-featured-glow"></div>
+                    <div class="rewards-featured-content">
+                        <div class="rewards-featured-badge">👑 FEATURED REWARD</div>
+                        <h2 class="rewards-featured-title">Crystal Sovereign</h2>
+                        <p class="rewards-featured-desc">
+                            Reward eksklusif untuk para penakluk Crystal Era.
+                            Selesaikan tantangan utama bulanan untuk membuka hadiah legendaris ini.
+                        </p>
+                        <div class="rewards-featured-status">COMING SOON</div>
+                    </div>
+                    <div class="rewards-featured-emblem">👑</div>
+                </section>
+
             </section>
 
 
@@ -646,22 +677,22 @@
                                 </div>
                             </button>
 
+                            <button class="editor-roadmap-item" data-editor-module="rewards" type="button">
+                                <div class="editor-roadmap-icon">⭐</div>
+                                <div class="editor-roadmap-content">
+                                    <h3>Rewards & Quest Editor</h3>
+                                    <p>Kelola milestone, daily login, dan quest harian/mingguan/bulanan.</p>
+                                    <span class="editor-roadmap-badge active-badge">
+                                        Aktif
+                                    </span>
+                                </div>
+                            </button>
+
                             <div class="editor-roadmap-item locked">
                                 <div class="editor-roadmap-icon">💎</div>
                                 <div class="editor-roadmap-content">
                                     <h3>Top Up Packages</h3>
                                     <p>Kelola paket top up, harga, dan badge.</p>
-                                    <span class="editor-roadmap-badge">
-                                        Coming Soon
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="editor-roadmap-item locked">
-                                <div class="editor-roadmap-icon">⭐</div>
-                                <div class="editor-roadmap-content">
-                                    <h3>Quest Config</h3>
-                                    <p>Atur misi, target, dan reward.</p>
                                     <span class="editor-roadmap-badge">
                                         Coming Soon
                                     </span>
@@ -780,6 +811,147 @@
                                 Save Draft
                             </button>
                             <button class="primary-button" id="newsFormPublish" type="button" style="width:auto">
+                                Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: REWARDS LIST -->
+
+                <div class="editor-view hidden" id="editorViewRewardsList">
+                    <div class="page-panel">
+
+                        <div class="editor-view-header">
+                            <h2>⭐ Rewards & Quest Editor</h2>
+
+                            <div class="editor-view-actions">
+                                <button class="profile-button" id="rewardsBackToRoadmap" type="button">
+                                    ← Back
+                                </button>
+                                <button class="primary-button" id="rewardsCreateBtn" type="button" style="width:auto">
+                                    + Baru
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="rewards-filter" id="rewardsFilter">
+                            <button class="rewards-filter-btn active" data-filter="all" type="button">All</button>
+                            <button class="rewards-filter-btn" data-filter="milestone" type="button">💠 Milestone</button>
+                            <button class="rewards-filter-btn" data-filter="daily-login" type="button">🎁 Daily Login</button>
+                            <button class="rewards-filter-btn" data-filter="daily-quest" type="button">⚔️ Daily</button>
+                            <button class="rewards-filter-btn" data-filter="weekly-quest" type="button">📅 Weekly</button>
+                            <button class="rewards-filter-btn" data-filter="monthly-quest" type="button">👑 Monthly</button>
+                        </div>
+
+                        <div id="rewardsAdminList">
+                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
+                                Memuat reward...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: REWARDS FORM -->
+
+                <div class="editor-view hidden" id="editorViewRewardsForm">
+                    <div class="page-panel">
+
+                        <div class="editor-view-header">
+                            <h2 id="rewardsFormTitle">Buat Reward Baru</h2>
+
+                            <button class="profile-button" id="rewardsFormBack" type="button">
+                                ← Back
+                            </button>
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="rewardsFormCategory">Category</label>
+                            <select class="editor-input" id="rewardsFormCategory">
+                                <option value="milestone">💠 Milestone</option>
+                                <option value="daily-login">🎁 Daily Login</option>
+                                <option value="daily-quest">⚔️ Daily Quest</option>
+                                <option value="weekly-quest">📅 Weekly Quest</option>
+                                <option value="monthly-quest">👑 Monthly Quest</option>
+                            </select>
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="rewardsFormName">Name / Title</label>
+                            <input class="editor-input" id="rewardsFormName" type="text"
+                                   maxlength="120" placeholder="Contoh: First Steps" />
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="rewardsFormDescription">Description</label>
+                            <textarea class="editor-input editor-textarea" id="rewardsFormDescription"
+                                      rows="3" maxlength="500"
+                                      placeholder="Deskripsi singkat reward / quest..."></textarea>
+                        </div>
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="rewardsFormIcon">Icon (emoji / karakter)</label>
+                                <input class="editor-input" id="rewardsFormIcon" type="text"
+                                       maxlength="8" placeholder="◇" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="rewardsFormRarity">Rarity</label>
+                                <select class="editor-input" id="rewardsFormRarity">
+                                    <option value="common">Common</option>
+                                    <option value="rare">Rare</option>
+                                    <option value="epic">Epic</option>
+                                    <option value="legendary">Legendary</option>
+                                    <option value="divine">Divine</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="rewardsFormProgress">Progress (opsional)</label>
+                                <input class="editor-input" id="rewardsFormProgress" type="text"
+                                       maxlength="40" placeholder="-- / --" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="rewardsFormDay">Day (khusus Daily Login)</label>
+                                <input class="editor-input" id="rewardsFormDay" type="number"
+                                       min="1" max="31" placeholder="1" />
+                            </div>
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="rewardsFormReward">Reward Preview</label>
+                            <input class="editor-input" id="rewardsFormReward" type="text"
+                                   maxlength="120" placeholder="💎 Coming Soon" />
+                        </div>
+
+                        <div class="editor-form-row">
+                            <div class="editor-form-group">
+                                <label for="rewardsFormOrder">Order</label>
+                                <input class="editor-input" id="rewardsFormOrder" type="number"
+                                       min="0" placeholder="0" />
+                            </div>
+
+                            <div class="editor-form-group">
+                                <label for="rewardsFormStatus">Status</label>
+                                <select class="editor-input" id="rewardsFormStatus">
+                                    <option value="draft">Draft</option>
+                                    <option value="published">Published</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="editor-form-actions">
+                            <button class="profile-button" id="rewardsFormCancel" type="button">
+                                Cancel
+                            </button>
+                            <button class="profile-button" id="rewardsFormSaveDraft" type="button">
+                                Save Draft
+                            </button>
+                            <button class="primary-button" id="rewardsFormPublish" type="button" style="width:auto">
                                 Publish
                             </button>
                         </div>
@@ -935,6 +1107,37 @@
 
                     </div>
                 </div>
+
+            </div>
+        </div>
+
+
+        <!-- REWARDS MODAL -->
+
+        <div class="rewards-modal" id="rewardsModal">
+            <div class="rewards-modal-content" id="rewardsModalContent" data-variant="milestone">
+
+                <div class="rewards-modal-header" id="rewardsModalHeader">
+                    <div class="rewards-modal-icon" id="rewardsModalIcon">💠</div>
+
+                    <div class="rewards-modal-header-info">
+                        <h2 class="rewards-modal-title" id="rewardsModalTitle">MILESTONE REWARDS</h2>
+                        <p class="rewards-modal-subtitle" id="rewardsModalSubtitle">
+                            Every achievement tells a story.
+                        </p>
+                    </div>
+
+                    <button
+                        class="rewards-modal-close-btn"
+                        id="rewardsModalCloseBtn"
+                        type="button"
+                        aria-label="Close"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <div class="rewards-modal-body" id="rewardsModalBody"></div>
 
             </div>
         </div>
