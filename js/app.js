@@ -67,10 +67,9 @@ let currentProfile = null;
 
 let currentUserIsAdmin = false;
 
-/* News editor state */
 let newsState = {
-    view: "roadmap",      // "roadmap" | "list" | "form"
-    mode: "create",       // "create" | "edit"
+    view: "roadmap",
+    mode: "create",
     editingId: null,
     articles: []
 };
@@ -780,7 +779,7 @@ async function fetchPlayerProfile() {
 
 
 /* =========================================
-   HOME NEWS CARD
+   HOME NEWS — HERO + LIST
 ========================================= */
 
 async function loadHomeNews() {
@@ -791,71 +790,139 @@ async function loadHomeNews() {
 
         const data = await readJSONResponse(response);
         if (!response.ok || data.success !== true) return;
-        if (!Array.isArray(data.articles) || data.articles.length === 0) return;
 
-        const article = data.articles[0];
+        const articles = Array.isArray(data.articles) ? data.articles : [];
 
-        const titleEl = document.getElementById("newsTitle");
-        const excerptEl = document.getElementById("newsExcerpt");
-        const dateEl = document.getElementById("newsDate");
-        const badgeEl = document.querySelector(".news-card .news-badge");
-
-        if (titleEl) titleEl.textContent = article.title;
-        if (excerptEl) excerptEl.textContent = article.excerpt;
-        if (badgeEl && article.badge) badgeEl.textContent = article.badge;
-        if (dateEl && article.updatedAt) {
-            dateEl.textContent = "Update " + new Date(
-                article.updatedAt * 1000
-            ).toLocaleDateString("id-ID");
+        if (articles.length === 0) {
+            document.getElementById("newsListSection").classList.add("hidden");
+            return;
         }
 
-        // Store for modal
-        window.__currentHomeArticle = article;
+        const newest = articles[0];
+        setHeroNews(newest);
+
+        const others = articles.slice(1, 5);
+        renderNewsList(others);
     } catch (err) {
         console.warn("[GROWERA] Load home news failed:", err);
     }
 }
 
+function setHeroNews(article) {
+    if (!article) return;
 
-/* =========================================
-   NEWS MODAL
-========================================= */
+    document.getElementById("newsTitle").textContent = article.title || "Untitled";
+    document.getElementById("newsExcerpt").textContent = article.excerpt || "";
+    document.getElementById("newsBadge").textContent = article.badge || "GROWERA NEWS";
 
-function openNewsModal() {
+    const dateEl = document.getElementById("newsDate");
+    if (dateEl && article.updatedAt) {
+        dateEl.textContent = "Update " +
+            new Date(article.updatedAt * 1000).toLocaleDateString("id-ID");
+    }
+
+    window.__currentHomeArticle = article;
+}
+
+function renderNewsList(articles) {
+    const section = document.getElementById("newsListSection");
+    const container = document.getElementById("newsListContainer");
+
+    if (!section || !container) return;
+
+    if (!Array.isArray(articles) || articles.length === 0) {
+        section.classList.add("hidden");
+        return;
+    }
+
+    section.classList.remove("hidden");
+    container.replaceChildren();
+
+    articles.forEach(function (article) {
+        const item = document.createElement("button");
+        item.className = "news-list-mini";
+        item.type = "button";
+
+        const info = document.createElement("div");
+        info.className = "news-list-mini-info";
+
+        const title = document.createElement("div");
+        title.className = "news-list-mini-title";
+        title.textContent = article.title || "Untitled";
+
+        const date = document.createElement("div");
+        date.className = "news-list-mini-date";
+        date.textContent = article.updatedAt
+            ? new Date(article.updatedAt * 1000).toLocaleDateString("id-ID")
+            : "—";
+
+        info.appendChild(title);
+        info.appendChild(date);
+
+        const arrow = document.createElement("span");
+        arrow.className = "news-list-mini-arrow";
+        arrow.textContent = "→";
+
+        item.appendChild(info);
+        item.appendChild(arrow);
+
+        item.addEventListener("click", function () {
+            openNewsModalWith(article);
+        });
+
+        container.appendChild(item);
+    });
+}
+
+function openNewsModalWith(article) {
     const modal = document.getElementById("newsModal");
-    if (!modal) return;
+    if (!modal || !article) return;
 
-    const article = window.__currentHomeArticle;
+    document.getElementById("newsModalBadge").textContent =
+        article.badge || "CRYSTAL ERA";
 
-    if (article) {
-        const badgeEl = document.getElementById("newsModalBadge");
-        const titleEl = document.getElementById("newsModalTitle");
-        const metaEl = document.getElementById("newsModalMeta");
-        const bodyEl = document.getElementById("newsModalBody");
+    document.getElementById("newsModalTitle").textContent =
+        article.title || "Untitled";
 
-        if (badgeEl && article.badge) badgeEl.textContent = article.badge;
-        if (titleEl) titleEl.textContent = article.title;
-        if (metaEl) {
-            const author = article.author || "GROWERA";
-            const date = article.updatedAt
-                ? new Date(article.updatedAt * 1000).toLocaleDateString("id-ID")
-                : "—";
-            metaEl.textContent = "Dipublikasikan oleh " + author + " · " + date;
-        }
+    document.getElementById("newsModalMeta").textContent =
+        "Dipublikasikan oleh " + (article.author || "GROWERA") + " · " +
+        (article.updatedAt
+            ? new Date(article.updatedAt * 1000).toLocaleDateString("id-ID")
+            : "—");
 
-        if (bodyEl && article.body) {
-            bodyEl.replaceChildren();
-            const paragraphs = String(article.body).split(/\n\s*\n/);
-            paragraphs.forEach(function(p) {
-                if (!p.trim()) return;
-                const para = document.createElement("p");
-                para.textContent = p.trim();
-                bodyEl.appendChild(para);
-            });
-        }
+    const bodyEl = document.getElementById("newsModalBody");
+    bodyEl.replaceChildren();
+
+    const body = String(article.body || "").trim();
+
+    if (body === "") {
+        const emptyPara = document.createElement("p");
+        emptyPara.textContent = "(Artikel ini belum memiliki isi.)";
+        emptyPara.style.color = "var(--muted)";
+        emptyPara.style.fontStyle = "italic";
+        bodyEl.appendChild(emptyPara);
+    } else {
+        const paragraphs = body.split(/\n\s*\n/);
+        paragraphs.forEach(function (raw) {
+            const text = raw.trim();
+            if (!text) return;
+
+            const para = document.createElement("p");
+            para.textContent = text;
+            bodyEl.appendChild(para);
+        });
     }
 
     modal.classList.add("open");
+}
+
+function openNewsModal() {
+    if (window.__currentHomeArticle) {
+        openNewsModalWith(window.__currentHomeArticle);
+    } else {
+        const modal = document.getElementById("newsModal");
+        if (modal) modal.classList.add("open");
+    }
 }
 
 function closeNewsModal() {
@@ -1084,13 +1151,13 @@ async function loadNewsList() {
         }
 
         newsState.articles = Array.isArray(data.articles) ? data.articles : [];
-        renderNewsList(newsState.articles);
+        renderNewsListAdmin(newsState.articles);
     } catch (err) {
         container.innerHTML = '<p style="color:var(--danger);font-size:12px;text-align:center;padding:20px">Gagal memuat: ' + err.message + '</p>';
     }
 }
 
-function renderNewsList(articles) {
+function renderNewsListAdmin(articles) {
     const container = document.getElementById("newsListContainer");
     if (!container) return;
 
@@ -1245,6 +1312,11 @@ async function saveNews(status) {
         return;
     }
 
+    if (status === "published" && !body) {
+        alert("Body wajib diisi untuk publish. Simpan sebagai draft kalau belum selesai.");
+        return;
+    }
+
     const session = loadSession();
     if (!session.token) return;
 
@@ -1286,8 +1358,6 @@ async function saveNews(status) {
         alert("Gagal menyimpan: " + err.message);
     }
 }
-
-/* Wire news editor buttons */
 
 function initNewsEditor() {
     const roadmapNewsBtn = document.querySelector('[data-editor-module="news"]');
@@ -1383,7 +1453,6 @@ function navigateTo(pageName) {
         button.classList.toggle("active", button.dataset.page === pageName);
     });
 
-    // Reset editor to roadmap view when entering
     if (pageName === "editor") {
         showEditorView("roadmap");
     }
