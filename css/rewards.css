@@ -1,1 +1,1143 @@
 
+/* =========================================
+   GROWERA — REWARDS MODULE STYLES
+   Semua gaya kartu, modal, rarity, dan editor
+   khusus halaman Rewards.
+========================================= */
+
+
+/* =========================================
+   REWARDS PAGE — HEADER
+========================================= */
+
+.rewards-header {
+    margin-bottom: 24px;
+}
+
+.rewards-title {
+    margin: 10px 0 8px;
+    font-size: clamp(24px, 5vw, 34px);
+    line-height: 1.15;
+    background-image: linear-gradient(
+        90deg, #65E7FF 0%, #9B7BFF 40%, #F1CC78 70%, #FF5C8A 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: rewardTitleShift 8s linear infinite;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+}
+
+@keyframes rewardTitleShift {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.rewards-subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 640px;
+}
+
+
+/* =========================================
+   REWARDS — OVERVIEW BANNER
+========================================= */
+
+.rewards-overview {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 26px;
+    margin-bottom: 26px;
+    border: 1px solid rgba(155, 123, 255, 0.28);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.2), transparent 55%),
+        radial-gradient(circle at 0% 100%, rgba(101, 231, 255, 0.14), transparent 50%),
+        linear-gradient(145deg, #131C31, #0C1220);
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.rewards-overview:hover {
+    border-color: rgba(155, 123, 255, 0.45);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.3);
+}
+
+.rewards-overview-glow {
+    position: absolute;
+    inset: -40%;
+    background:
+        radial-gradient(circle at 30% 50%, rgba(101, 231, 255, 0.16), transparent 35%),
+        radial-gradient(circle at 70% 50%, rgba(155, 123, 255, 0.14), transparent 40%);
+    animation: rewardOverviewPulse 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes rewardOverviewPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50%      { opacity: 1;   transform: scale(1.05); }
+}
+
+.rewards-overview-crystal {
+    position: relative;
+    z-index: 1;
+    font-size: 56px;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(101, 231, 255, 0.5));
+    animation: crystalFloat 4s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes crystalFloat {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-6px) rotate(2deg); }
+}
+
+.rewards-overview-content {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.rewards-overview-label {
+    color: var(--cyan);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2.5px;
+    margin-bottom: 8px;
+}
+
+.rewards-overview-title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: var(--text);
+}
+
+.rewards-overview-desc {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 520px;
+}
+
+.rewards-overview-status {
+    display: inline-block;
+    padding: 5px 12px;
+    border: 1px solid rgba(155, 123, 255, 0.35);
+    border-radius: 999px;
+    background: rgba(155, 123, 255, 0.1);
+    color: #C7B8FF;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+
+/* =========================================
+   REWARDS GRID & CARDS
+========================================= */
+
+.rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
+}
+
+.rewards-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 18px 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: linear-gradient(145deg, var(--surface), #0D1523);
+    color: var(--text);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rewards-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.rewards-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+.rewards-card:hover::before { opacity: 1; }
+
+.rewards-card:active { transform: translateY(-1px) scale(0.99); }
+
+.rewards-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 26px;
+    line-height: 1;
+    background: rgba(101, 231, 255, 0.08);
+    border: 1px solid rgba(101, 231, 255, 0.18);
+    flex-shrink: 0;
+    transition: transform 0.3s;
+}
+
+.rewards-card:hover .rewards-card-icon {
+    transform: scale(1.06) rotate(-3deg);
+}
+
+.rewards-card-label {
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.rewards-card-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    overflow-wrap: anywhere;
+}
+
+.rewards-card-desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.55;
+    min-height: 32px;
+    overflow-wrap: anywhere;
+}
+
+.rewards-card-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(130, 160, 210, 0.1);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.rewards-card-arrow {
+    font-size: 14px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.rewards-card:hover .rewards-card-arrow {
+    transform: translateX(4px);
+}
+
+
+/* --- VARIANT: MILESTONE (ungu + emas) --- */
+.rewards-card[data-variant="milestone"] {
+    border-color: rgba(155, 123, 255, 0.3);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(216, 182, 106, 0.14), transparent 55%),
+        linear-gradient(145deg, #1A1430, #0F0D1F);
+}
+.rewards-card[data-variant="milestone"] .rewards-card-icon {
+    background: rgba(155, 123, 255, 0.12);
+    border-color: rgba(155, 123, 255, 0.3);
+    color: #C7B8FF;
+}
+.rewards-card[data-variant="milestone"] .rewards-card-action { color: var(--gold); }
+
+
+/* --- VARIANT: DAILY LOGIN (cyan) --- */
+.rewards-card[data-variant="daily-login"] {
+    border-color: rgba(101, 231, 255, 0.3);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(101, 231, 255, 0.16), transparent 55%),
+        linear-gradient(145deg, #0F2535, #0B1424);
+}
+.rewards-card[data-variant="daily-login"] .rewards-card-icon {
+    background: rgba(101, 231, 255, 0.12);
+    border-color: rgba(101, 231, 255, 0.3);
+    color: var(--cyan);
+    box-shadow: 0 0 14px rgba(101, 231, 255, 0.2);
+}
+.rewards-card[data-variant="daily-login"] .rewards-card-action { color: var(--cyan); }
+
+
+/* --- VARIANT: DAILY QUEST (electric blue) --- */
+.rewards-card[data-variant="daily-quest"] {
+    border-color: rgba(80, 160, 255, 0.32);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(80, 160, 255, 0.16), transparent 55%),
+        linear-gradient(145deg, #101D3A, #0B0F1F);
+}
+.rewards-card[data-variant="daily-quest"] .rewards-card-icon {
+    background: rgba(80, 160, 255, 0.12);
+    border-color: rgba(80, 160, 255, 0.32);
+    color: #7FB9FF;
+}
+.rewards-card[data-variant="daily-quest"] .rewards-card-action { color: #7FB9FF; }
+
+
+/* --- VARIANT: WEEKLY QUEST (indigo + violet) --- */
+.rewards-card[data-variant="weekly-quest"] {
+    border-color: rgba(120, 100, 240, 0.35);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.2), transparent 55%),
+        linear-gradient(145deg, #181B3A, #0D0F22);
+}
+.rewards-card[data-variant="weekly-quest"] .rewards-card-icon {
+    background: rgba(155, 123, 255, 0.14);
+    border-color: rgba(155, 123, 255, 0.35);
+    color: #B8A6FF;
+}
+.rewards-card[data-variant="weekly-quest"] .rewards-card-action { color: #B8A6FF; }
+
+
+/* --- VARIANT: MONTHLY QUEST (gold + royal) --- */
+.rewards-card[data-variant="monthly-quest"] {
+    grid-column: span 2;
+    border: 2px solid transparent;
+    background:
+        linear-gradient(145deg, #1A1430, #0D0F1A) padding-box,
+        linear-gradient(135deg, #F1CC78 0%, #9B7BFF 50%, #FF5C8A 100%) border-box;
+    background-size: auto, 200% 200%;
+    animation: monthlyBorderShift 8s linear infinite;
+    box-shadow: 0 0 24px rgba(155, 123, 255, 0.18);
+}
+@keyframes monthlyBorderShift {
+    0%   { background-position: 0 0, 0% 50%; }
+    100% { background-position: 0 0, 200% 50%; }
+}
+.rewards-card[data-variant="monthly-quest"] .rewards-card-icon {
+    background: rgba(241, 204, 120, 0.14);
+    border-color: rgba(241, 204, 120, 0.4);
+    color: var(--gold);
+    box-shadow: 0 0 18px rgba(241, 204, 120, 0.25);
+}
+.rewards-card[data-variant="monthly-quest"] .rewards-card-title {
+    background-image: linear-gradient(90deg, #F1CC78, #FF5C8A, #9B7BFF);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: rewardTitleShift 6s linear infinite;
+}
+.rewards-card[data-variant="monthly-quest"] .rewards-card-action { color: var(--gold); }
+
+@media (max-width: 560px) {
+    .rewards-card[data-variant="monthly-quest"] { grid-column: span 1; }
+}
+
+
+/* =========================================
+   REWARDS — FEATURED BANNER
+========================================= */
+
+.rewards-featured {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 26px;
+    margin-bottom: 26px;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    background:
+        linear-gradient(145deg, #1A1228 0%, #0A0D18 100%) padding-box,
+        linear-gradient(135deg, #F1CC78 0%, #FF5C8A 40%, #9B7BFF 75%, #F1CC78 100%) border-box;
+    background-size: auto, 220% 220%;
+    animation: monthlyBorderShift 8s linear infinite;
+    box-shadow:
+        0 0 26px rgba(155, 123, 255, 0.2),
+        0 0 60px rgba(241, 204, 120, 0.1);
+    overflow: hidden;
+}
+
+.rewards-featured-glow {
+    position: absolute;
+    inset: -40%;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(241, 204, 120, 0.12), transparent 40%),
+        radial-gradient(circle at 80% 50%, rgba(155, 123, 255, 0.14), transparent 45%);
+    animation: rewardOverviewPulse 10s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.rewards-featured-content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+}
+
+.rewards-featured-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #F1CC78, #FF5C8A);
+    color: #0A0D18;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.rewards-featured-title {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 900;
+    background-image: linear-gradient(90deg, #F1CC78, #FF5C8A, #9B7BFF, #F1CC78);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: rewardTitleShift 6s linear infinite;
+}
+
+.rewards-featured-desc {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.7;
+    max-width: 520px;
+}
+
+.rewards-featured-status {
+    display: inline-block;
+    padding: 5px 14px;
+    border: 1px solid rgba(241, 204, 120, 0.35);
+    border-radius: 999px;
+    background: rgba(241, 204, 120, 0.08);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+.rewards-featured-emblem {
+    position: relative;
+    z-index: 1;
+    font-size: 68px;
+    line-height: 1;
+    filter: drop-shadow(0 0 26px rgba(241, 204, 120, 0.5));
+    animation: crystalFloat 5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   REWARDS MODAL
+========================================= */
+
+.rewards-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.65);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        backdrop-filter 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(0px);
+}
+
+.rewards-modal.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    backdrop-filter: blur(8px);
+}
+
+.rewards-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    transform: scale(0.96) translateY(6px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rewards-modal.open .rewards-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.rewards-modal-content[data-variant="milestone"] {
+    border-color: rgba(155, 123, 255, 0.4);
+}
+.rewards-modal-content[data-variant="milestone"] .rewards-modal-header {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(216, 182, 106, 0.18), transparent 60%),
+        rgba(8, 13, 25, 0.7);
+    border-bottom-color: rgba(155, 123, 255, 0.25);
+}
+.rewards-modal-content[data-variant="milestone"] .rewards-modal-icon {
+    background: rgba(155, 123, 255, 0.12);
+    border-color: rgba(155, 123, 255, 0.35);
+    color: #C7B8FF;
+}
+
+.rewards-modal-content[data-variant="daily-login"] {
+    border-color: rgba(101, 231, 255, 0.4);
+}
+.rewards-modal-content[data-variant="daily-login"] .rewards-modal-header {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(101, 231, 255, 0.2), transparent 60%),
+        rgba(8, 13, 25, 0.7);
+    border-bottom-color: rgba(101, 231, 255, 0.25);
+}
+.rewards-modal-content[data-variant="daily-login"] .rewards-modal-icon {
+    background: rgba(101, 231, 255, 0.14);
+    border-color: rgba(101, 231, 255, 0.4);
+    color: var(--cyan);
+    box-shadow: 0 0 16px rgba(101, 231, 255, 0.3);
+}
+
+.rewards-modal-content[data-variant="daily-quest"] {
+    border-color: rgba(80, 160, 255, 0.4);
+}
+.rewards-modal-content[data-variant="daily-quest"] .rewards-modal-header {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(80, 160, 255, 0.22), transparent 60%),
+        rgba(8, 13, 25, 0.7);
+    border-bottom-color: rgba(80, 160, 255, 0.25);
+}
+.rewards-modal-content[data-variant="daily-quest"] .rewards-modal-icon {
+    background: rgba(80, 160, 255, 0.14);
+    border-color: rgba(80, 160, 255, 0.4);
+    color: #7FB9FF;
+}
+
+.rewards-modal-content[data-variant="weekly-quest"] {
+    border-color: rgba(155, 123, 255, 0.4);
+}
+.rewards-modal-content[data-variant="weekly-quest"] .rewards-modal-header {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(155, 123, 255, 0.25), transparent 60%),
+        rgba(8, 13, 25, 0.7);
+    border-bottom-color: rgba(155, 123, 255, 0.3);
+}
+.rewards-modal-content[data-variant="weekly-quest"] .rewards-modal-icon {
+    background: rgba(155, 123, 255, 0.16);
+    border-color: rgba(155, 123, 255, 0.4);
+    color: #B8A6FF;
+}
+
+.rewards-modal-content[data-variant="monthly-quest"] {
+    border: 2px solid transparent;
+    background:
+        linear-gradient(145deg, #14111F, #0A0D18) padding-box,
+        linear-gradient(135deg, #F1CC78, #FF5C8A, #9B7BFF, #F1CC78) border-box;
+    background-size: auto, 220% 220%;
+    animation: monthlyBorderShift 8s linear infinite;
+}
+.rewards-modal-content[data-variant="monthly-quest"] .rewards-modal-header {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(241, 204, 120, 0.22), transparent 60%),
+        radial-gradient(circle at 0% 100%, rgba(255, 92, 138, 0.14), transparent 50%),
+        rgba(8, 13, 25, 0.7);
+    border-bottom-color: rgba(241, 204, 120, 0.3);
+}
+.rewards-modal-content[data-variant="monthly-quest"] .rewards-modal-icon {
+    background: rgba(241, 204, 120, 0.14);
+    border-color: rgba(241, 204, 120, 0.4);
+    color: var(--gold);
+    box-shadow: 0 0 18px rgba(241, 204, 120, 0.35);
+}
+
+.rewards-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8, 13, 25, 0.7);
+}
+
+.rewards-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-size: 22px;
+    line-height: 1;
+}
+
+.rewards-modal-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rewards-modal-title {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.rewards-modal-subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.rewards-modal-close-btn {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    background: transparent;
+    font-size: 16px;
+    line-height: 1;
+    transition: color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.rewards-modal-close-btn:hover {
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.rewards-modal-body {
+    padding: 20px 22px 26px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.rewards-modal-section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.rewards-modal-section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(130, 160, 210, 0.25), transparent);
+}
+
+
+/* =========================================
+   REWARD ITEM (di dalam modal)
+========================================= */
+
+.reward-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(145deg, var(--surface-2), #0A1120);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.reward-item:hover {
+    border-color: rgba(101, 231, 255, 0.35);
+    transform: translateY(-1px);
+}
+
+.reward-item::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--rarity-color, rgba(130, 160, 210, 0.4));
+}
+
+.reward-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    font-size: 20px;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--rarity-color, rgba(130, 160, 210, 0.25));
+    color: var(--rarity-color, var(--text));
+}
+
+.reward-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.reward-item-name {
+    margin: 0 0 4px;
+    font-size: 13.5px;
+    font-weight: bold;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+.reward-item-desc {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.reward-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.reward-item-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(130, 160, 210, 0.08);
+    color: var(--muted);
+    font-size: 10px;
+    font-family: monospace;
+    letter-spacing: 0.3px;
+}
+
+.reward-item-reward {
+    color: var(--success);
+    font-size: 10.5px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+    overflow-wrap: anywhere;
+}
+
+.reward-item-rarity {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--rarity-color, rgba(130, 160, 210, 0.3));
+    color: var(--rarity-color, var(--muted));
+}
+
+
+/* =========================================
+   RARITY COLORS
+========================================= */
+
+.rarity-common    { --rarity-color: #8CA0C0; }
+.rarity-rare      { --rarity-color: #65E7FF; }
+.rarity-epic      { --rarity-color: #9B7BFF; }
+.rarity-legendary { --rarity-color: #F1CC78; }
+
+.rarity-divine {
+    --rarity-color: #FF5C8A;
+    position: relative;
+}
+.rarity-divine .reward-item-icon {
+    background:
+        linear-gradient(135deg, #1A1228, #0A0D18) padding-box,
+        linear-gradient(135deg, #FF5C8A, #FFB347, #FFE066, #58FFAD, #65E7FF, #9B7BFF) border-box;
+    background-size: auto, 200% 200%;
+    animation: monthlyBorderShift 6s linear infinite;
+    border-color: transparent;
+    color: #fff;
+}
+.rarity-divine .reward-item-rarity {
+    background:
+        linear-gradient(135deg, #FF5C8A, #FFB347, #58FFAD, #65E7FF, #9B7BFF);
+    background-size: 200% 100%;
+    animation: rewardTitleShift 5s linear infinite;
+    color: #0A0D18;
+    border-color: transparent;
+}
+
+
+/* =========================================
+   DAILY LOGIN — CALENDAR GRID
+========================================= */
+
+.rewards-login-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.rewards-login-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(145deg, var(--surface-2), #0A1120);
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.rewards-login-day:hover {
+    border-color: rgba(101, 231, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(101, 231, 255, 0.12);
+}
+
+.rewards-login-day-label {
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.rewards-login-day-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.rewards-login-day-name {
+    font-size: 10.5px;
+    font-weight: bold;
+    color: var(--text);
+    overflow-wrap: anywhere;
+    line-height: 1.3;
+}
+
+.rewards-login-day-rarity {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-family: monospace;
+    color: var(--rarity-color, var(--muted));
+}
+
+.rewards-login-day.rarity-legendary,
+.rewards-login-day.rarity-divine {
+    border-color: var(--rarity-color);
+    box-shadow: 0 0 14px rgba(241, 204, 120, 0.15);
+}
+
+
+/* =========================================
+   MONTHLY QUEST — HERO + LIST
+========================================= */
+
+.rewards-monthly-hero {
+    position: relative;
+    padding: 22px 20px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(241, 204, 120, 0.35);
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 92, 138, 0.18), transparent 55%),
+        radial-gradient(circle at 0% 100%, rgba(155, 123, 255, 0.18), transparent 55%),
+        linear-gradient(145deg, #1A1228, #0F0D1F);
+    text-align: center;
+    overflow: hidden;
+}
+
+.rewards-monthly-hero::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(241, 204, 120, 0.08), transparent 50%);
+    animation: rewardOverviewPulse 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.rewards-monthly-hero-label {
+    position: relative;
+    z-index: 1;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 2.5px;
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.rewards-monthly-hero-title {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 900;
+    background-image: linear-gradient(90deg, #F1CC78, #FF5C8A, #9B7BFF, #F1CC78);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: rewardTitleShift 6s linear infinite;
+}
+
+.rewards-monthly-hero-desc {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto 10px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    max-width: 400px;
+}
+
+.rewards-monthly-hero-emblem {
+    position: relative;
+    z-index: 1;
+    font-size: 46px;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(241, 204, 120, 0.45));
+    animation: crystalFloat 5s ease-in-out infinite;
+}
+
+
+/* =========================================
+   REWARDS EMPTY / LOADING STATE
+========================================= */
+
+.rewards-empty {
+    padding: 26px 18px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.rewards-empty-icon {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+
+/* =========================================
+   REWARDS ADMIN — FILTER & LIST
+========================================= */
+
+.rewards-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.rewards-filter-btn {
+    padding: 7px 13px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+}
+
+.rewards-filter-btn:hover {
+    color: var(--text);
+    border-color: rgba(101, 231, 255, 0.3);
+}
+
+.rewards-filter-btn.active {
+    color: var(--text);
+    border-color: var(--cyan);
+    background: rgba(101, 231, 255, 0.1);
+    box-shadow: 0 0 12px rgba(101, 231, 255, 0.15);
+}
+
+.editor-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 560px) {
+    .editor-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+
+/* =========================================
+   REWARDS PAGE — MOBILE
+========================================= */
+
+@media (max-width: 560px) {
+    .rewards-overview {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 18px;
+        gap: 14px;
+    }
+
+    .rewards-overview-crystal { font-size: 42px; }
+
+    .rewards-overview-title { font-size: 15px; }
+
+    .rewards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .rewards-card {
+        padding: 14px 12px 12px;
+        gap: 8px;
+    }
+
+    .rewards-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+
+    .rewards-card-title { font-size: 14px; }
+
+    .rewards-card-desc {
+        font-size: 10.5px;
+        min-height: 28px;
+    }
+
+    .rewards-card-action {
+        font-size: 9.5px;
+        padding-top: 10px;
+    }
+
+    .rewards-featured {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 16px;
+    }
+
+    .rewards-featured-emblem { font-size: 52px; }
+
+    .rewards-featured-title { font-size: 18px; }
+
+    .rewards-login-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rewards-modal {
+        padding: 10px;
+        align-items: flex-end;
+    }
+
+    .rewards-modal-content {
+        max-height: 92vh;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .rewards-modal-header {
+        padding: 14px 16px;
+        gap: 10px;
+    }
+
+    .rewards-modal-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+
+    .rewards-modal-title { font-size: 13px; letter-spacing: 1px; }
+    .rewards-modal-subtitle { font-size: 10.5px; }
+    .rewards-modal-body { padding: 16px 16px 22px; }
+}
+
+
+/* =========================================
+   REDUCED MOTION (khusus rewards)
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .rewards-title,
+    .rewards-overview-crystal,
+    .rewards-overview-glow,
+    .rewards-card[data-variant="monthly-quest"],
+    .rewards-card[data-variant="monthly-quest"] .rewards-card-title,
+    .rewards-featured,
+    .rewards-featured-glow,
+    .rewards-featured-title,
+    .rewards-featured-emblem,
+    .rewards-modal-content[data-variant="monthly-quest"],
+    .rewards-monthly-hero::after,
+    .rewards-monthly-hero-title,
+    .rewards-monthly-hero-emblem,
+    .rarity-divine .reward-item-icon,
+    .rarity-divine .reward-item-rarity {
+        animation: none !important;
+    }
+}
