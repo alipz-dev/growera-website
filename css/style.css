@@ -1488,3 +1488,340 @@
         .news-detail-highlight strong {
             color: var(--cyan);
         }
+
+/* =====================================================
+   TOP UP PAGE
+===================================================== */
+
+.topup-header {
+    margin-bottom: 24px;
+}
+
+.topup-title {
+    margin: 10px 0 8px;
+    font-size: clamp(24px, 5vw, 34px);
+    line-height: 1.2;
+}
+
+.topup-subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.topup-balance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    border: 1px solid rgba(101, 231, 255, 0.25);
+    border-radius: 16px;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(155, 123, 255, 0.18),
+            transparent 55%
+        ),
+        linear-gradient(145deg, var(--surface), #0A1120);
+}
+
+.topup-balance-label {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.topup-balance-value {
+    margin-top: 4px;
+    color: var(--gold);
+    font-size: 22px;
+    font-weight: bold;
+    font-family: monospace;
+    overflow-wrap: anywhere;
+}
+
+.topup-balance-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.topup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.topup-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 16px 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: linear-gradient(145deg, var(--surface), #0D1523);
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.topup-card:hover {
+    border-color: rgba(101, 231, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.topup-card.featured {
+    border-color: rgba(101, 231, 255, 0.55);
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(155, 123, 255, 0.25),
+            transparent 55%
+        ),
+        linear-gradient(145deg, #112C49, #15152F);
+    box-shadow: 0 0 24px rgba(101, 231, 255, 0.15);
+}
+
+.topup-card.mega {
+    border-color: rgba(241, 204, 120, 0.5);
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(241, 204, 120, 0.18),
+            transparent 55%
+        ),
+        linear-gradient(145deg, #2A1F14, #15152F);
+}
+
+.topup-card-badge {
+    position: absolute;
+    top: -10px;
+    right: 14px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #04131E;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    box-shadow: 0 4px 12px rgba(101, 231, 255, 0.35);
+    white-space: nowrap;
+}
+
+.topup-card-badge.mega {
+    background: linear-gradient(90deg, #F1CC78, #FFB347);
+    box-shadow: 0 4px 12px rgba(241, 204, 120, 0.35);
+}
+
+.topup-card-gems {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topup-card-gems-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.topup-card-gems-value {
+    color: var(--text);
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1;
+    overflow-wrap: anywhere;
+}
+
+.topup-card-gems-unit {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.topup-card-bonus {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(88, 255, 173, 0.1);
+    border: 1px solid rgba(88, 255, 173, 0.3);
+    color: var(--success);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    align-self: flex-start;
+}
+
+.topup-card-divider {
+    height: 1px;
+    background: rgba(130, 160, 210, 0.12);
+    margin: 4px 0;
+}
+
+.topup-card-price {
+    color: var(--cyan);
+    font-size: 17px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.topup-card-total {
+    color: #7186A4;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.topup-card-total strong {
+    color: var(--text);
+}
+
+.topup-buy-btn {
+    width: 100%;
+    margin-top: auto;
+    padding: 10px 14px;
+    border: 1px solid rgba(101, 231, 255, 0.3);
+    border-radius: 10px;
+    color: var(--cyan);
+    background: rgba(5, 16, 31, 0.5);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.topup-buy-btn:hover {
+    background: rgba(101, 231, 255, 0.12);
+    border-color: var(--cyan);
+}
+
+.topup-card.featured .topup-buy-btn {
+    color: #04131E;
+    background: linear-gradient(90deg, #79EFFF, #39B9FF);
+    border: 0;
+}
+
+.topup-card.featured .topup-buy-btn:hover {
+    filter: brightness(1.08);
+}
+
+.topup-card.mega .topup-buy-btn {
+    color: #04131E;
+    background: linear-gradient(90deg, #F1CC78, #FFB347);
+    border: 0;
+}
+
+.topup-card.mega .topup-buy-btn:hover {
+    filter: brightness(1.08);
+}
+
+.topup-section {
+    margin-top: 32px;
+}
+
+.topup-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-size: 16px;
+}
+
+.topup-section-heading span {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: normal;
+    letter-spacing: 0;
+    margin-left: auto;
+}
+
+.topup-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.topup-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+}
+
+.topup-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    color: #04131E;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.topup-step-text {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.topup-step-text strong {
+    color: var(--text);
+}
+
+.topup-payments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.topup-payment {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text);
+    background: var(--surface);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.topup-note {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    background: rgba(101, 231, 255, 0.06);
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+@media (max-width: 560px) {
+    .topup-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .topup-card {
+        padding: 14px 12px 12px;
+    }
+
+    .topup-card-gems-value {
+        font-size: 18px;
+    }
+
+    .topup-card-price {
+        font-size: 15px;
+    }
+}
