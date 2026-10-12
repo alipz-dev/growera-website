@@ -398,7 +398,7 @@
             </section>
 
 
-            <!-- TOP UP -->
+            <!-- TOP UP / CRYSTAL STORE -->
 
             <section class="app-page hidden" id="topupPage">
 
@@ -410,7 +410,7 @@
                         data-topup-tab="topup"
                         type="button"
                     >
-                        TOP UP
+                        💎 CRYSTAL STORE
                     </button>
 
                     <button
@@ -418,7 +418,7 @@
                         data-topup-tab="assets"
                         type="button"
                     >
-                        ASSETS
+                        🟠 ASSETS
                     </button>
 
                     <button
@@ -426,29 +426,52 @@
                         data-topup-tab="items"
                         type="button"
                     >
-                        ITEMS
+                        🟣 ITEMS
                     </button>
                 </div>
 
-                <!-- HEADER -->
+                <!-- DYNAMIC CATEGORY HEADER -->
 
-                <div class="topup-header">
-                    <div class="eyebrow">CRYSTAL STORE</div>
-                    <h1 class="topup-title">Top Up Gems</h1>
-                    <p class="topup-subtitle">
-                        Isi ulang gems GROWERA kamu. Gems bisa dipakai untuk
-                        belanja item, event eksklusif, dan fitur premium.
+                <div
+                    class="topup-header"
+                    id="storeHeader"
+                    data-variant="crystal"
+                >
+                    <div class="eyebrow" id="storeEyebrow">CRYSTAL STORE</div>
+
+                    <h1 class="topup-title" id="storeTitle">
+                        CRYSTAL STORE
+                    </h1>
+
+                    <p class="topup-subtitle" id="storeSubtitle">
+                        Isi ulang gems GROWERA kamu. Gems bisa dipakai
+                        untuk belanja item, event eksklusif, dan fitur
+                        premium.
                     </p>
+
+                    <div class="store-currency" id="storeCurrency">
+                        <span class="store-currency-label">CURRENCY</span>
+                        <span class="store-currency-chip">
+                            <span
+                                class="store-currency-icon"
+                                id="storeCurrencyIcon"
+                            >💎</span>
+                            <span
+                                class="store-currency-name"
+                                id="storeCurrencyName"
+                            >GEMS</span>
+                        </span>
+                    </div>
                 </div>
 
-                <!-- SALDO (compact) -->
+                <!-- SALDO (hanya untuk Crystal Store) -->
 
-                <div class="topup-balance">
+                <div class="topup-balance" id="topupBalanceWrap">
                     <span class="topup-balance-label">SALDO</span>
                     <span class="topup-balance-value" id="topupBalance">—</span>
                 </div>
 
-                <!-- PANEL: TOP UP -->
+                <!-- PANEL: CRYSTAL STORE -->
 
                 <div class="topup-tab-panel" id="topupPanelTopup">
 
@@ -517,11 +540,14 @@
 
                 <div class="topup-tab-panel hidden" id="topupPanelAssets">
                     <div class="topup-placeholder">
-                        <div class="topup-placeholder-icon">📦</div>
-                        <h3>Assets</h3>
+                        <div class="topup-placeholder-icon">🟠</div>
+                        <h3>Assets Store</h3>
                         <p>
-                            Kategori assets (World Lock, Diamond Lock,
-                            Bundle, dll) akan segera tersedia.
+                            Perkuat koleksimu dengan berbagai aset berharga
+                            untuk perjalananmu di Crystal Era.
+                        </p>
+                        <p class="topup-placeholder-hint">
+                            Belum tersedia · segera hadir
                         </p>
                     </div>
                 </div>
@@ -530,11 +556,14 @@
 
                 <div class="topup-tab-panel hidden" id="topupPanelItems">
                     <div class="topup-placeholder">
-                        <div class="topup-placeholder-icon">🎁</div>
-                        <h3>Items</h3>
+                        <div class="topup-placeholder-icon">🟣</div>
+                        <h3>Items Store</h3>
                         <p>
-                            Kategori items (Item langka, Event item,
-                            Collectible, dll) akan segera tersedia.
+                            Temukan item pilihan, koleksi eksklusif, dan
+                            berbagai perlengkapan untuk petualanganmu.
+                        </p>
+                        <p class="topup-placeholder-hint">
+                            Belum tersedia · segera hadir
                         </p>
                     </div>
                 </div>
