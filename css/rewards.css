@@ -1573,3 +1573,220 @@
         animation: none !important;
     }
 }
+
+/* =========================================
+   QUEST CLAIM — BUTTON
+========================================= */
+
+.reward-claim-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: monospace;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.reward-claim-btn.locked {
+    cursor: not-allowed;
+    opacity: 0.75;
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(130, 160, 210, 0.2);
+    color: var(--muted);
+}
+
+.reward-claim-btn.ready {
+    background: linear-gradient(135deg, #58FFAD, #65E7FF);
+    color: #0A0D18;
+    border-color: transparent;
+    box-shadow:
+        0 0 18px rgba(88, 255, 173, 0.4),
+        0 0 32px rgba(101, 231, 255, 0.15);
+    animation: claimPulse 2.2s ease-in-out infinite;
+}
+
+.reward-claim-btn.ready:hover {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow:
+        0 0 24px rgba(88, 255, 173, 0.55),
+        0 0 44px rgba(101, 231, 255, 0.25);
+}
+
+.reward-claim-btn.ready:active {
+    transform: translateY(0) scale(0.98);
+}
+
+@keyframes claimPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 18px rgba(88, 255, 173, 0.4),
+            0 0 32px rgba(101, 231, 255, 0.15);
+    }
+    50% {
+        box-shadow:
+            0 0 26px rgba(88, 255, 173, 0.65),
+            0 0 46px rgba(101, 231, 255, 0.3);
+    }
+}
+
+.reward-claim-btn.claimed {
+    cursor: default;
+    background: rgba(88, 255, 173, 0.08);
+    border-color: rgba(88, 255, 173, 0.35);
+    color: var(--success);
+    opacity: 0.85;
+}
+
+
+/* =========================================
+   REWARD ITEM — PROGRESS BAR
+========================================= */
+
+.reward-item-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 10px;
+}
+
+.reward-item-progress-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.reward-item-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #65E7FF, #9B7BFF);
+    box-shadow: 0 0 10px rgba(101, 231, 255, 0.4);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reward-item-progress-fill.completed {
+    background: linear-gradient(90deg, #58FFAD, #65E7FF);
+    box-shadow: 0 0 12px rgba(88, 255, 173, 0.5);
+}
+
+.reward-item-progress-fill.claimed {
+    background: linear-gradient(90deg, #4B5F8A, #2A3450);
+    box-shadow: none;
+    opacity: 0.7;
+}
+
+.reward-item-progress-text {
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+}
+
+
+/* =========================================
+   REWARD ITEM — LAYOUT (footer 2 kolom)
+========================================= */
+
+.reward-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.reward-item-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.reward-item-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+
+/* =========================================
+   MILESTONE — CLAIM STATE
+========================================= */
+
+.milestone-node.claimable .milestone-node-box {
+    border-color: #58FFAD !important;
+    box-shadow:
+        0 0 22px rgba(88, 255, 173, 0.45),
+        inset 0 0 14px rgba(88, 255, 173, 0.15);
+    animation: claimPulse 2.2s ease-in-out infinite;
+}
+
+.milestone-detail-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+
+/* =========================================
+   DAILY LOGIN — CLAIM BUTTON
+========================================= */
+
+.rewards-login-day-claim {
+    margin-top: 6px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.rewards-login-day-claim .reward-claim-btn {
+    font-size: 9.5px;
+    padding: 5px 10px;
+    letter-spacing: 0.8px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 560px) {
+    .reward-claim-btn {
+        font-size: 10px;
+        padding: 6px 12px;
+    }
+
+    .reward-item-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reward-item-footer-right {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
