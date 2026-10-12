@@ -1493,8 +1493,81 @@ img.inventory-item-icon {
    TOP UP PAGE
 ===================================================== */
 
+.topup-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.topup-tab {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--muted);
+    background: var(--surface);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    transition:
+        color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.topup-tab:hover {
+    color: var(--text);
+    border-color: rgba(101, 231, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.topup-tab:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.topup-tab.active {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    background: rgba(101, 231, 255, 0.1);
+    box-shadow: 0 0 12px rgba(101, 231, 255, 0.18);
+}
+
+.topup-tab-panel {
+    animation: pageEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.topup-placeholder {
+    padding: 50px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    background: rgba(8, 13, 25, 0.4);
+    text-align: center;
+}
+
+.topup-placeholder-icon {
+    font-size: 44px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.topup-placeholder h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: 0.5px;
+}
+
+.topup-placeholder p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
 .topup-header {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .topup-title {
@@ -1510,46 +1583,44 @@ img.inventory-item-icon {
     line-height: 1.7;
 }
 
+/* Top up balance - compact pill */
+
 .topup-balance {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 24px;
-    padding: 16px 20px;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 7px 14px;
     border: 1px solid rgba(101, 231, 255, 0.25);
-    border-radius: 16px;
-    background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(155, 123, 255, 0.18),
-            transparent 55%
-        ),
-        linear-gradient(145deg, var(--surface), #0A1120);
+    border-radius: 999px;
+    background: rgba(5, 16, 31, 0.5);
+    transition:
+        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.topup-balance:hover {
+    border-color: rgba(101, 231, 255, 0.45);
+    box-shadow: 0 0 14px rgba(101, 231, 255, 0.15);
 }
 
 .topup-balance-label {
     color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 1px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
     font-weight: bold;
 }
 
 .topup-balance-value {
-    margin-top: 4px;
     color: var(--gold);
-    font-size: 22px;
+    font-size: 13px;
     font-weight: bold;
     font-family: monospace;
     overflow-wrap: anywhere;
 }
 
-.topup-balance-icon {
-    font-size: 32px;
-    flex-shrink: 0;
-}
+/* Top up grid - 3 kolom */
 
-/* FIX: 3 kolom per baris */
 .topup-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1818,6 +1889,28 @@ img.inventory-item-icon {
 }
 
 @media (max-width: 560px) {
+    .topup-tab {
+        padding: 6px 11px;
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .topup-balance {
+        padding: 6px 12px;
+    }
+
+    .topup-balance-value {
+        font-size: 12px;
+    }
+
+    .topup-placeholder {
+        padding: 36px 18px;
+    }
+
+    .topup-placeholder-icon {
+        font-size: 36px;
+    }
+
     .topup-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
@@ -1881,10 +1974,6 @@ img.inventory-item-icon {
    GROWERA - VISUAL ENHANCEMENTS
 ===================================================== */
 
-/* -----------------------------------------------------
-   1. GLOBAL BUTTON INTERACTIONS
------------------------------------------------------ */
-
 button {
     transition:
         transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
@@ -1937,10 +2026,6 @@ button:focus-visible {
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
-/* -----------------------------------------------------
-   2. PAGE TRANSITIONS
------------------------------------------------------ */
-
 .app-page {
     animation: pageEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -1986,10 +2071,6 @@ button:focus-visible {
 .sidebar-bottom .nav-button:not(.active):hover {
     transform: translateX(3px);
 }
-
-/* -----------------------------------------------------
-   3. CARD HOVER POLISH
------------------------------------------------------ */
 
 .player-card {
     transition:
@@ -2102,10 +2183,6 @@ button:focus-visible {
     transform: translateY(0) scale(0.97);
 }
 
-/* -----------------------------------------------------
-   4. MODAL TRANSITIONS
------------------------------------------------------ */
-
 .inventory-modal,
 .news-modal {
     display: flex !important;
@@ -2137,10 +2214,6 @@ button:focus-visible {
 .news-modal.open .news-modal-content {
     transform: scale(1) translateY(0);
 }
-
-/* -----------------------------------------------------
-   5. BETA TESTER MARQUEE
------------------------------------------------------ */
 
 .beta-tester-bar {
     position: fixed;
@@ -2220,10 +2293,6 @@ button:focus-visible {
     }
 }
 
-/* -----------------------------------------------------
-   6. CONTENT SMOOTH SCROLL + STATUS DOT PULSE
------------------------------------------------------ */
-
 .content {
     scroll-behavior: smooth;
 }
@@ -2240,10 +2309,6 @@ button:focus-visible {
         box-shadow: 0 0 0 5px rgba(88, 255, 173, 0);
     }
 }
-
-/* -----------------------------------------------------
-   7. RESPONSIVE ADJUSTMENTS
------------------------------------------------------ */
 
 @media (max-width: 1100px) {
     .beta-tester-bar {
@@ -2271,10 +2336,6 @@ button:focus-visible {
         letter-spacing: 3px;
     }
 }
-
-/* -----------------------------------------------------
-   8. REDUCED MOTION SUPPORT
------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
     *,
