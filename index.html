@@ -144,8 +144,6 @@
             </button>
         </header>
 
-        <!-- BETA TESTER MARQUEE -->
-
         <div class="beta-tester-bar" aria-hidden="true">
             <span class="beta-tester-text">GROWERA BETA TESTER!</span>
         </div>
@@ -575,8 +573,6 @@
                         Pengaturan akun akan dikembangkan pada tahap berikutnya.
                     </p>
 
-                    <!-- FASE 0: Admin Editor Button (hidden by default) -->
-
                     <button
                         class="admin-editor-button hidden"
                         id="adminEditorBtn"
@@ -614,80 +610,174 @@
             </section>
 
 
-            <!-- FASE 0: ADMIN EDITOR PLACEHOLDER -->
+            <!-- EDITOR PAGE -->
 
             <section class="app-page hidden" id="editorPage">
                 <div class="welcome">
                     <div class="eyebrow">ADMIN PANEL</div>
-                    <h1>Website Editor</h1>
-                    <p>Kelola konten website GROWERA dari sini.</p>
+                    <h1 id="editorPageTitle">Website Editor</h1>
+                    <p id="editorPageSubtitle">Kelola konten website GROWERA dari sini.</p>
                 </div>
 
-                <div class="page-panel">
-                    <h2>Selamat datang di Editor</h2>
+                <!-- VIEW: ROADMAP -->
 
-                    <p>
-                        Fase 0 sudah selesai. Modul editor berikutnya
-                        akan muncul satu per satu di sini.
-                    </p>
+                <div class="editor-view" id="editorViewRoadmap">
+                    <div class="page-panel">
+                        <h2>Modul Editor</h2>
 
-                    <div class="editor-roadmap">
+                        <div class="editor-roadmap">
 
-                        <div class="editor-roadmap-item">
-                            <div class="editor-roadmap-icon">📰</div>
-                            <div class="editor-roadmap-content">
-                                <h3>News Editor</h3>
-                                <p>Tambah, edit, dan hapus berita website.</p>
-                                <span class="editor-roadmap-badge">
-                                    Coming Soon
-                                </span>
+                            <button class="editor-roadmap-item" data-editor-module="news" type="button">
+                                <div class="editor-roadmap-icon">📰</div>
+                                <div class="editor-roadmap-content">
+                                    <h3>News Editor</h3>
+                                    <p>Tambah, edit, dan hapus berita website.</p>
+                                    <span class="editor-roadmap-badge active-badge">
+                                        Aktif
+                                    </span>
+                                </div>
+                            </button>
+
+                            <div class="editor-roadmap-item locked">
+                                <div class="editor-roadmap-icon">💎</div>
+                                <div class="editor-roadmap-content">
+                                    <h3>Top Up Packages</h3>
+                                    <p>Kelola paket top up, harga, dan badge.</p>
+                                    <span class="editor-roadmap-badge">
+                                        Coming Soon
+                                    </span>
+                                </div>
                             </div>
+
+                            <div class="editor-roadmap-item locked">
+                                <div class="editor-roadmap-icon">⭐</div>
+                                <div class="editor-roadmap-content">
+                                    <h3>Quest Config</h3>
+                                    <p>Atur misi, target, dan reward.</p>
+                                    <span class="editor-roadmap-badge">
+                                        Coming Soon
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="editor-roadmap-item locked">
+                                <div class="editor-roadmap-icon">🎨</div>
+                                <div class="editor-roadmap-content">
+                                    <h3>Appearance</h3>
+                                    <p>Kustomisasi warna dan tema website.</p>
+                                    <span class="editor-roadmap-badge">
+                                        Coming Soon
+                                    </span>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <div class="editor-roadmap-item">
-                            <div class="editor-roadmap-icon">💎</div>
-                            <div class="editor-roadmap-content">
-                                <h3>Top Up Packages</h3>
-                                <p>Kelola paket top up, harga, dan badge.</p>
-                                <span class="editor-roadmap-badge">
-                                    Coming Soon
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="editor-roadmap-item">
-                            <div class="editor-roadmap-icon">⭐</div>
-                            <div class="editor-roadmap-content">
-                                <h3>Quest Config</h3>
-                                <p>Atur misi, target, dan reward.</p>
-                                <span class="editor-roadmap-badge">
-                                    Coming Soon
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="editor-roadmap-item">
-                            <div class="editor-roadmap-icon">🎨</div>
-                            <div class="editor-roadmap-content">
-                                <h3>Appearance</h3>
-                                <p>Kustomisasi warna dan tema website.</p>
-                                <span class="editor-roadmap-badge">
-                                    Coming Soon
-                                </span>
-                            </div>
-                        </div>
-
+                        <button
+                            class="profile-button"
+                            data-page="more"
+                            type="button"
+                            style="margin-top:20px"
+                        >
+                            ← Back to Settings
+                        </button>
                     </div>
-
-                    <button
-                        class="profile-button"
-                        data-page="more"
-                        type="button"
-                        style="margin-top:20px"
-                    >
-                        ← Back to Settings
-                    </button>
                 </div>
+
+                <!-- VIEW: NEWS LIST -->
+
+                <div class="editor-view hidden" id="editorViewNewsList">
+                    <div class="page-panel">
+                        <div class="editor-view-header">
+                            <h2>📰 News Editor</h2>
+
+                            <div class="editor-view-actions">
+                                <button class="profile-button" id="newsBackToRoadmap" type="button">
+                                    ← Back
+                                </button>
+                                <button class="primary-button" id="newsCreateBtn" type="button" style="width:auto">
+                                    + Baru
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="newsListContainer">
+                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
+                                Memuat artikel...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: NEWS FORM -->
+
+                <div class="editor-view hidden" id="editorViewNewsForm">
+                    <div class="page-panel">
+                        <div class="editor-view-header">
+                            <h2 id="newsFormTitle">Buat Artikel Baru</h2>
+
+                            <button class="profile-button" id="newsFormBack" type="button">
+                                ← Back
+                            </button>
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="newsFormTitleInput">Title</label>
+                            <input
+                                class="editor-input"
+                                id="newsFormTitleInput"
+                                type="text"
+                                maxlength="200"
+                                placeholder="Judul artikel..."
+                            />
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="newsFormBadge">Badge</label>
+                            <input
+                                class="editor-input"
+                                id="newsFormBadge"
+                                type="text"
+                                maxlength="40"
+                                placeholder="GROWERA NEWS"
+                            />
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="newsFormExcerpt">Excerpt</label>
+                            <textarea
+                                class="editor-input editor-textarea"
+                                id="newsFormExcerpt"
+                                rows="3"
+                                maxlength="500"
+                                placeholder="Ringkasan singkat untuk news card di Home..."
+                            ></textarea>
+                        </div>
+
+                        <div class="editor-form-group">
+                            <label for="newsFormBody">Body</label>
+                            <textarea
+                                class="editor-input editor-textarea"
+                                id="newsFormBody"
+                                rows="14"
+                                placeholder="Isi lengkap artikel. Pisahkan paragraf dengan baris kosong."
+                            ></textarea>
+                        </div>
+
+                        <div class="editor-form-actions">
+                            <button class="profile-button" id="newsFormCancel" type="button">
+                                Cancel
+                            </button>
+                            <button class="profile-button" id="newsFormSaveDraft" type="button">
+                                Save Draft
+                            </button>
+                            <button class="primary-button" id="newsFormPublish" type="button" style="width:auto">
+                                Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
             <div class="app-footer">
@@ -696,7 +786,7 @@
         </main>
 
 
-        <!-- FIXED RIGHT PANEL -->
+        <!-- RIGHT PANEL -->
 
         <aside class="right-panel">
 
@@ -799,7 +889,7 @@
             <div class="news-modal-content">
 
                 <div class="news-modal-header">
-                    <h2>📰 GROWERA News</h2>
+                    <h2 id="newsModalHeaderTitle">📰 GROWERA News</h2>
 
                     <button
                         class="news-modal-close-btn"
@@ -812,17 +902,19 @@
                 </div>
 
                 <div class="news-modal-body">
-                    <div class="news-detail-badge">CRYSTAL ERA</div>
+                    <div class="news-detail-badge" id="newsModalBadge">
+                        CRYSTAL ERA
+                    </div>
 
-                    <h1 class="news-detail-title">
+                    <h1 class="news-detail-title" id="newsModalTitle">
                         Selamat Datang di GROWERA Crystal Era
                     </h1>
 
-                    <p class="news-detail-meta">
+                    <p class="news-detail-meta" id="newsModalMeta">
                         Dipublikasikan oleh Tim GROWERA · Update terbaru
                     </p>
 
-                    <div class="news-detail-body">
+                    <div class="news-detail-body" id="newsModalBody">
 
                         <p>
                             <strong>GROWERA Crystal Era</strong> secara resmi
@@ -833,74 +925,6 @@
                             dari satu tempat.
                         </p>
 
-                        <div class="news-detail-highlight">
-                            <strong>Fitur baru:</strong> Cek profile dan
-                            inventory langsung dari browser, tanpa perlu
-                            login ke game.
-                        </div>
-
-                        <h3>Apa yang Baru?</h3>
-
-                        <ul class="news-detail-list">
-                            <li>
-                                <strong>Player Portal</strong> — dashboard
-                                pribadi dengan level, gems, XP progress,
-                                dan playtime secara real-time.
-                            </li>
-                            <li>
-                                <strong>Inventory Viewer</strong> — lihat
-                                seluruh item yang kamu miliki lengkap dengan
-                                ikon dan jumlah. Data di-sync otomatis saat
-                                kamu login, pindah world, atau keluar game.
-                            </li>
-                            <li>
-                                <strong>Level Progress</strong> — pantau XP
-                                saat ini, XP yang dibutuhkan, dan berapa
-                                lagi untuk naik level berikutnya.
-                            </li>
-                            <li>
-                                <strong>Session Aman</strong> — login sekali,
-                                akses dashboard kapan saja. Sesi bertahan
-                                selama 24 jam sejak login terakhir.
-                            </li>
-                        </ul>
-
-                        <h3>Event yang Akan Datang</h3>
-
-                        <p>
-                            Sepanjang bulan ini, kami akan menyelenggarakan
-                            beberapa event seru:
-                        </p>
-
-                        <ul class="news-detail-list">
-                            <li><strong>Weekly BFG Tournament</strong> — setiap Sabtu malam, hadiah sampai 500 DL</li>
-                            <li><strong>Item Giveaway</strong> — hadiah harian untuk pemain aktif</li>
-                            <li><strong>Custom World Contest</strong> — lomba desain world terbaik</li>
-                            <li><strong>Community Meetup</strong> — ngobrol santai bareng admin dan mod</li>
-                        </ul>
-
-                        <div class="news-detail-highlight">
-                            Jangan lewatkan update selanjutnya. Pantau
-                            halaman ini dan komunitas resmi GROWERA untuk
-                            info terbaru.
-                        </div>
-
-                        <h3>Cara Menggunakan Portal</h3>
-
-                        <ul class="news-detail-list">
-                            <li>Login dengan username dan password akun GROWERA kamu</li>
-                            <li>Dashboard akan menampilkan statistik dan profile secara otomatis</li>
-                            <li>Buka halaman <strong>Profile</strong> untuk melihat detail lengkap akun</li>
-                            <li>Tekan <strong>View Inventory</strong> di halaman Profile untuk melihat semua item</li>
-                            <li>Klik <strong>Logout</strong> jika ingin keluar dari sesi ini</li>
-                        </ul>
-
-                        <p>
-                            Selamat menjelajahi Crystal Era. Kalau ada
-                            pertanyaan atau kendala, langsung hubungi tim
-                            kami melalui komunitas resmi GROWERA.
-                        </p>
-
                     </div>
                 </div>
 
@@ -908,6 +932,7 @@
         </div>
 
     </section>
+
 
     <script src="/js/app.js"></script>
 
