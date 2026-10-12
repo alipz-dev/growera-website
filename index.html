@@ -402,6 +402,36 @@
 
             <section class="app-page hidden" id="topupPage">
 
+                <!-- CATEGORY TABS -->
+
+                <div class="topup-tabs" role="tablist">
+                    <button
+                        class="topup-tab active"
+                        data-topup-tab="topup"
+                        type="button"
+                    >
+                        TOP UP
+                    </button>
+
+                    <button
+                        class="topup-tab"
+                        data-topup-tab="assets"
+                        type="button"
+                    >
+                        ASSETS
+                    </button>
+
+                    <button
+                        class="topup-tab"
+                        data-topup-tab="items"
+                        type="button"
+                    >
+                        ITEMS
+                    </button>
+                </div>
+
+                <!-- HEADER -->
+
                 <div class="topup-header">
                     <div class="eyebrow">CRYSTAL STORE</div>
                     <h1 class="topup-title">Top Up Gems</h1>
@@ -411,72 +441,103 @@
                     </p>
                 </div>
 
+                <!-- SALDO (compact) -->
+
                 <div class="topup-balance">
-                    <div>
-                        <div class="topup-balance-label">SALDO SAAT INI</div>
-                        <div class="topup-balance-value" id="topupBalance">—</div>
-                    </div>
-                    <div class="topup-balance-icon">💎</div>
+                    <span class="topup-balance-label">SALDO</span>
+                    <span class="topup-balance-value" id="topupBalance">—</span>
                 </div>
 
-                <div class="topup-grid" id="topupGrid"></div>
+                <!-- PANEL: TOP UP -->
 
-                <section class="topup-section">
-                    <h2 class="topup-section-heading">
-                        🚀 Cara Top Up
-                    </h2>
+                <div class="topup-tab-panel" id="topupPanelTopup">
 
-                    <div class="topup-steps">
-                        <div class="topup-step">
-                            <div class="topup-step-num">1</div>
-                            <div class="topup-step-text">
-                                <strong>Pilih paket</strong><br>
-                                Klik tombol "Beli" pada paket yang kamu inginkan.
+                    <div class="topup-grid" id="topupGrid"></div>
+
+                    <section class="topup-section">
+                        <h2 class="topup-section-heading">
+                            🚀 Cara Top Up
+                        </h2>
+
+                        <div class="topup-steps">
+                            <div class="topup-step">
+                                <div class="topup-step-num">1</div>
+                                <div class="topup-step-text">
+                                    <strong>Pilih paket</strong><br>
+                                    Klik tombol "Beli" pada paket yang kamu inginkan.
+                                </div>
+                            </div>
+
+                            <div class="topup-step">
+                                <div class="topup-step-num">2</div>
+                                <div class="topup-step-text">
+                                    <strong>Lakukan pembayaran</strong><br>
+                                    Ikuti instruksi pembayaran dari metode yang kamu pilih.
+                                </div>
+                            </div>
+
+                            <div class="topup-step">
+                                <div class="topup-step-num">3</div>
+                                <div class="topup-step-text">
+                                    <strong>Gems otomatis masuk</strong><br>
+                                    Setelah pembayaran diverifikasi, gems langsung masuk ke akunmu.
+                                </div>
                             </div>
                         </div>
+                    </section>
 
-                        <div class="topup-step">
-                            <div class="topup-step-num">2</div>
-                            <div class="topup-step-text">
-                                <strong>Lakukan pembayaran</strong><br>
-                                Ikuti instruksi pembayaran dari metode yang kamu pilih.
-                            </div>
+                    <section class="topup-section">
+                        <h2 class="topup-section-heading">
+                            💳 Metode Pembayaran
+                            <span>Semua metode aman & terverifikasi</span>
+                        </h2>
+
+                        <div class="topup-payments">
+                            <span class="topup-payment">QRIS</span>
+                            <span class="topup-payment">GoPay</span>
+                            <span class="topup-payment">OVO</span>
+                            <span class="topup-payment">Dana</span>
+                            <span class="topup-payment">ShopeePay</span>
+                            <span class="topup-payment">Transfer Bank</span>
+                            <span class="topup-payment">Virtual Account</span>
                         </div>
 
-                        <div class="topup-step">
-                            <div class="topup-step-num">3</div>
-                            <div class="topup-step-text">
-                                <strong>Gems otomatis masuk</strong><br>
-                                Setelah pembayaran diverifikasi, gems langsung masuk ke akunmu.
-                            </div>
+                        <div class="topup-note">
+                            <strong style="color: var(--cyan);">Catatan:</strong>
+                            Pembayaran otomatis akan tersedia setelah integrasi
+                            payment gateway selesai. Untuk saat ini, hubungi
+                            admin melalui komunitas resmi GROWERA untuk proses
+                            top up manual.
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <section class="topup-section">
-                    <h2 class="topup-section-heading">
-                        💳 Metode Pembayaran
-                        <span>Semua metode aman & terverifikasi</span>
-                    </h2>
+                </div>
 
-                    <div class="topup-payments">
-                        <span class="topup-payment">QRIS</span>
-                        <span class="topup-payment">GoPay</span>
-                        <span class="topup-payment">OVO</span>
-                        <span class="topup-payment">Dana</span>
-                        <span class="topup-payment">ShopeePay</span>
-                        <span class="topup-payment">Transfer Bank</span>
-                        <span class="topup-payment">Virtual Account</span>
-                    </div>
+                <!-- PANEL: ASSETS -->
 
-                    <div class="topup-note">
-                        <strong style="color: var(--cyan);">Catatan:</strong>
-                        Pembayaran otomatis akan tersedia setelah integrasi
-                        payment gateway selesai. Untuk saat ini, hubungi
-                        admin melalui komunitas resmi GROWERA untuk proses
-                        top up manual.
+                <div class="topup-tab-panel hidden" id="topupPanelAssets">
+                    <div class="topup-placeholder">
+                        <div class="topup-placeholder-icon">📦</div>
+                        <h3>Assets</h3>
+                        <p>
+                            Kategori assets (World Lock, Diamond Lock,
+                            Bundle, dll) akan segera tersedia.
+                        </p>
                     </div>
-                </section>
+                </div>
+
+                <!-- PANEL: ITEMS -->
+
+                <div class="topup-tab-panel hidden" id="topupPanelItems">
+                    <div class="topup-placeholder">
+                        <div class="topup-placeholder-icon">🎁</div>
+                        <h3>Items</h3>
+                        <p>
+                            Kategori items (Item langka, Event item,
+                            Collectible, dll) akan segera tersedia.
+                        </p>
+                    </div>
+                </div>
 
             </section>
 
