@@ -870,7 +870,6 @@ input:focus {
     min-height: 0;
 
     margin: 0;
-    /* 72px topbar + 24px beta bar + 12px buffer = 108px */
     padding: 108px 26px 35px;
 
     overflow-x: hidden;
@@ -880,12 +879,8 @@ input:focus {
     scrollbar-color: #314363 transparent;
 
     position: relative;
-
-    /* ANTI BUG: cegah browser auto-snap scroll saat konten berubah */
     overflow-anchor: none;
     scroll-behavior: auto;
-
-    /* ANTI BUG: isolasi scroll context & cegah layout bocor */
     contain: layout style paint;
 }
 
@@ -1330,12 +1325,8 @@ button:focus-visible {
 
 .app-page {
     animation: pageEnter 0.25s ease-out both;
-
-    /* ANTI BUG: cegah browser auto-anchor saat page switch */
     overflow-anchor: none;
     contain: layout style;
-
-    /* ANTI BUG: pastikan tidak collapse ke 0 height */
     min-height: 1px;
 }
 
@@ -1991,29 +1982,18 @@ button:focus-visible {
 
 
 /* =========================================
-   REDUCED MOTION
-========================================= */
-
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-}
-
-/* =========================================
-   FLOATING QUICK MENU (draggable)
+   FLOATING QUICK MENU (draggable) — FIXED
+   - Default position pakai bottom/right (akurat di mobile)
+   - Z-index tinggi biar selalu di atas
 ========================================= */
 
 .floating-quick-btn {
     position: fixed;
-    top: calc(100vh - 100px);
-    left: calc(100vw - 100px);
-    z-index: 130;
+    bottom: 30px;
+    right: 30px;
+    left: auto;
+    top: auto;
+    z-index: 99999;
 
     width: 56px;
     height: 56px;
@@ -2080,7 +2060,7 @@ button:focus-visible {
 /* Menu panel */
 .floating-menu {
     position: fixed;
-    z-index: 129;
+    z-index: 99998;
 
     display: flex;
     flex-direction: column;
@@ -2172,6 +2152,8 @@ button:focus-visible {
         width: 50px;
         height: 50px;
         font-size: 20px;
+        bottom: 20px;
+        right: 20px;
     }
 
     .floating-menu-item {
@@ -2184,7 +2166,21 @@ button:focus-visible {
     }
 }
 
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
 @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
     .floating-quick-btn,
     .floating-quick-btn.snapping,
     .floating-menu {
