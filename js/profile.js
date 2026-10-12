@@ -1,6 +1,6 @@
 /* =========================================
    GROWERA — PROFILE + INVENTORY MODULE
-   Version: 2.1 (extended + layout baru)
+   Version: 2.2 (world names + sync online/ping)
 
    Dependensi (dari app.js):
    - loadSession(), readJSONResponse()
@@ -15,7 +15,7 @@
    - current (getter)
 ========================================= */
 
-console.log("[GROWERA] profile.js v2.1 loading...");
+console.log("[GROWERA] profile.js v2.2 loading...");
 
 (function () {
     "use strict";
@@ -177,7 +177,7 @@ console.log("[GROWERA] profile.js v2.1 loading...");
 
 
     /* =========================================
-       RENDER — HERO
+       RENDER — HERO (dengan sync online + ping)
     ========================================= */
 
     function renderProfileHero(profile) {
@@ -194,31 +194,49 @@ console.log("[GROWERA] profile.js v2.1 loading...");
         const heroName = document.getElementById("profileUsername");
         if (heroName) heroName.textContent = username;
 
-        // Online
+        // ---- SYNC LOGIC ----
+        // Online tersedia kalau profile.online === true
+        const isOnline = profile.online === true;
+
+        // Ping tersedia kalau angka >= 0
+        const pingNum = Number(profile.ping);
+        const hasPing = Number.isFinite(pingNum) && pingNum >= 0;
+
+        // Kalau dua-duanya tidak tersedia, tampilkan "—" untuk keduanya
+        const bothUnavailable = !isOnline && !hasPing;
+
+        // Elemen
         const onlineValue = document.getElementById("profileOnlineValue");
         const onlineBadge = document.getElementById("profileOnlineBadge");
-
-        if (onlineValue && onlineBadge) {
-            if (profile.online === true) {
-                onlineValue.textContent = "Online";
-                onlineBadge.classList.add("online");
-            } else {
-                onlineValue.textContent = "Offline";
-                onlineBadge.classList.remove("online");
-            }
-        }
-
-        // Ping
         const pingValue = document.getElementById("profilePingValue");
         const pingBadge = document.getElementById("profilePingBadge");
 
-        if (pingValue && pingBadge) {
+        // Reset class
+        if (onlineBadge) onlineBadge.classList.remove("online");
+        if (pingBadge) {
             pingBadge.classList.remove("ping-excellent", "ping-good", "ping-fair", "ping-poor");
+        }
 
-            const ping = Number(profile.ping);
-            if (Number.isFinite(ping) && ping >= 0) {
-                pingValue.textContent = ping + " ms · " + getPingLabel(ping);
-                pingBadge.classList.add(getPingClass(ping));
+        // ---- RENDER ONLINE ----
+        if (onlineValue) {
+            if (bothUnavailable) {
+                onlineValue.textContent = "—";
+            } else if (isOnline) {
+                onlineValue.textContent = "Online";
+                if (onlineBadge) onlineBadge.classList.add("online");
+            } else {
+                onlineValue.textContent = "Offline";
+            }
+        }
+
+        // ---- RENDER PING ----
+        if (pingValue && pingBadge) {
+            if (bothUnavailable) {
+                pingValue.textContent = "—";
+            } else if (hasPing) {
+                pingValue.textContent = Math.floor(pingNum) + " ms · " +
+                    getPingLabel(pingNum);
+                pingBadge.classList.add(getPingClass(pingNum));
             } else {
                 pingValue.textContent = "—";
             }
@@ -247,7 +265,6 @@ console.log("[GROWERA] profile.js v2.1 loading...");
 
     /* =========================================
        RENDER — ACCOUNT DETAILS
-       (heading dihapus — section sudah punya heading sendiri)
     ========================================= */
 
     function renderProfileDetails(profile) {
@@ -301,7 +318,7 @@ console.log("[GROWERA] profile.js v2.1 loading...");
 
 
     /* =========================================
-       RENDER — WORLDS
+       RENDER — WORLDS (nama + tooltip ID)
     ========================================= */
 
     function renderProfileWorlds(profile) {
@@ -314,25 +331,29 @@ console.log("[GROWERA] profile.js v2.1 loading...");
                 title: "Owned Worlds",
                 icon: "🏠",
                 chipClass: "owned",
-                data: asArray(profile.ownedWorlds)
+                data: asArray(profile.ownedWorlds),
+                ids: asArray(profile.ownedWorldIDs)
             },
             {
                 title: "Recent Worlds",
                 icon: "🕐",
                 chipClass: "recent",
-                data: asArray(profile.recentWorlds)
+                data: asArray(profile.recentWorlds),
+                ids: asArray(profile.recentWorldIDs)
             },
             {
                 title: "Access Worlds",
                 icon: "🔓",
                 chipClass: "access",
-                data: asArray(profile.accessWorlds)
+                data: asArray(profile.accessWorlds),
+                ids: asArray(profile.accessWorldIDs)
             },
             {
                 title: "Small Locked Worlds",
                 icon: "🔒",
                 chipClass: "locked",
-                data: asArray(profile.smallLockedWorlds)
+                data: asArray(profile.smallLockedWorlds),
+                ids: asArray(profile.smallLockedWorldIDs)
             }
         ];
 
@@ -377,11 +398,22 @@ console.log("[GROWERA] profile.js v2.1 loading...");
                 const list = document.createElement("div");
                 list.className = "profile-world-list";
 
-                group.data.forEach(function (worldName) {
+                group.data.forEach(function (worldName, i) {
                     const chip = document.createElement("span");
                     chip.className = "profile-world-chip " + group.chipClass;
                     chip.textContent = String(worldName);
-                    chip.title = String(worldName);
+
+                    // Tooltip: kalau nama berhasil di-resolve, tampilkan ID aslinya
+                    const rawId = group.ids[i];
+                    const looksLikeFallback =
+                        String(worldName).indexOf("World #") === 0;
+
+                    if (rawId !== undefined && !looksLikeFallback) {
+                        chip.title = "ID: " + rawId;
+                    } else {
+                        chip.title = String(worldName);
+                    }
+
                     list.appendChild(chip);
                 });
 
@@ -913,10 +945,10 @@ console.log("[GROWERA] profile.js v2.1 loading...");
         reset: reset,
         closeInventory: closeInventoryModal,
         get current() { return currentProfile; },
-        _version: "2.1"
+        _version: "2.2"
     };
 
-    console.log("[GROWERA] profile.js v2.1 ready. window.GroweraProfile:", window.GroweraProfile);
+    console.log("[GROWERA] profile.js v2.2 ready. window.GroweraProfile:", window.GroweraProfile);
 
     init();
 
