@@ -8,6 +8,10 @@
    - shop.css     : Topup page (Crystal/Assets/Items)
    - rewards.css  : Rewards page + modal + rarity
    - profile.css  : Profile page
+
+   === TRANSPARENCY (v2) ===
+   .topbar, .sidebar, .right-panel, .floating-quick-btn
+   dipaksa transparan dengan !important.
 ========================================= */
 
 
@@ -27,6 +31,15 @@
     --muted: #9BAAC3;
     --success: #58FFAD;
     --danger: #FF8585;
+
+    /* Transparency tokens — ubah di sini kalau mau atur ulang */
+    --alpha-topbar: 0.55;
+    --alpha-sidebar: 0.62;
+    --alpha-right-panel: 0.62;
+    --alpha-floating: 0.68;
+    --blur-topbar: 18px;
+    --blur-sidebar: 16px;
+    --blur-floating: 12px;
 }
 
 * {
@@ -42,6 +55,7 @@ body {
         radial-gradient(circle at 15% 0%, rgba(39, 103, 170, 0.22), transparent 35%),
         radial-gradient(circle at 90% 15%, rgba(115, 73, 180, 0.12), transparent 30%),
         var(--bg);
+    background-attachment: fixed;
 }
 
 button,
@@ -176,8 +190,9 @@ input:focus {
     gap: 14px;
     padding: 16px 22px;
     border-bottom: 1px solid var(--border);
-    background: rgba(8, 13, 25, 0.50);
-    backdrop-filter: blur(14px);
+    background: rgba(8, 13, 25, var(--alpha-topbar)) !important;
+    -webkit-backdrop-filter: blur(var(--blur-topbar)) saturate(140%) !important;
+    backdrop-filter: blur(var(--blur-topbar)) saturate(140%) !important;
 }
 
 .brand {
@@ -204,7 +219,9 @@ input:focus {
     border: 1px solid var(--border);
     border-radius: 12px;
     color: var(--text);
-    background: var(--surface);
+    background: rgba(17, 26, 43, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
 }
 
 .avatar {
@@ -713,6 +730,7 @@ input:focus {
     height: 72px;
     padding: 12px 26px;
     z-index: 100;
+    /* background & blur sudah di-set di atas dengan !important */
 }
 
 .sidebar {
@@ -730,8 +748,9 @@ input:focus {
     padding: 20px 12px;
 
     border-right: 1px solid var(--border);
-    background: rgba(8, 13, 25, 0.70);
-    backdrop-filter: blur(10px);
+    background: rgba(8, 13, 25, var(--alpha-sidebar)) !important;
+    -webkit-backdrop-filter: blur(var(--blur-sidebar)) saturate(140%) !important;
+    backdrop-filter: blur(var(--blur-sidebar)) saturate(140%) !important;
 
     overflow-y: auto;
     scrollbar-width: thin;
@@ -900,7 +919,10 @@ input:focus {
     overscroll-behavior: contain;
 
     border-left: 1px solid var(--border);
-    background: rgba(8, 13, 25, 0.96);
+    background: rgba(8, 13, 25, var(--alpha-right-panel)) !important;
+    -webkit-backdrop-filter: blur(var(--blur-sidebar)) saturate(140%) !important;
+    backdrop-filter: blur(var(--blur-sidebar)) saturate(140%) !important;
+
     scrollbar-width: thin;
     scrollbar-color: #314363 transparent;
 }
@@ -1983,9 +2005,7 @@ button:focus-visible {
 
 
 /* =========================================
-   FLOATING QUICK MENU (draggable) — FIXED
-   - Default position pakai bottom/right (akurat di mobile)
-   - Z-index tinggi biar selalu di atas
+   FLOATING QUICK MENU (draggable) — TRANSPARENT
 ========================================= */
 
 .floating-quick-btn {
@@ -2003,8 +2023,13 @@ button:focus-visible {
     border-radius: 50%;
     background:
         radial-gradient(circle at 30% 30%, rgba(101, 231, 255, 0.35), transparent 60%),
-        linear-gradient(145deg, rgba(26, 20, 48, 0.72), rgba(13, 15, 26, 0.72));
-    backdrop-filter: blur(8px);
+        linear-gradient(
+            145deg,
+            rgba(26, 20, 48, var(--alpha-floating)),
+            rgba(13, 15, 26, var(--alpha-floating))
+        ) !important;
+    -webkit-backdrop-filter: blur(var(--blur-floating)) saturate(140%) !important;
+    backdrop-filter: blur(var(--blur-floating)) saturate(140%) !important;
     color: var(--cyan);
     font-size: 22px;
     font-weight: bold;
@@ -2071,8 +2096,9 @@ button:focus-visible {
     border: 1px solid rgba(101, 231, 255, 0.35);
     border-radius: 14px;
     background:
-        linear-gradient(145deg, rgba(17, 26, 43, 0.98), rgba(13, 23, 39, 0.98));
-    backdrop-filter: blur(12px);
+        linear-gradient(145deg, rgba(17, 26, 43, 0.82), rgba(13, 23, 39, 0.82)) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+    backdrop-filter: blur(14px) saturate(140%) !important;
     box-shadow:
         0 20px 48px rgba(0, 0, 0, 0.55),
         0 0 24px rgba(101, 231, 255, 0.2);
