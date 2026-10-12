@@ -1204,7 +1204,7 @@
 
 
         <!-- =========================================
-             FLOATING QUICK MENU (DRAGGABLE)
+             FLOATING QUICK MENU (DRAGGABLE + SERVER STATS)
         ========================================= -->
 
         <button
@@ -1224,6 +1224,48 @@
             role="menu"
             aria-hidden="true"
         >
+            <!-- SERVER STATS -->
+            <div class="floating-stats" id="floatingStats">
+                <div class="floating-stats-header">
+                    <span class="floating-stats-dot" id="floatingStatsDot"></span>
+                    <span class="floating-stats-title" id="floatingStatsTitle">SERVER STATS</span>
+                </div>
+
+                <div class="floating-stats-rows" id="floatingStatsRows">
+                    <div class="floating-stats-row">
+                        <span class="fs-label">Status</span>
+                        <span class="fs-value" id="fsStatus">—</span>
+                    </div>
+                    <div class="floating-stats-row">
+                        <span class="fs-label">👥 Players</span>
+                        <span class="fs-value" id="fsPlayers">—</span>
+                    </div>
+                    <div class="floating-stats-row">
+                        <span class="fs-label">⏱ Uptime</span>
+                        <span class="fs-value" id="fsUptime">—</span>
+                    </div>
+                    <div class="floating-stats-row">
+                        <span class="fs-label">💾 RAM</span>
+                        <span class="fs-value" id="fsRam">—</span>
+                    </div>
+                    <div class="floating-stats-row">
+                        <span class="fs-label">⚡ CPU</span>
+                        <span class="fs-value" id="fsCpu">—</span>
+                    </div>
+                    <div class="floating-stats-row">
+                        <span class="fs-label">🌍 Worlds</span>
+                        <span class="fs-value" id="fsWorlds">—</span>
+                    </div>
+                </div>
+
+                <div class="floating-stats-footer">
+                    <span id="fsUpdated">—</span>
+                </div>
+            </div>
+
+            <div class="floating-menu-divider"></div>
+
+            <!-- NAVIGATION -->
             <button class="floating-menu-item" data-page="home" role="menuitem" type="button">
                 <span class="fm-icon">⌂</span>
                 <span>Home</span>
