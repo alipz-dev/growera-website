@@ -1,7 +1,6 @@
 /* =========================================
    GROWERA — PROFILE + INVENTORY MODULE
-   Fetch profil pemain + kartu Home, render
-   detail akun, dan modal inventory.
+   Version: 2.1 (extended + layout baru)
 
    Dependensi (dari app.js):
    - loadSession(), readJSONResponse()
@@ -12,12 +11,11 @@
    - window.GroweraShop.updateBalance(profile)
 
    Public API (window.GroweraProfile):
-   - init()           : wire event (auto dijalankan)
-   - fetch()          : fetch profil, return "ok"|"unauthorized"|"error"
-   - reset()          : batalkan request pending + null currentProfile
-   - closeInventory() : tutup modal inventory dari luar
-   - current (getter) : akses profile (read-only)
+   - init(), fetch(), reset(), closeInventory()
+   - current (getter)
 ========================================= */
+
+console.log("[GROWERA] profile.js v2.1 loading...");
 
 (function () {
     "use strict";
@@ -42,33 +40,133 @@
 
 
     /* =========================================
-       RESET PROFILE DISPLAY
+       UTILITIES
+    ========================================= */
+
+    function asArray(value) {
+        if (Array.isArray(value)) return value;
+        if (value && typeof value === "object") {
+            return Object.keys(value).map(function (k) { return value[k]; });
+        }
+        return [];
+    }
+
+    function getPingClass(ping) {
+        if (ping < 60) return "ping-excellent";
+        if (ping < 120) return "ping-good";
+        if (ping < 200) return "ping-fair";
+        return "ping-poor";
+    }
+
+    function getPingLabel(ping) {
+        if (ping < 60) return "Excellent";
+        if (ping < 120) return "Good";
+        if (ping < 200) return "Fair";
+        return "Poor";
+    }
+
+    function parseHistoryString(raw) {
+        if (typeof raw !== "string" || raw.trim() === "") return [];
+        return raw
+            .split(/[\n\r,;]+/)
+            .map(function (s) { return s.trim(); })
+            .filter(function (s) { return s !== ""; });
+    }
+
+
+    /* =========================================
+       RESET DISPLAY
     ========================================= */
 
     function resetProfileDisplay() {
         currentProfile = null;
 
-        document.getElementById("statPlaytime").textContent = "—";
-        document.getElementById("statPlaytimeNote").textContent =
-            "Memuat data dari server...";
+        // Hero
+        const heroAvatar = document.getElementById("profileHeroAvatar");
+        if (heroAvatar) heroAvatar.textContent = "P";
 
-        document.getElementById("profileError").classList.add("hidden");
-        document.getElementById("profileDetails").replaceChildren();
+        const heroRole = document.getElementById("profileHeroRole");
+        if (heroRole) heroRole.textContent = "Memuat role...";
 
-        const placeholder = document.createElement("p");
-        placeholder.textContent = "Sedang mengambil data profil...";
-        document.getElementById("profileDetails").appendChild(placeholder);
+        const onlineValue = document.getElementById("profileOnlineValue");
+        if (onlineValue) onlineValue.textContent = "—";
+
+        const onlineBadge = document.getElementById("profileOnlineBadge");
+        if (onlineBadge) onlineBadge.classList.remove("online");
+
+        const pingValue = document.getElementById("profilePingValue");
+        if (pingValue) pingValue.textContent = "—";
+
+        const pingBadge = document.getElementById("profilePingBadge");
+        if (pingBadge) {
+            pingBadge.classList.remove("ping-excellent", "ping-good", "ping-fair", "ping-poor");
+        }
+
+        // Stats
+        ["profileStatLevel", "profileStatGems", "profileStatUserID", "profileStatPlaytime"]
+            .forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = "—";
+            });
+
+        // Error
+        const errorBox = document.getElementById("profileError");
+        if (errorBox) errorBox.classList.add("hidden");
+
+        // Details
+        const details = document.getElementById("profileDetails");
+        if (details) {
+            details.replaceChildren();
+            const placeholder = document.createElement("p");
+            placeholder.style.cssText = "color:var(--muted);font-size:12px;margin:0";
+            placeholder.textContent = "Sedang mengambil data profil...";
+            details.appendChild(placeholder);
+        }
+
+        // Worlds
+        const worldsGrid = document.getElementById("profileWorldsGrid");
+        if (worldsGrid) {
+            worldsGrid.replaceChildren();
+            const loading = document.createElement("p");
+            loading.className = "profile-loading";
+            loading.textContent = "Menunggu data...";
+            worldsGrid.appendChild(loading);
+        }
+
+        // Security
+        const securityContent = document.getElementById("profileSecurityContent");
+        if (securityContent) {
+            securityContent.replaceChildren();
+            const loading = document.createElement("p");
+            loading.className = "profile-loading";
+            loading.textContent = "Menunggu data...";
+            securityContent.appendChild(loading);
+        }
 
         setPlayerStatus("Memuat...", "#65E7FF");
         setProfileStatus("Memuat profil pemain...", "#65E7FF");
 
-        document.getElementById("rightPlayerUsername").textContent = "Memuat...";
-        document.getElementById("rightPlayerRole").textContent = "Memuat role...";
-        document.getElementById("rightPlayerAvatar").textContent = "P";
-        document.getElementById("rightPlayerLevel").textContent = "—";
-        document.getElementById("rightPlayerUserID").textContent = "—";
-        document.getElementById("rightPlayerGems").textContent = "—";
-        document.getElementById("rightPlayerPlaytime").textContent = "—";
+        // Home card + right panel
+        const rightUser = document.getElementById("rightPlayerUsername");
+        if (rightUser) rightUser.textContent = "Memuat...";
+
+        const rightRole = document.getElementById("rightPlayerRole");
+        if (rightRole) rightRole.textContent = "Memuat role...";
+
+        const rightAvatar = document.getElementById("rightPlayerAvatar");
+        if (rightAvatar) rightAvatar.textContent = "P";
+
+        const rightLevel = document.getElementById("rightPlayerLevel");
+        if (rightLevel) rightLevel.textContent = "—";
+
+        const rightUserID = document.getElementById("rightPlayerUserID");
+        if (rightUserID) rightUserID.textContent = "—";
+
+        const rightGems = document.getElementById("rightPlayerGems");
+        if (rightGems) rightGems.textContent = "—";
+
+        const rightPlaytime = document.getElementById("rightPlayerPlaytime");
+        if (rightPlaytime) rightPlaytime.textContent = "—";
 
         resetPlayerOverview();
 
@@ -79,20 +177,85 @@
 
 
     /* =========================================
-       RENDER PROFILE DETAILS
+       RENDER — HERO
+    ========================================= */
+
+    function renderProfileHero(profile) {
+        const username = String(profile.username || "Player");
+        const initial = getInitial(username);
+        const roleName = (profile.role && profile.role.name) || "Player";
+
+        const heroAvatar = document.getElementById("profileHeroAvatar");
+        if (heroAvatar) heroAvatar.textContent = initial;
+
+        const heroRole = document.getElementById("profileHeroRole");
+        if (heroRole) heroRole.textContent = roleName;
+
+        const heroName = document.getElementById("profileUsername");
+        if (heroName) heroName.textContent = username;
+
+        // Online
+        const onlineValue = document.getElementById("profileOnlineValue");
+        const onlineBadge = document.getElementById("profileOnlineBadge");
+
+        if (onlineValue && onlineBadge) {
+            if (profile.online === true) {
+                onlineValue.textContent = "Online";
+                onlineBadge.classList.add("online");
+            } else {
+                onlineValue.textContent = "Offline";
+                onlineBadge.classList.remove("online");
+            }
+        }
+
+        // Ping
+        const pingValue = document.getElementById("profilePingValue");
+        const pingBadge = document.getElementById("profilePingBadge");
+
+        if (pingValue && pingBadge) {
+            pingBadge.classList.remove("ping-excellent", "ping-good", "ping-fair", "ping-poor");
+
+            const ping = Number(profile.ping);
+            if (Number.isFinite(ping) && ping >= 0) {
+                pingValue.textContent = ping + " ms · " + getPingLabel(ping);
+                pingBadge.classList.add(getPingClass(ping));
+            } else {
+                pingValue.textContent = "—";
+            }
+        }
+    }
+
+
+    /* =========================================
+       RENDER — STATS
+    ========================================= */
+
+    function renderProfileStats(profile) {
+        const levelEl = document.getElementById("profileStatLevel");
+        if (levelEl) levelEl.textContent = formatNumber(profile.level);
+
+        const gemsEl = document.getElementById("profileStatGems");
+        if (gemsEl) gemsEl.textContent = formatNumber(profile.gems);
+
+        const uidEl = document.getElementById("profileStatUserID");
+        if (uidEl) uidEl.textContent = formatNumber(profile.userID);
+
+        const playEl = document.getElementById("profileStatPlaytime");
+        if (playEl) playEl.textContent = formatNumber(profile.playtime);
+    }
+
+
+    /* =========================================
+       RENDER — ACCOUNT DETAILS
+       (heading dihapus — section sudah punya heading sendiri)
     ========================================= */
 
     function renderProfileDetails(profile) {
         const container = document.getElementById("profileDetails");
+        if (!container) return;
         container.replaceChildren();
 
-        const heading = document.createElement("h3");
-        heading.textContent = "Account Information";
-        heading.style.color = "#65E7FF";
-        container.appendChild(heading);
-
-        const roleName = profile.role && profile.role.name
-            ? profile.role.name : "Player";
+        const roleName = (profile.role && profile.role.name) || "Player";
         const roleID = profile.role && profile.role.id !== undefined
             ? profile.role.id : 0;
 
@@ -108,6 +271,14 @@
             ["Role", roleName],
             ["Role ID", formatNumber(roleID)]
         ];
+
+        const createdAt = Number(profile.accountCreatedAt);
+        if (Number.isFinite(createdAt) && createdAt > 0) {
+            fields.push([
+                "Account Created",
+                new Date(createdAt * 1000).toLocaleString("id-ID")
+            ]);
+        }
 
         fields.forEach(function (field) {
             const row = document.createElement("div");
@@ -126,47 +297,214 @@
             row.appendChild(value);
             container.appendChild(row);
         });
-
-        const createdAt = Number(profile.accountCreatedAt);
-
-        if (Number.isFinite(createdAt) && createdAt > 0) {
-            const row = document.createElement("div");
-            row.className = "profile-details-row";
-
-            const label = document.createElement("span");
-            label.className = "profile-details-label";
-            label.textContent = "Account Created";
-
-            const value = document.createElement("span");
-            value.className = "profile-details-value";
-            value.textContent = new Date(createdAt * 1000).toLocaleString("id-ID");
-
-            row.appendChild(label);
-            row.appendChild(value);
-            container.appendChild(row);
-        }
-
-        const note = document.createElement("p");
-        note.textContent =
-            "Playtime ditampilkan sesuai nilai mentah dari server. " +
-            "Satuannya belum dikonfirmasi.";
-        note.style.fontSize = "11px";
-        note.style.color = "#7186A4";
-        container.appendChild(note);
     }
 
 
     /* =========================================
-       PLAYER OVERVIEW (kartu di Home)
+       RENDER — WORLDS
+    ========================================= */
+
+    function renderProfileWorlds(profile) {
+        const container = document.getElementById("profileWorldsGrid");
+        if (!container) return;
+        container.replaceChildren();
+
+        const groups = [
+            {
+                title: "Owned Worlds",
+                icon: "🏠",
+                chipClass: "owned",
+                data: asArray(profile.ownedWorlds)
+            },
+            {
+                title: "Recent Worlds",
+                icon: "🕐",
+                chipClass: "recent",
+                data: asArray(profile.recentWorlds)
+            },
+            {
+                title: "Access Worlds",
+                icon: "🔓",
+                chipClass: "access",
+                data: asArray(profile.accessWorlds)
+            },
+            {
+                title: "Small Locked Worlds",
+                icon: "🔒",
+                chipClass: "locked",
+                data: asArray(profile.smallLockedWorlds)
+            }
+        ];
+
+        let hasAnyData = false;
+
+        groups.forEach(function (group) {
+            const wrap = document.createElement("div");
+            wrap.className = "profile-world-group";
+
+            const header = document.createElement("div");
+            header.className = "profile-world-header";
+
+            const title = document.createElement("div");
+            title.className = "profile-world-title";
+
+            const icon = document.createElement("span");
+            icon.className = "profile-world-icon";
+            icon.textContent = group.icon;
+
+            const titleText = document.createElement("span");
+            titleText.textContent = group.title;
+
+            title.appendChild(icon);
+            title.appendChild(titleText);
+
+            const count = document.createElement("span");
+            count.className = "profile-world-count";
+            count.textContent = group.data.length;
+
+            header.appendChild(title);
+            header.appendChild(count);
+            wrap.appendChild(header);
+
+            if (group.data.length === 0) {
+                const empty = document.createElement("div");
+                empty.className = "profile-world-empty";
+                empty.textContent = "Tidak ada data.";
+                wrap.appendChild(empty);
+            } else {
+                hasAnyData = true;
+
+                const list = document.createElement("div");
+                list.className = "profile-world-list";
+
+                group.data.forEach(function (worldName) {
+                    const chip = document.createElement("span");
+                    chip.className = "profile-world-chip " + group.chipClass;
+                    chip.textContent = String(worldName);
+                    chip.title = String(worldName);
+                    list.appendChild(chip);
+                });
+
+                wrap.appendChild(list);
+            }
+
+            container.appendChild(wrap);
+        });
+
+        if (!hasAnyData) {
+            const hint = document.createElement("p");
+            hint.className = "profile-loading";
+            hint.style.textAlign = "center";
+            hint.style.padding = "8px 0 0";
+            hint.textContent = "Data world belum tersedia dari server.";
+            container.appendChild(hint);
+        }
+    }
+
+
+    /* =========================================
+       RENDER — SECURITY & HISTORY
+    ========================================= */
+
+    function renderProfileSecurity(profile) {
+        const container = document.getElementById("profileSecurityContent");
+        if (!container) return;
+        container.replaceChildren();
+
+        const ipList = parseHistoryString(profile.ipHistory);
+        const ridList = parseHistoryString(profile.ridHistory);
+
+        container.appendChild(buildSecurityBlock({
+            title: "IP History",
+            icon: "🌐",
+            chipClass: "ip",
+            items: ipList,
+            emptyText: "Tidak ada riwayat IP."
+        }));
+
+        container.appendChild(buildSecurityBlock({
+            title: "RID History",
+            icon: "🆔",
+            chipClass: "rid",
+            items: ridList,
+            emptyText: "Tidak ada riwayat RID."
+        }));
+    }
+
+    function buildSecurityBlock(config) {
+        const block = document.createElement("div");
+        block.className = "profile-security-block";
+
+        const head = document.createElement("div");
+        head.className = "profile-security-head";
+
+        const title = document.createElement("div");
+        title.className = "profile-security-title";
+
+        const icon = document.createElement("span");
+        icon.className = "profile-security-title-icon";
+        icon.textContent = config.icon;
+
+        const titleText = document.createElement("span");
+        titleText.textContent = config.title;
+
+        title.appendChild(icon);
+        title.appendChild(titleText);
+
+        const count = document.createElement("span");
+        count.className = "profile-security-count";
+        count.textContent = config.items.length;
+
+        head.appendChild(title);
+        head.appendChild(count);
+        block.appendChild(head);
+
+        if (config.items.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "profile-world-empty";
+            empty.textContent = config.emptyText;
+            block.appendChild(empty);
+        } else {
+            const list = document.createElement("div");
+            list.className = "profile-security-list";
+
+            config.items.forEach(function (entry) {
+                const chip = document.createElement("span");
+                chip.className = "profile-history-chip " + config.chipClass;
+                chip.textContent = entry;
+                chip.title = entry;
+                list.appendChild(chip);
+            });
+
+            block.appendChild(list);
+        }
+
+        return block;
+    }
+
+
+    /* =========================================
+       PLAYER OVERVIEW (kartu Home)
     ========================================= */
 
     function resetPlayerOverview() {
-        document.getElementById("playerLevel").textContent = "—";
-        document.getElementById("playerGems").textContent = "—";
-        document.getElementById("levelProgressXP").textContent = "— / — XP";
-        document.getElementById("levelProgressFill").style.width = "0%";
-        document.getElementById("levelProgressPercent").textContent = "0%";
-        document.getElementById("levelProgressRemaining").textContent = "Memuat...";
+        const el1 = document.getElementById("playerLevel");
+        if (el1) el1.textContent = "—";
+
+        const el2 = document.getElementById("playerGems");
+        if (el2) el2.textContent = "—";
+
+        const el3 = document.getElementById("levelProgressXP");
+        if (el3) el3.textContent = "— / — XP";
+
+        const el4 = document.getElementById("levelProgressFill");
+        if (el4) el4.style.width = "0%";
+
+        const el5 = document.getElementById("levelProgressPercent");
+        if (el5) el5.textContent = "0%";
+
+        const el6 = document.getElementById("levelProgressRemaining");
+        if (el6) el6.textContent = "Memuat...";
     }
 
     function updatePlayerOverview(profile) {
@@ -176,64 +514,72 @@
         const xp = Number(profile.xp) || 0;
         const requiredXP = Number(profile.requiredXP) || 0;
 
-        document.getElementById("playerLevel").textContent = formatNumber(level);
-        document.getElementById("playerGems").textContent = formatNumber(profile.gems);
+        const playerLevel = document.getElementById("playerLevel");
+        if (playerLevel) playerLevel.textContent = formatNumber(level);
+
+        const playerGems = document.getElementById("playerGems");
+        if (playerGems) playerGems.textContent = formatNumber(profile.gems);
 
         if (requiredXP > 0) {
             const percent = Math.min(100, Math.max(0, (xp / requiredXP) * 100));
 
-            document.getElementById("levelProgressXP").textContent =
+            const xpEl = document.getElementById("levelProgressXP");
+            if (xpEl) xpEl.textContent =
                 formatNumber(xp) + " / " + formatNumber(requiredXP) + " XP";
 
-            document.getElementById("levelProgressFill").style.width =
-                percent.toFixed(2) + "%";
+            const fillEl = document.getElementById("levelProgressFill");
+            if (fillEl) fillEl.style.width = percent.toFixed(2) + "%";
 
-            document.getElementById("levelProgressPercent").textContent =
-                percent.toFixed(1) + "%";
+            const pctEl = document.getElementById("levelProgressPercent");
+            if (pctEl) pctEl.textContent = percent.toFixed(1) + "%";
 
             const remaining = Math.max(0, requiredXP - xp);
-
-            document.getElementById("levelProgressRemaining").textContent =
+            const remEl = document.getElementById("levelProgressRemaining");
+            if (remEl) remEl.textContent =
                 remaining === 0 ? "Siap naik level"
                     : "Butuh " + formatNumber(remaining) + " XP lagi";
         } else {
-            document.getElementById("levelProgressXP").textContent =
-                formatNumber(xp) + " XP";
-            document.getElementById("levelProgressFill").style.width = "0%";
-            document.getElementById("levelProgressPercent").textContent = "—";
-            document.getElementById("levelProgressRemaining").textContent =
+            const xpEl = document.getElementById("levelProgressXP");
+            if (xpEl) xpEl.textContent = formatNumber(xp) + " XP";
+
+            const fillEl = document.getElementById("levelProgressFill");
+            if (fillEl) fillEl.style.width = "0%";
+
+            const pctEl = document.getElementById("levelProgressPercent");
+            if (pctEl) pctEl.textContent = "—";
+
+            const remEl = document.getElementById("levelProgressRemaining");
+            if (remEl) remEl.textContent =
                 "Data required XP belum tersedia dari server";
         }
     }
 
 
     /* =========================================
-       PROFILE ERROR
+       ERROR
     ========================================= */
 
     function showProfileError(message) {
         const errorBox = document.getElementById("profileError");
         const errorMessage = document.getElementById("profileErrorMessage");
 
-        errorMessage.textContent = message;
-        errorBox.classList.remove("hidden");
+        if (errorMessage) errorMessage.textContent = message;
+        if (errorBox) errorBox.classList.remove("hidden");
 
-        document.getElementById("profileDetails").replaceChildren();
-
-        const heading = document.createElement("h3");
-        heading.textContent = "Profile API Error";
-        heading.style.color = "#FF8585";
-
-        const detail = document.createElement("p");
-        detail.textContent = message;
-
-        document.getElementById("profileDetails").appendChild(heading);
-        document.getElementById("profileDetails").appendChild(detail);
+        const details = document.getElementById("profileDetails");
+        if (details) {
+            details.replaceChildren();
+            const p = document.createElement("p");
+            p.style.cssText = "color:var(--muted);font-size:12px;margin:0";
+            p.textContent = "Data profil tidak dapat dimuat.";
+            details.appendChild(p);
+        }
 
         setPlayerStatus("Gagal memuat profil", "#FF8585");
         setProfileStatus("Gagal memuat profil", "#FF8585");
 
-        document.getElementById("rightPlayerRole").textContent = "Gagal memuat profil";
+        const rightRole = document.getElementById("rightPlayerRole");
+        if (rightRole) rightRole.textContent = "Gagal memuat profil";
 
         resetPlayerOverview();
     }
@@ -289,46 +635,70 @@
 
             currentProfile = profile;
 
-            const roleName = profile.role && profile.role.name
-                ? profile.role.name : "Player";
-
-            document.getElementById("rightPlayerUsername").textContent =
-                profile.username || "Player";
-            document.getElementById("rightPlayerRole").textContent = roleName;
-            document.getElementById("rightPlayerAvatar").textContent =
-                getInitial(profile.username);
-            document.getElementById("rightPlayerLevel").textContent =
-                formatNumber(profile.level);
-            document.getElementById("rightPlayerUserID").textContent =
-                formatNumber(profile.userID);
-            document.getElementById("rightPlayerGems").textContent =
-                formatNumber(profile.gems);
-            document.getElementById("rightPlayerPlaytime").textContent =
-                formatNumber(profile.playtime);
-
+            const roleName = (profile.role && profile.role.name) || "Player";
             const username = String(profile.username);
             const initial = getInitial(username);
 
-            document.getElementById("headerUsername").textContent = username;
-            document.getElementById("playerUsername").textContent = username;
-            document.getElementById("profileUsername").textContent = username;
+            // Right panel
+            const rightUser = document.getElementById("rightPlayerUsername");
+            if (rightUser) rightUser.textContent = profile.username || "Player";
 
-            document.getElementById("headerAvatar").textContent = initial;
-            document.getElementById("playerAvatar").textContent = initial;
+            const rightRole = document.getElementById("rightPlayerRole");
+            if (rightRole) rightRole.textContent = roleName;
 
-            document.getElementById("statPlaytime").textContent =
-                formatNumber(profile.playtime);
-            document.getElementById("statPlaytimeNote").textContent =
-                "Nilai playtime dari server";
+            const rightAvatar = document.getElementById("rightPlayerAvatar");
+            if (rightAvatar) rightAvatar.textContent = initial;
 
+            const rightLevel = document.getElementById("rightPlayerLevel");
+            if (rightLevel) rightLevel.textContent = formatNumber(profile.level);
+
+            const rightUserID = document.getElementById("rightPlayerUserID");
+            if (rightUserID) rightUserID.textContent = formatNumber(profile.userID);
+
+            const rightGems = document.getElementById("rightPlayerGems");
+            if (rightGems) rightGems.textContent = formatNumber(profile.gems);
+
+            const rightPlaytime = document.getElementById("rightPlayerPlaytime");
+            if (rightPlaytime) rightPlaytime.textContent = formatNumber(profile.playtime);
+
+            // Header + home card
+            const headerUser = document.getElementById("headerUsername");
+            if (headerUser) headerUser.textContent = username;
+
+            const playerUser = document.getElementById("playerUsername");
+            if (playerUser) playerUser.textContent = username;
+
+            const profileUser = document.getElementById("profileUsername");
+            if (profileUser) profileUser.textContent = username;
+
+            const headerAvatar = document.getElementById("headerAvatar");
+            if (headerAvatar) headerAvatar.textContent = initial;
+
+            const playerAvatar = document.getElementById("playerAvatar");
+            if (playerAvatar) playerAvatar.textContent = initial;
+
+            const statPlaytime = document.getElementById("statPlaytime");
+            if (statPlaytime) statPlaytime.textContent = formatNumber(profile.playtime);
+
+            const statPlaytimeNote = document.getElementById("statPlaytimeNote");
+            if (statPlaytimeNote) statPlaytimeNote.textContent = "Nilai playtime dari server";
+
+            // Home card
             updatePlayerOverview(profile);
+
+            // Profile page — semua section
+            renderProfileHero(profile);
+            renderProfileStats(profile);
             renderProfileDetails(profile);
+            renderProfileWorlds(profile);
+            renderProfileSecurity(profile);
 
             if (window.GroweraShop) {
                 window.GroweraShop.updateBalance(profile);
             }
 
-            document.getElementById("profileError").classList.add("hidden");
+            const errorBox = document.getElementById("profileError");
+            if (errorBox) errorBox.classList.add("hidden");
 
             setPlayerStatus("Profil berhasil dimuat", "#58FFAD");
             setProfileStatus("Profil berhasil dimuat", "#58FFAD");
@@ -492,7 +862,7 @@
 
 
     /* =========================================
-       RESET (dipanggil dari logout)
+       RESET (dari logout)
     ========================================= */
 
     function reset() {
@@ -542,8 +912,11 @@
         fetch: fetchPlayerProfile,
         reset: reset,
         closeInventory: closeInventoryModal,
-        get current() { return currentProfile; }
+        get current() { return currentProfile; },
+        _version: "2.1"
     };
+
+    console.log("[GROWERA] profile.js v2.1 ready. window.GroweraProfile:", window.GroweraProfile);
 
     init();
 
