@@ -1,27 +1,12 @@
 /* =========================================
-   GROWERA — FLOATING QUICK MENU (v2 — fixed)
-   Draggable FAB dengan quick access menu.
+   GROWERA — FLOATING QUICK MENU + SERVER STATS (v4 FINAL)
+   Sumber stats: api.gtps.cloud (public endpoint)
+   Tidak butuh backend Lua untuk stats.
 
-   FIX v2:
-   - Tidak pakai visibility:hidden (biar selalu visible meski JS error)
-   - Default position pakai CSS (bottom/right) — akurat di mobile Chrome
-   - Pakai visualViewport kalau tersedia (handle toolbar dinamis)
-   - try/catch di semua handler
-
-   Fitur:
-   - Drag (mouse + touch) via pointer events
-   - Auto-snap ke tepi layar setelah release
-   - Posisi tersimpan di localStorage
-   - Klik (tanpa drag) → buka menu
-   - Menu auto-position (atas/bawah, kiri/kanan)
-
-   Public API (window.GroweraFloating):
-   - init()
-   - closeMenu()
-   - resetPosition()
+   Data source: /api/server/public/1791
 ========================================= */
 
-console.log("[GROWERA FAB] Script loading...");
+console.log("[GROWERA FAB] Script loading (v4 FINAL)...");
 
 (function () {
     "use strict";
@@ -31,15 +16,15 @@ console.log("[GROWERA FAB] Script loading...");
        CONFIG
     ========================================= */
 
+    const SERVER_ID = "1791";
+    const API_SERVER_URL = "https://api.gtps.cloud/api/server/public/" + SERVER_ID;
+
     const STORAGE_KEY = "growera_floating_pos";
     const EDGE_PADDING = 12;
     const DRAG_THRESHOLD = 6;
     const SNAP_DURATION = 320;
-
-
-    /* =========================================
-       STATE
-    ========================================= */
+    const STATS_REFRESH_MS = 15000;
+    const FETCH_TIMEOUT_MS = 6000;
 
     let btn = null;
     let menu = null;
@@ -48,6 +33,8 @@ console.log("[GROWERA FAB] Script loading...");
     let startX = 0, startY = 0;
     let startLeft = 0, startTop = 0;
     let pointerId = null;
+    let statsTimer = null;
+    let statsAbortController = null;
 
 
     /* =========================================
@@ -93,8 +80,6 @@ console.log("[GROWERA FAB] Script loading...");
     }
 
     function useDefaultPosition() {
-        // Pakai CSS default (bottom/right) — biar browser yang handle
-        // toolbar dinamis di mobile
         if (!btn) return;
         btn.style.left = "";
         btn.style.top = "";
@@ -104,7 +89,7 @@ console.log("[GROWERA FAB] Script loading...");
 
     function savePos(left, top) {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ left: left, top: top }));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ left, top }));
         } catch (e) { /* ignore */ }
     }
 
@@ -140,7 +125,7 @@ console.log("[GROWERA FAB] Script loading...");
                 useDefaultPosition();
             }
         } catch (e) {
-            console.warn("[GROWERA FAB] placeAtDefaultOrSaved error:", e);
+            console.warn("[GROWERA FAB] place error:", e);
             useDefaultPosition();
         }
     }
@@ -189,7 +174,7 @@ console.log("[GROWERA FAB] Script loading...");
             top = clamp(
                 btnRect.top,
                 EDGE_PADDING,
-                vp.height - menuRect.height - EDGE_PADDING
+                Math.max(EDGE_PADDING, vp.height - menuRect.height - EDGE_PADDING)
             );
         }
 
@@ -217,6 +202,8 @@ console.log("[GROWERA FAB] Script loading...");
         menu.setAttribute("aria-hidden", "false");
         btn.setAttribute("aria-expanded", "true");
         requestAnimationFrame(function () { positionMenu(); });
+        fetchAndRenderStats();
+        startStatsTimer();
     }
 
     function closeMenu() {
@@ -224,6 +211,7 @@ console.log("[GROWERA FAB] Script loading...");
         menu.classList.remove("open");
         menu.setAttribute("aria-hidden", "true");
         btn.setAttribute("aria-expanded", "false");
+        stopStatsTimer();
     }
 
     function toggleMenu() {
@@ -234,7 +222,213 @@ console.log("[GROWERA FAB] Script loading...");
 
 
     /* =========================================
-       POINTER EVENTS (drag)
+       SERVER STATS
+    ========================================= */
+
+    function setEl(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    }
+
+    function setElClass(id, className) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove("online", "offline", "warn", "critical");
+        if (className) el.classList.add(className);
+    }
+
+    function setDotClass(className) {
+        const dot = document.getElementById("floatingStatsDot");
+        if (!dot) return;
+        dot.classList.remove("online", "offline", "loading");
+        if (className) dot.classList.add(className);
+    }
+
+    function formatNumber(n) {
+        n = Number(n);
+        if (!isFinite(n)) return "—";
+        return new Intl.NumberFormat("id-ID").format(Math.floor(n));
+    }
+
+    function getLoadClass(percent) {
+        if (typeof percent !== "number" || !isFinite(percent)) return "";
+        if (percent >= 85) return "critical";
+        if (percent >= 60) return "warn";
+        return "";
+    }
+
+    function renderStatsOffline() {
+        setDotClass("offline");
+        setEl("floatingStatsTitle", "SERVER OFFLINE");
+        setEl("fsStatus", "Offline");
+        setElClass("fsStatus", "offline");
+        setEl("fsPlayers", "—");
+        setEl("fsUptime", "—");
+        setEl("fsRam", "—");
+        setEl("fsCpu", "—");
+        setEl("fsWorlds", "—");
+        setEl("fsUpdated", "Tidak dapat terhubung");
+    }
+
+    function renderStatsLoading() {
+        setDotClass("loading");
+        setEl("floatingStatsTitle", "MEMUAT...");
+        setEl("fsStatus", "Loading...");
+        setElClass("fsStatus", "");
+    }
+
+    async function fetchServerData() {
+        // Abort request lama
+        if (statsAbortController) {
+            try { statsAbortController.abort(); } catch (e) {}
+        }
+
+        const controller = ("AbortController" in window)
+            ? new AbortController()
+            : null;
+        statsAbortController = controller;
+
+        const timeoutId = setTimeout(function () {
+            if (controller) {
+                try { controller.abort(); } catch (e) {}
+            }
+        }, FETCH_TIMEOUT_MS);
+
+        try {
+            const opts = {
+                method: "GET",
+                headers: { "Accept": "application/json" },
+                cache: "no-store"
+            };
+            if (controller) opts.signal = controller.signal;
+
+            const response = await fetch(API_SERVER_URL, opts);
+            clearTimeout(timeoutId);
+
+            if (!response.ok) return null;
+            return await response.json();
+        } catch (err) {
+            clearTimeout(timeoutId);
+            return null;
+        } finally {
+            if (statsAbortController === controller) {
+                statsAbortController = null;
+            }
+        }
+    }
+
+    async function fetchAndRenderStats() {
+        renderStatsLoading();
+        const data = await fetchServerData();
+        renderStats(data);
+    }
+
+    function renderStats(data) {
+        if (!data || typeof data !== "object" || !data.state) {
+            renderStatsOffline();
+            return;
+        }
+
+        const state = data.state;
+        const tier = data.tier_info || {};
+
+        // === STATUS ===
+        const isOnline = state.server_status === 1;
+
+        if (isOnline) {
+            setDotClass("online");
+            setEl("floatingStatsTitle", "SERVER ONLINE");
+            setEl("fsStatus", "Online");
+            setElClass("fsStatus", "online");
+        } else {
+            setDotClass("offline");
+            setEl("floatingStatsTitle", "SERVER OFFLINE");
+            setEl("fsStatus", "Offline");
+            setElClass("fsStatus", "offline");
+        }
+
+        // === PLAYERS ===
+        const players = Number(state.players_online) || 0;
+        const maxPlayers = Number(tier.max_players_online) || 0;
+        if (maxPlayers > 0) {
+            setEl("fsPlayers", formatNumber(players) + " / " + formatNumber(maxPlayers));
+        } else {
+            setEl("fsPlayers", formatNumber(players) + " online");
+        }
+
+        // === UPTIME (pakai server_status_changed) ===
+        const statusChanged = Number(state.server_status_changed) || 0;
+        if (statusChanged > 0 && isOnline) {
+            const nowSec = Math.floor(Date.now() / 1000);
+            const uptimeSec = nowSec - statusChanged;
+            setEl("fsUptime", formatUptime(uptimeSec));
+        } else {
+            setEl("fsUptime", "—");
+        }
+
+        // === RAM ===
+        const memUsed = Number(state.memory_usage) || 0;
+        const memMax = Number(tier.max_memory_usage) || 0;
+        if (memMax > 0) {
+            setEl("fsRam", formatNumber(memUsed) + " / " + formatNumber(memMax) + " MB");
+            const memPercent = (memUsed / memMax) * 100;
+            setElClass("fsRam", getLoadClass(memPercent));
+        } else {
+            setEl("fsRam", formatNumber(memUsed) + " MB");
+        }
+
+        // === CPU ===
+        const cpuUsed = Number(state.cpu_usage) || 0;
+        const cpuMax = Number(tier.max_cpu_usage) || 0;
+        if (cpuMax > 0) {
+            setEl("fsCpu", cpuUsed.toFixed(2) + "% / " + cpuMax + "%");
+            const cpuPercent = (cpuUsed / cpuMax) * 100;
+            setElClass("fsCpu", getLoadClass(cpuPercent));
+        } else {
+            setEl("fsCpu", cpuUsed.toFixed(2) + "%");
+        }
+
+        // === WORLDS ===
+        const activeWorlds = Number(state.active_worlds) || 0;
+        setEl("fsWorlds", formatNumber(activeWorlds) + " active");
+
+        // === UPDATED ===
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        setEl("fsUpdated", "Update " + hh + ":" + mm + ":" + ss);
+    }
+
+    function formatUptime(seconds) {
+        seconds = Math.floor(Number(seconds) || 0);
+        if (seconds <= 0) return "—";
+        if (seconds < 60) return seconds + "s";
+        const m = Math.floor(seconds / 60);
+        if (m < 60) return m + "m";
+        const h = Math.floor(m / 60);
+        const rm = m % 60;
+        if (h < 24) return h + "h " + rm + "m";
+        const d = Math.floor(h / 24);
+        const rh = h % 24;
+        return d + "d " + rh + "h";
+    }
+
+    function startStatsTimer() {
+        stopStatsTimer();
+        statsTimer = setInterval(fetchAndRenderStats, STATS_REFRESH_MS);
+    }
+
+    function stopStatsTimer() {
+        if (statsTimer) {
+            clearInterval(statsTimer);
+            statsTimer = null;
+        }
+    }
+
+
+    /* =========================================
+       POINTER EVENTS
     ========================================= */
 
     function onPointerDown(e) {
@@ -252,7 +446,7 @@ console.log("[GROWERA FAB] Script loading...");
         startLeft = rect.left;
         startTop = rect.top;
 
-        try { btn.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
         btn.classList.add("dragging");
         closeMenu();
     }
@@ -282,7 +476,7 @@ console.log("[GROWERA FAB] Script loading...");
         isDragging = false;
         btn.classList.remove("dragging");
 
-        try { btn.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        try { btn.releasePointerCapture(e.pointerId); } catch (err) {}
 
         pointerId = null;
         hasDragged = false;
@@ -298,7 +492,7 @@ console.log("[GROWERA FAB] Script loading...");
         if (e.pointerId !== pointerId) return;
         isDragging = false;
         btn.classList.remove("dragging");
-        try { btn.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        try { btn.releasePointerCapture(e.pointerId); } catch (err) {}
         pointerId = null;
         hasDragged = false;
     }
@@ -375,16 +569,13 @@ console.log("[GROWERA FAB] Script loading...");
             return;
         }
 
-        // Set posisi (kalau ada saved) atau biarkan CSS default
         placeAtDefaultOrSaved();
 
-        // Pointer events
         btn.addEventListener("pointerdown", onPointerDown);
         btn.addEventListener("pointermove", onPointerMove);
         btn.addEventListener("pointerup", onPointerUp);
         btn.addEventListener("pointercancel", onPointerCancel);
 
-        // Global
         document.addEventListener("click", onDocClick, true);
         document.addEventListener("keydown", onKeyDown);
         window.addEventListener("resize", onResize);
@@ -399,8 +590,7 @@ console.log("[GROWERA FAB] Script loading...");
 
         wireMenuItems();
 
-        console.log("[GROWERA FAB] Initialized. Position:",
-            getComputedStyle(btn).bottom, getComputedStyle(btn).right);
+        console.log("[GROWERA FAB] v4 FINAL initialized. SERVER_ID=" + SERVER_ID);
     }
 
 
@@ -411,8 +601,9 @@ console.log("[GROWERA FAB] Script loading...");
     window.GroweraFloating = {
         init: init,
         closeMenu: closeMenu,
+        refreshStats: fetchAndRenderStats,
         resetPosition: function () {
-            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
             useDefaultPosition();
         }
     };
