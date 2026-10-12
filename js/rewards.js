@@ -1,7 +1,7 @@
 /* =========================================
    GROWERA — REWARDS MODULE
    Rewards page (5 kategori kartu + modal),
-   admin rewards editor, dan milestone track
+   admin rewards & quest editor, dan milestone track
    ala Starlight Pass ML.
 
    Dependensi (dari app.js):
@@ -25,6 +25,7 @@
 
     const API_REWARDS_PUBLIC_URL = "/api/growera/rewards";
     const API_REWARDS_ADMIN_URL = "/api/growera/admin/rewards";
+    const API_QUEST_CONFIG_URL = "/api/growera/admin/quest-config";
 
 
     /* =========================================
@@ -99,6 +100,21 @@
         filter: "all",
         loaded: false
     };
+
+
+    /* =========================================
+       SMALL HELPERS
+    ========================================= */
+
+    function setVal(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+    }
+
+    function getVal(id) {
+        const el = document.getElementById(id);
+        return el ? String(el.value).trim() : "";
+    }
 
 
     /* =========================================
@@ -353,7 +369,7 @@
         if (item.progress) {
             const prog = document.createElement("span");
             prog.className = "reward-item-progress";
-            prog.textContent = "PROGRESS " + item.progress;
+            prog.textContent = "TARGET " + item.progress;
             left.appendChild(prog);
         }
 
@@ -609,8 +625,8 @@
 
         const label = document.createElement("div");
         label.className = "milestone-node-label";
-        label.textContent = item.progress
-            ? ("Lv " + item.progress)
+        label.textContent = (item.questType === "levelup" && item.targetValue)
+            ? ("Lv " + item.targetValue)
             : ("M" + (index + 1));
 
         node.appendChild(box);
@@ -665,6 +681,53 @@
             (unlocked ? "unlocked" : "locked");
         status.textContent = unlocked ? "✓ Unlocked" : "🔒 Locked";
         container.appendChild(status);
+    }
+
+
+    /* =========================================
+       ADMIN EDITOR — QUEST CONFIG (dropdown type)
+    ========================================= */
+
+    async function loadQuestConfig() {
+        const session = loadSession();
+        if (!session.token) return;
+
+        try {
+            const response = await fetch(API_QUEST_CONFIG_URL, {
+                headers: {
+                    "Authorization": "Bearer " + session.token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
+            });
+
+            const data = await readJSONResponse(response);
+            if (!response.ok || data.success !== true) return;
+
+            const select = document.getElementById("rewardsFormQuestType");
+            if (!select) return;
+
+            const previous = select.value;
+            select.replaceChildren();
+
+            (data.groups || []).forEach(function (g) {
+                const og = document.createElement("optgroup");
+                og.label = g.group;
+
+                (g.types || []).forEach(function (t) {
+                    const opt = document.createElement("option");
+                    opt.value = t.id;
+                    opt.textContent = t.name;
+                    og.appendChild(opt);
+                });
+
+                select.appendChild(og);
+            });
+
+            if (previous) select.value = previous;
+        } catch (err) {
+            console.warn("[GROWERA REWARDS] Quest config failed:", err);
+        }
     }
 
 
@@ -771,6 +834,13 @@
             rarityBadge.style.color = "var(--rarity-color, var(--muted))";
             rarityBadge.textContent = RARITY_LABELS[rarity] || "Common";
 
+            const typeBadge = document.createElement("span");
+            typeBadge.className = "news-status-badge";
+            typeBadge.style.background = "rgba(101, 231, 255, 0.08)";
+            typeBadge.style.border = "1px solid rgba(101, 231, 255, 0.25)";
+            typeBadge.style.color = "var(--cyan)";
+            typeBadge.textContent = item.questType || "custom";
+
             const title = document.createElement("h3");
             title.className = "news-list-item-title";
             title.textContent = (item.icon || "") + " " + (item.name || "Untitled");
@@ -778,6 +848,7 @@
             header.appendChild(statusBadge);
             header.appendChild(catBadge);
             header.appendChild(rarityBadge);
+            header.appendChild(typeBadge);
             header.appendChild(title);
 
             const excerpt = document.createElement("p");
@@ -786,8 +857,14 @@
 
             const meta = document.createElement("div");
             meta.className = "news-list-item-meta";
+
+            const targetText = "target " + (item.targetName || "*") +
+                " × " + (item.targetValue || 1);
+            const rewardText = item.reward ? (" · 🎁 " + item.reward) : "";
+
             meta.appendChild(document.createTextNode(
-                "order " + (item.order || 0) + " · " + formatDateTime(item.updatedAt)
+                "order " + (item.order || 0) + " · " + targetText +
+                rewardText + " · " + formatDateTime(item.updatedAt)
             ));
 
             content.appendChild(header);
@@ -826,16 +903,20 @@
     ========================================= */
 
     function resetRewardsForm() {
-        document.getElementById("rewardsFormCategory").value = "milestone";
-        document.getElementById("rewardsFormName").value = "";
-        document.getElementById("rewardsFormDescription").value = "";
-        document.getElementById("rewardsFormIcon").value = "";
-        document.getElementById("rewardsFormRarity").value = "common";
-        document.getElementById("rewardsFormProgress").value = "";
-        document.getElementById("rewardsFormDay").value = "";
-        document.getElementById("rewardsFormReward").value = "";
-        document.getElementById("rewardsFormOrder").value = "0";
-        document.getElementById("rewardsFormStatus").value = "draft";
+        setVal("rewardsFormCategory", "milestone");
+        setVal("rewardsFormName", "");
+        setVal("rewardsFormDescription", "");
+        setVal("rewardsFormIcon", "");
+        setVal("rewardsFormRarity", "common");
+        setVal("rewardsFormQuestType", "custom");
+        setVal("rewardsFormDay", "");
+        setVal("rewardsFormTarget", "");
+        setVal("rewardsFormTargetValue", "1");
+        setVal("rewardsFormRewardItem", "");
+        setVal("rewardsFormRewardCount", "1");
+        setVal("rewardsFormRewardGems", "0");
+        setVal("rewardsFormOrder", "0");
+        setVal("rewardsFormStatus", "draft");
 
         rewardsState.mode = "create";
         rewardsState.editingId = null;
@@ -844,18 +925,21 @@
     }
 
     function fillRewardsForm(item) {
-        document.getElementById("rewardsFormCategory").value = item.category || "milestone";
-        document.getElementById("rewardsFormName").value = item.name || "";
-        document.getElementById("rewardsFormDescription").value = item.description || "";
-        document.getElementById("rewardsFormIcon").value = item.icon || "";
-        document.getElementById("rewardsFormRarity").value = item.rarity || "common";
-        document.getElementById("rewardsFormProgress").value = item.progress || "";
-        document.getElementById("rewardsFormDay").value =
-            item.day !== undefined && item.day !== null ? item.day : "";
-        document.getElementById("rewardsFormReward").value = item.reward || "";
-        document.getElementById("rewardsFormOrder").value =
-            item.order !== undefined && item.order !== null ? item.order : 0;
-        document.getElementById("rewardsFormStatus").value = item.status || "draft";
+        setVal("rewardsFormCategory", item.category || "milestone");
+        setVal("rewardsFormName", item.name || "");
+        setVal("rewardsFormDescription", item.description || "");
+        setVal("rewardsFormIcon", item.icon || "");
+        setVal("rewardsFormRarity", item.rarity || "common");
+        setVal("rewardsFormQuestType", item.questType || "custom");
+        setVal("rewardsFormDay", item.day ? item.day : "");
+        setVal("rewardsFormTarget", item.targetName || "");
+        setVal("rewardsFormTargetValue", item.targetValue || 1);
+        setVal("rewardsFormRewardItem", item.rewardItem || "");
+        setVal("rewardsFormRewardCount", item.rewardCount || 0);
+        setVal("rewardsFormRewardGems", item.rewardGems || 0);
+        setVal("rewardsFormOrder",
+            item.order !== undefined && item.order !== null ? item.order : 0);
+        setVal("rewardsFormStatus", item.status || "draft");
 
         rewardsState.mode = "edit";
         rewardsState.editingId = item.id;
@@ -882,6 +966,7 @@
                 throw new Error(data.message || "HTTP " + response.status);
             }
 
+            await loadQuestConfig();
             fillRewardsForm(data.reward);
             showEditorView("rewards-form");
         } catch (err) {
@@ -922,19 +1007,23 @@
     }
 
     async function saveReward(status) {
-        const category = document.getElementById("rewardsFormCategory").value;
-        const name = document.getElementById("rewardsFormName").value.trim();
-        const description = document.getElementById("rewardsFormDescription").value.trim();
-        const icon = document.getElementById("rewardsFormIcon").value.trim();
-        const rarity = document.getElementById("rewardsFormRarity").value;
-        const progress = document.getElementById("rewardsFormProgress").value.trim();
-        const dayRaw = document.getElementById("rewardsFormDay").value.trim();
-        const reward = document.getElementById("rewardsFormReward").value.trim();
-        const orderRaw = document.getElementById("rewardsFormOrder").value.trim();
-        const formStatus = document.getElementById("rewardsFormStatus").value;
+        const category = getVal("rewardsFormCategory");
+        const name = getVal("rewardsFormName");
+        const description = getVal("rewardsFormDescription");
+        const icon = getVal("rewardsFormIcon");
+        const rarity = getVal("rewardsFormRarity");
+        const dayRaw = getVal("rewardsFormDay");
+        const orderRaw = getVal("rewardsFormOrder");
+        const formStatus = getVal("rewardsFormStatus");
 
         if (!name) {
             alert("Name wajib diisi.");
+            return;
+        }
+
+        const targetValue = Number(getVal("rewardsFormTargetValue")) || 1;
+        if (targetValue < 1) {
+            alert("Jumlah target minimal 1.");
             return;
         }
 
@@ -947,8 +1036,12 @@
             description: description,
             icon: icon,
             rarity: rarity,
-            progress: progress,
-            reward: reward,
+            quest_type: getVal("rewardsFormQuestType") || "custom",
+            target_name: getVal("rewardsFormTarget"),
+            target_value: targetValue,
+            reward_item: getVal("rewardsFormRewardItem"),
+            reward_count: Number(getVal("rewardsFormRewardCount")) || 0,
+            reward_gems: Number(getVal("rewardsFormRewardGems")) || 0,
             order: Number(orderRaw) || 0,
             status: status || formStatus || "draft"
         };
@@ -1006,6 +1099,7 @@
             roadmapBtn.addEventListener("click", function () {
                 showEditorView("rewards-list");
                 loadAdminRewards();
+                loadQuestConfig();
             });
         }
 
