@@ -402,8 +402,6 @@
 
             <section class="app-page hidden" id="topupPage">
 
-                <!-- CATEGORY TABS -->
-
                 <div class="topup-tabs" role="tablist">
                     <button
                         class="topup-tab active"
@@ -429,8 +427,6 @@
                         🟣 ITEMS
                     </button>
                 </div>
-
-                <!-- DYNAMIC CATEGORY HEADER -->
 
                 <div
                     class="topup-header"
@@ -464,14 +460,10 @@
                     </div>
                 </div>
 
-                <!-- SALDO (hanya untuk Crystal Store) -->
-
                 <div class="topup-balance" id="topupBalanceWrap">
                     <span class="topup-balance-label">SALDO</span>
                     <span class="topup-balance-value" id="topupBalance">—</span>
                 </div>
-
-                <!-- PANEL: CRYSTAL STORE -->
 
                 <div class="topup-tab-panel" id="topupPanelTopup">
 
@@ -536,8 +528,6 @@
 
                 </div>
 
-                <!-- PANEL: ASSETS -->
-
                 <div class="topup-tab-panel hidden" id="topupPanelAssets">
                     <div class="topup-placeholder">
                         <div class="topup-placeholder-icon">🟠</div>
@@ -551,8 +541,6 @@
                         </p>
                     </div>
                 </div>
-
-                <!-- PANEL: ITEMS -->
 
                 <div class="topup-tab-panel hidden" id="topupPanelItems">
                     <div class="topup-placeholder">
@@ -571,7 +559,7 @@
             </section>
 
 
-            <!-- MORE -->
+            <!-- MORE / ACCOUNT SETTINGS -->
 
             <section class="app-page hidden" id="morePage">
                 <div class="welcome">
@@ -587,8 +575,117 @@
                         Pengaturan akun akan dikembangkan pada tahap berikutnya.
                     </p>
 
+                    <!-- FASE 0: Admin Editor Button (hidden by default) -->
+
+                    <button
+                        class="admin-editor-button hidden"
+                        id="adminEditorBtn"
+                        data-page="editor"
+                        type="button"
+                    >
+                        <div class="admin-editor-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"/>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                            </svg>
+                        </div>
+
+                        <div class="admin-editor-content">
+                            <div class="admin-editor-title">
+                                Website Editor
+                                <span class="admin-editor-badge">ADMIN</span>
+                            </div>
+                            <div class="admin-editor-desc">
+                                Kelola konten GROWERA
+                            </div>
+                        </div>
+
+                        <div class="admin-editor-arrow">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                    </button>
+
                     <button class="logout-button" id="logoutButton" type="button">
                         Sign Out
+                    </button>
+                </div>
+            </section>
+
+
+            <!-- FASE 0: ADMIN EDITOR PLACEHOLDER -->
+
+            <section class="app-page hidden" id="editorPage">
+                <div class="welcome">
+                    <div class="eyebrow">ADMIN PANEL</div>
+                    <h1>Website Editor</h1>
+                    <p>Kelola konten website GROWERA dari sini.</p>
+                </div>
+
+                <div class="page-panel">
+                    <h2>Selamat datang di Editor</h2>
+
+                    <p>
+                        Fase 0 sudah selesai. Modul editor berikutnya
+                        akan muncul satu per satu di sini.
+                    </p>
+
+                    <div class="editor-roadmap">
+
+                        <div class="editor-roadmap-item">
+                            <div class="editor-roadmap-icon">📰</div>
+                            <div class="editor-roadmap-content">
+                                <h3>News Editor</h3>
+                                <p>Tambah, edit, dan hapus berita website.</p>
+                                <span class="editor-roadmap-badge">
+                                    Coming Soon
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="editor-roadmap-item">
+                            <div class="editor-roadmap-icon">💎</div>
+                            <div class="editor-roadmap-content">
+                                <h3>Top Up Packages</h3>
+                                <p>Kelola paket top up, harga, dan badge.</p>
+                                <span class="editor-roadmap-badge">
+                                    Coming Soon
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="editor-roadmap-item">
+                            <div class="editor-roadmap-icon">⭐</div>
+                            <div class="editor-roadmap-content">
+                                <h3>Quest Config</h3>
+                                <p>Atur misi, target, dan reward.</p>
+                                <span class="editor-roadmap-badge">
+                                    Coming Soon
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="editor-roadmap-item">
+                            <div class="editor-roadmap-icon">🎨</div>
+                            <div class="editor-roadmap-content">
+                                <h3>Appearance</h3>
+                                <p>Kustomisasi warna dan tema website.</p>
+                                <span class="editor-roadmap-badge">
+                                    Coming Soon
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="profile-button"
+                        data-page="more"
+                        type="button"
+                        style="margin-top:20px"
+                    >
+                        ← Back to Settings
                     </button>
                 </div>
             </section>
