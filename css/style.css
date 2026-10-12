@@ -7,6 +7,7 @@
    - news.css     : News card, list, modal, editor
    - shop.css     : Topup page (Crystal/Assets/Items)
    - rewards.css  : Rewards page + modal + rarity
+   - profile.css  : Profile page
 ========================================= */
 
 
@@ -856,6 +857,11 @@ input:focus {
     text-align: center;
 }
 
+/* =========================================
+   CONTENT — SCROLL CONTAINER (patched)
+   Anti bug: konten ketarik ke atas / terpotong header
+========================================= */
+
 .content {
     grid-column: 2;
     width: 100%;
@@ -864,6 +870,7 @@ input:focus {
     min-height: 0;
 
     margin: 0;
+    /* 72px topbar + 24px beta bar + 12px buffer = 108px */
     padding: 108px 26px 35px;
 
     overflow-x: hidden;
@@ -873,7 +880,13 @@ input:focus {
     scrollbar-color: #314363 transparent;
 
     position: relative;
+
+    /* ANTI BUG: cegah browser auto-snap scroll saat konten berubah */
     overflow-anchor: none;
+    scroll-behavior: auto;
+
+    /* ANTI BUG: isolasi scroll context & cegah layout bocor */
+    contain: layout style paint;
 }
 
 .right-panel {
@@ -1310,8 +1323,20 @@ button:focus-visible {
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
+/* =========================================
+   APP PAGE (patched)
+   Anti bug: konten tidak lompat saat page switch
+========================================= */
+
 .app-page {
     animation: pageEnter 0.25s ease-out both;
+
+    /* ANTI BUG: cegah browser auto-anchor saat page switch */
+    overflow-anchor: none;
+    contain: layout style;
+
+    /* ANTI BUG: pastikan tidak collapse ke 0 height */
+    min-height: 1px;
 }
 
 @keyframes pageEnter {
