@@ -1203,6 +1203,56 @@
         </aside>
 
 
+        <!-- =========================================
+             FLOATING QUICK MENU (DRAGGABLE)
+        ========================================= -->
+
+        <button
+            class="floating-quick-btn"
+            id="floatingQuickBtn"
+            type="button"
+            aria-label="Quick access menu"
+            aria-haspopup="menu"
+            aria-expanded="false"
+        >
+            <span class="floating-quick-icon">⚡</span>
+        </button>
+
+        <div
+            class="floating-menu"
+            id="floatingMenu"
+            role="menu"
+            aria-hidden="true"
+        >
+            <button class="floating-menu-item" data-page="home" role="menuitem" type="button">
+                <span class="fm-icon">⌂</span>
+                <span>Home</span>
+            </button>
+
+            <button class="floating-menu-item" data-page="profile" role="menuitem" type="button">
+                <span class="fm-icon">♙</span>
+                <span>Profile</span>
+            </button>
+
+            <button class="floating-menu-item" data-page="rewards" role="menuitem" type="button">
+                <span class="fm-icon">✧</span>
+                <span>Rewards</span>
+            </button>
+
+            <button class="floating-menu-item" data-page="topup" role="menuitem" type="button">
+                <span class="fm-icon">💎</span>
+                <span>Top Up</span>
+            </button>
+
+            <div class="floating-menu-divider"></div>
+
+            <button class="floating-menu-item logout" data-action="logout" role="menuitem" type="button">
+                <span class="fm-icon">↪</span>
+                <span>Logout</span>
+            </button>
+        </div>
+
+
         <!-- INVENTORY MODAL -->
 
         <div class="inventory-modal" id="inventoryModal">
@@ -1320,6 +1370,7 @@
     <script src="/js/shop.js"></script>
     <script src="/js/profile.js"></script>
     <script src="/js/rewards.js"></script>
+    <script src="/js/floating-button.js"></script>
 
 </body>
 </html>
