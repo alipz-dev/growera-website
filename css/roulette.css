@@ -1,0 +1,42 @@
+/* GROWERA Crystal Roulette — isolated styles */
+#rouletteLauncher,#roulettePanel,#rouletteWinOverlay{box-sizing:border-box}
+#rouletteLauncher *,#roulettePanel *,#rouletteWinOverlay *{box-sizing:border-box}
+#rouletteLauncher{position:fixed;z-index:99990;right:88px;bottom:28px;width:68px;height:78px;padding:6px 3px;border:1px solid #65e7ff80;border-radius:21px;color:#f4f7ff;background:radial-gradient(circle at 50% 10%,#65e7ff30,transparent 50%),linear-gradient(145deg,#142239f5,#090f1df5);box-shadow:0 0 22px #65e7ff29,inset 0 1px #ffffff20;backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:transform .2s,box-shadow .2s;touch-action:manipulation}
+#rouletteLauncher[hidden],#roulettePanel[hidden],#rouletteWinOverlay[hidden]{display:none!important}
+#rouletteLauncher:hover{transform:translateY(-3px);box-shadow:0 0 28px #65e7ff47}
+.roulette-launcher-crystal{font-size:27px;line-height:1.05;filter:drop-shadow(0 0 8px #65e7ff99)}
+.roulette-launcher-caption{font-size:6px;font-weight:900;letter-spacing:.8px;color:#9baac3;white-space:nowrap}
+.roulette-launcher-total{font-size:10px;font-weight:900;color:#f1cc78}
+#roulettePanel{position:fixed;z-index:99991;right:24px;bottom:120px;width:min(390px,calc(100vw - 28px));max-height:calc(100dvh - 145px);overflow:auto;padding:19px;border:1px solid #82a0d23d;border-radius:24px;color:#f4f7ff;background:radial-gradient(circle at 90% 0%,#9b7bff28,transparent 40%),radial-gradient(circle at 0% 100%,#65e7ff18,transparent 40%),#080d19f7;box-shadow:0 24px 80px #0009,0 0 30px #65e7ff14;backdrop-filter:blur(20px);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(12px) scale(.98);transition:opacity .2s,transform .2s,visibility .2s}
+#roulettePanel.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.roulette-panel-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px}
+.roulette-eyebrow{color:#65e7ff;font-size:9px;letter-spacing:2px;font-weight:900}
+.roulette-panel-title{margin:5px 0;font-size:22px;line-height:1.2}
+.roulette-panel-subtitle{margin:0;color:#9baac3;font-size:11px;line-height:1.6}
+.roulette-close{width:32px;height:32px;flex:none;border:1px solid #82a0d233;border-radius:11px;color:#9baac3;background:#ffffff08;cursor:pointer}
+.roulette-total-card{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin-bottom:14px;border:1px solid #f1cc7833;border-radius:15px;background:linear-gradient(110deg,#f1cc7818,#9b7bff10)}
+.roulette-total-label{font-size:9px;letter-spacing:1.3px;color:#9baac3;font-weight:800}.roulette-total-value{font-size:20px;font-weight:900;color:#f1cc78}
+.roulette-types{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.roulette-type{text-align:left;padding:12px 10px;border:1px solid #82a0d22e;border-radius:15px;color:#f4f7ff;background:#ffffff06;cursor:pointer}
+.roulette-type.is-selected{border-color:#65e7ffb3;background:#65e7ff14;box-shadow:inset 0 0 0 1px #65e7ff12}
+.roulette-type-icon,.roulette-type-name,.roulette-type-balance{display:block}.roulette-type-icon{font-size:19px;margin-bottom:7px}.roulette-type-name{font-size:10px;font-weight:900;letter-spacing:.3px}.roulette-type-balance{margin-top:4px;color:#9baac3;font-size:10px}
+.roulette-wheel-wrap{position:relative;width:min(260px,76vw);aspect-ratio:1;margin:0 auto 15px}
+.roulette-wheel-rim{position:absolute;inset:0;padding:7px;border-radius:50%;background:linear-gradient(135deg,#65e7ff,#9b7bff 48%,#f1cc78);box-shadow:0 0 28px #65e7ff24,0 8px 30px #0005}
+.roulette-wheel{position:relative;width:100%;height:100%;overflow:hidden;border:3px solid #10182a;border-radius:50%;background:conic-gradient(from -22.5deg,#182e48 0 45deg,#322750 45deg 90deg,#174454 90deg 135deg,#49364b 135deg 180deg,#1d3651 180deg 225deg,#3d2d57 225deg 270deg,#16404b 270deg 315deg,#4a3a25 315deg 360deg);will-change:transform}
+.roulette-wheel:after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from -22.5deg,transparent 0 44deg,#ffffff70 44deg 45deg);pointer-events:none}
+.roulette-wheel-label{position:absolute;left:50%;top:50%;width:44%;height:44%;margin:-22%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:4px;text-align:center;transform-origin:center center;color:#f4f7ff;font-size:9px;line-height:1.1;font-weight:800;text-shadow:0 1px 4px #000b;pointer-events:none}
+.roulette-wheel-label span{font-size:17px;margin-bottom:2px}
+.roulette-wheel-center{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border:3px solid #f1cc78cc;border-radius:50%;display:grid;place-items:center;font-size:22px;background:radial-gradient(circle at 30% 20%,#283a57,#080d19 75%);box-shadow:0 0 18px #f1cc7838}
+.roulette-pointer{position:absolute;z-index:4;top:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:25px solid #f1cc78;filter:drop-shadow(0 2px 4px #0009)}
+.roulette-wheel-status{min-height:18px;margin:0 0 12px;color:#9baac3;text-align:center;font-size:11px}
+.roulette-spin-btn{width:100%;padding:13px;border:0;border-radius:14px;color:#07111e;font-size:11px;font-weight:1000;letter-spacing:1.2px;background:linear-gradient(100deg,#65e7ff,#a8eaff 48%,#f1cc78);cursor:pointer}
+.roulette-spin-btn:disabled{opacity:.4;cursor:not-allowed}.roulette-disclaimer{margin:10px 0 0;text-align:center;color:#72819c;font-size:9px;line-height:1.5}
+#rouletteWinOverlay{position:fixed;z-index:100000;inset:0;padding:20px;display:grid;place-items:center;background:#03060ec4;backdrop-filter:blur(9px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s}
+#rouletteWinOverlay.is-open{opacity:1;visibility:visible;pointer-events:auto}
+.roulette-win-card{position:relative;overflow:hidden;width:min(360px,100%);padding:28px 22px 22px;text-align:center;border:1px solid #f1cc7866;border-radius:25px;background:radial-gradient(circle at 50% 0%,#f1cc7826,transparent 45%),#10182a;box-shadow:0 25px 90px #0009,0 0 40px #f1cc781a;transform:translateY(12px) scale(.96);transition:transform .25s}
+#rouletteWinOverlay.is-open .roulette-win-card{transform:none}
+.roulette-win-kicker{color:#f1cc78;font-size:10px;letter-spacing:2px;font-weight:900}.roulette-win-icon{margin:12px 0 6px;font-size:52px}.roulette-win-title{margin:0 0 8px;font-size:24px}.roulette-win-prize{color:#65e7ff;font-size:16px;font-weight:900}.roulette-win-desc{color:#9baac3;font-size:11px;line-height:1.6;margin:12px 0 20px}.roulette-win-close{width:100%;padding:12px;border:1px solid #f1cc7859;border-radius:13px;color:#f4f7ff;background:#f1cc7817;font-weight:900;cursor:pointer}
+.roulette-particle{position:fixed;z-index:100001;pointer-events:none;width:7px;height:11px;border-radius:2px;background:var(--particle-color,#65e7ff);left:var(--particle-x);top:var(--particle-y);animation:rouletteParticleFly var(--particle-duration,1.2s) cubic-bezier(.12,.72,.2,1) forwards}
+@keyframes rouletteParticleFly{0%{opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate3d(var(--particle-dx),var(--particle-dy),0) rotate(620deg) scale(.25)}}
+@media(max-width:560px){#rouletteLauncher{right:72px;bottom:17px;width:62px;height:72px}#roulettePanel{right:10px;bottom:99px;width:calc(100vw - 20px);max-height:calc(100dvh - 115px);padding:15px}.roulette-panel-title{font-size:20px}.roulette-wheel-wrap{width:min(238px,72vw)}.roulette-wheel-label{font-size:8px}.roulette-wheel-label span{font-size:15px}}
+@media(prefers-reduced-motion:reduce){#rouletteLauncher,#roulettePanel,#rouletteWinOverlay,.roulette-win-card{transition:none!important}.roulette-particle{animation-duration:.01ms!important}}
