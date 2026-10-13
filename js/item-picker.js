@@ -1,6 +1,8 @@
 /* =========================================
-   GROWERA — ITEM PICKER (v3, per-file image)
-   Load texture dari /assets/itemimage/{id}.png
+   GROWERA — ITEM PICKER (v4)
+   + Preview icon di form
+   + Universal icon: <span data-item-icon="242"></span>
+   + Helper API: GroweraItemPicker.createIcon(id)
 ========================================= */
 
 (function () {
@@ -39,7 +41,7 @@
 
     const dom = {};
 
-    /* ====== DOM ====== */
+    /* ====== DOM CACHE ====== */
 
     function cacheDom() {
         dom.modal       = document.getElementById("itemPickerModal");
@@ -51,7 +53,7 @@
         dom.footer      = document.getElementById("itemPickerFooter");
     }
 
-    /* ====== DATA ====== */
+    /* ====== LOAD DATA ====== */
 
     function loadData() {
         if (loadPromise) return loadPromise;
@@ -105,7 +107,7 @@
         state.page = 1;
     }
 
-    /* ====== RENDER ====== */
+    /* ====== ICON HELPER ====== */
 
     function getItemColor(id) {
         const palette = [
@@ -124,6 +126,144 @@
         try { return IMAGE.fallbackUrl(id); } catch { return null; }
     }
 
+    /**
+     * Buat elemen <img> untuk item, lengkap dengan fallback API → huruf.
+     * @param {number} id
+     * @param {number} size
+     * @returns {HTMLImageElement}
+     */
+    function createIconImg(id, size) {
+        size = size || 20;
+
+        const img = document.createElement("img");
+        img.src = buildImageUrl(id);
+        img.alt = "";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.draggable = false;
+        img.width = size;
+        img.height = size;
+        img.style.width  = size + "px";
+        img.style.height = size + "px";
+        img.style.objectFit = "contain";
+        img.style.imageRendering = "pixelated";
+        img.style.pointerEvents = "none";
+        img.style.userSelect = "none";
+        img.style.verticalAlign = "middle";
+        img.style.display = "block";
+
+        let triedFallback = false;
+        img.addEventListener("error", function onErr() {
+            if (!triedFallback) {
+                triedFallback = true;
+                const fb = buildFallbackUrl(id);
+                if (fb) { img.src = fb; return; }
+            }
+            img.removeEventListener("error", onErr);
+            // Fallback terakhir: sembunyikan
+            img.style.display = "none";
+        });
+
+        return img;
+    }
+
+    /**
+     * Buat elemen wrapper <span class="item-icon"> berisi icon.
+     * @param {number} id
+     * @param {number} size
+     * @returns {HTMLSpanElement}
+     */
+    function createIconSpan(id, size) {
+        size = size || 20;
+        const span = document.createElement("span");
+        span.className = "item-icon";
+        span.style.width  = size + "px";
+        span.style.height = size + "px";
+        span.appendChild(createIconImg(id, size));
+        return span;
+    }
+
+    /**
+     * Kembalikan HTML string icon — untuk dipakai via innerHTML.
+     * @param {number} id
+     * @param {number} size
+     * @returns {string}
+     */
+    function iconHTML(id, size) {
+        size = size || 20;
+        return `<img src="${buildImageUrl(id)}" `
+            + `width="${size}" height="${size}" `
+            + `style="width:${size}px;height:${size}px;object-fit:contain;`
+            + `image-rendering:pixelated;vertical-align:middle;`
+            + `pointer-events:none;display:inline-block" `
+            + `loading="lazy" decoding="async" draggable="false" alt="">`;
+    }
+
+    /* ====== AUTO-INJECT KE [data-item-icon] ====== */
+
+    function autoAttachIcons(root) {
+        const scope = root || document;
+        scope.querySelectorAll("[data-item-icon]").forEach((el) => {
+            if (el.dataset.itemIconAttached === "1") return;
+            el.dataset.itemIconAttached = "1";
+
+            const id = parseInt(el.dataset.itemIcon, 10);
+            if (isNaN(id)) return;
+
+            const size = parseInt(el.dataset.itemIconSize || "20", 10);
+            el.replaceChildren(createIconImg(id, size));
+        });
+    }
+
+    /* ====== PARSE ID DARI TEXT ====== */
+
+    /**
+     * Parse item ID dari string yang formatnya "Name [#242]" atau "242".
+     * Return null kalau tidak ketemu.
+     */
+    function parseItemId(text) {
+        if (!text) return null;
+        const m = String(text).match(/\[#(\d+)\]/);
+        if (m) return parseInt(m[1], 10);
+        const n = String(text).trim();
+        if (/^\d+$/.test(n)) return parseInt(n, 10);
+        return null;
+    }
+
+    /* ====== PREVIEW DI FORM ====== */
+
+    function updateFormPreview(input, item) {
+        let wrap = input.parentElement;
+        if (!wrap || !wrap.classList.contains("item-picker-wrap")) return;
+
+        let preview = wrap.querySelector(".item-picker-preview");
+        if (!preview) {
+            preview = document.createElement("div");
+            preview.className = "item-picker-preview";
+            preview.hidden = true;
+            // Sisipkan sebelum tombol trigger kalau ada
+            const trigger = wrap.querySelector(".item-picker-trigger");
+            if (trigger) {
+                wrap.insertBefore(preview, trigger);
+            } else {
+                wrap.appendChild(preview);
+            }
+        }
+
+        preview.replaceChildren();
+
+        if (item && typeof item.id === "number") {
+            preview.appendChild(createIconImg(item.id, 28));
+            preview.hidden = false;
+            preview.title = item.name || ("Item #" + item.id);
+        } else {
+            preview.hidden = true;
+            preview.title = "";
+        }
+    }
+
+    /* ====== RENDER PICKER GRID ====== */
+
     function renderMeta() {
         if (!dom.meta) return;
         const total = state.filtered.length;
@@ -135,33 +275,7 @@
     function buildIconElement(item) {
         const wrapper = document.createElement("div");
         wrapper.className = "item-picker-icon-wrap";
-
-        const img = document.createElement("img");
-        img.className = "item-picker-icon-img";
-        img.alt = item.name;
-        img.draggable = false;
-        if (IMAGE.lazy) img.loading = "lazy";
-        img.decoding = "async";
-        img.src = buildImageUrl(item.id);
-
-        let triedFallback = false;
-        img.addEventListener("error", function onErr() {
-            if (!triedFallback) {
-                triedFallback = true;
-                const fb = buildFallbackUrl(item.id);
-                if (fb) { img.src = fb; return; }
-            }
-            img.removeEventListener("error", onErr);
-            const color = getItemColor(item.id);
-            const letter = document.createElement("div");
-            letter.className = "item-picker-letter";
-            letter.style.color = color;
-            letter.style.background = color + "22";
-            letter.textContent = (item.name.charAt(0) || "?").toUpperCase();
-            wrapper.replaceChild(letter, img);
-        });
-
-        wrapper.appendChild(img);
+        wrapper.appendChild(createIconImg(item.id, 46));
         return wrapper;
     }
 
@@ -340,8 +454,9 @@
         return item.name + " [#" + item.id + "]";
     }
 
-    function autoAttach() {
-        document.querySelectorAll("[data-item-picker]").forEach((input) => {
+    function autoAttach(root) {
+        const scope = root || document;
+        scope.querySelectorAll("[data-item-picker]").forEach((input) => {
             if (input.dataset.itemPickerAttached === "1") return;
             input.dataset.itemPickerAttached = "1";
 
@@ -356,6 +471,13 @@
                 wrap = newWrap;
             }
 
+            // Preview (hidden sampai ada item)
+            const preview = document.createElement("div");
+            preview.className = "item-picker-preview";
+            preview.hidden = true;
+            wrap.appendChild(preview);
+
+            // Trigger button
             const btn = document.createElement("button");
             btn.type = "button";
             btn.className = "item-picker-trigger";
@@ -369,6 +491,7 @@
                     title: input.dataset.itemPickerTitle || "Pilih Item",
                     onSelect: (item) => {
                         input.value = buildOutput(input, item);
+                        updateFormPreview(input, item);
                         input.dispatchEvent(new Event("input",  { bubbles: true }));
                         input.dispatchEvent(new Event("change", { bubbles: true }));
                     }
@@ -376,6 +499,24 @@
             });
 
             wrap.appendChild(btn);
+
+            // Kalau input sudah ada value (edit mode), tampilkan preview
+            const existingId = parseItemId(input.value);
+            if (existingId !== null) {
+                const item = idToItem.get(existingId);
+                updateFormPreview(input, item || { id: existingId, name: "Item #" + existingId });
+            }
+
+            // Update preview saat user ketik manual
+            input.addEventListener("input", () => {
+                const id = parseItemId(input.value);
+                if (id === null) {
+                    updateFormPreview(input, null);
+                } else {
+                    const item = idToItem.get(id);
+                    updateFormPreview(input, item || { id: id, name: "Item #" + id });
+                }
+            });
         });
     }
 
@@ -400,10 +541,14 @@
         });
 
         autoAttach();
+        autoAttachIcons();
 
         if (typeof MutationObserver !== "undefined") {
-            new MutationObserver(autoAttach)
-                .observe(document.body, { childList: true, subtree: true });
+            const observer = new MutationObserver((mutations) => {
+                autoAttach();
+                autoAttachIcons();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
         }
 
         loadData().catch(() => {});
@@ -415,6 +560,11 @@
 
     window.GroweraItemPicker = {
         init, open, close, isOpen, preload, getItem, getAllItems,
+        createIcon: createIconImg,      // → HTMLImageElement
+        createIconSpan: createIconSpan, // → HTMLSpanElement
+        iconHTML: iconHTML,             // → string HTML
+        parseItemId: parseItemId,
+        renderIcons: autoAttachIcons,   // panggil manual kalau perlu
         config: IMAGE,
         getImageUrl: buildImageUrl
     };
