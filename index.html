@@ -1328,6 +1328,83 @@
         </div>
 
 
+        <!-- =========================================
+             GROWERA CRYSTAL ROULETTE
+        ========================================= -->
+
+        <button id="rouletteLauncher" type="button" aria-label="Buka Crystal Roulette" aria-expanded="false" hidden>
+            <span class="roulette-launcher-crystal">💠</span>
+            <span class="roulette-launcher-caption">TOTAL AVAILABLE</span>
+            <span class="roulette-launcher-total"><span id="rouletteLauncherTotal">5</span> PTS</span>
+        </button>
+
+        <section id="roulettePanel" aria-label="Crystal Roulette" hidden>
+            <div class="roulette-panel-head">
+                <div>
+                    <div class="roulette-eyebrow">GROWERA · LUCKY CRYSTALS</div>
+                    <h2 class="roulette-panel-title">Crystal Roulette</h2>
+                    <p class="roulette-panel-subtitle">Choose your wheel. Every spin uses one matching point.</p>
+                </div>
+                <button class="roulette-close" id="rouletteCloseBtn" type="button" aria-label="Tutup Roulette">✕</button>
+            </div>
+
+            <div class="roulette-total-card">
+                <span class="roulette-total-label">TOTAL AVAILABLE</span>
+                <span class="roulette-total-value"><span id="roulettePanelTotal">5</span> PTS</span>
+            </div>
+
+            <div class="roulette-types">
+                <button class="roulette-type is-selected" data-roulette-type="daily" type="button" aria-pressed="true">
+                    <span class="roulette-type-icon">☀️</span>
+                    <span class="roulette-type-name">DAILY ROULETTE</span>
+                    <span class="roulette-type-balance" id="rouletteDailyBalance">2 points</span>
+                </button>
+                <button class="roulette-type" data-roulette-type="online" type="button" aria-pressed="false">
+                    <span class="roulette-type-icon">🌐</span>
+                    <span class="roulette-type-name">ONLINE ROULETTE</span>
+                    <span class="roulette-type-balance" id="rouletteOnlineBalance">3 points</span>
+                </button>
+            </div>
+
+            <div class="roulette-eyebrow" id="rouletteWheelHeading" style="text-align:center;margin-bottom:12px">DAILY ROULETTE</div>
+
+            <div class="roulette-wheel-wrap">
+                <div class="roulette-pointer" aria-hidden="true"></div>
+                <div class="roulette-wheel-rim">
+                    <div class="roulette-wheel" id="rouletteWheel" aria-label="Roda hadiah">
+                        <div class="roulette-wheel-center">💎</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="roulette-wheel-status" id="rouletteWheelStatus" aria-live="polite">
+                Gunakan poin Daily untuk memutar roda.
+            </p>
+
+            <button class="roulette-spin-btn" id="rouletteSpinBtn" type="button">
+                ✦ SPIN ROULETTE · 1 POINT
+            </button>
+
+            <p class="roulette-disclaimer">
+                UI DEMO · Poin dan hadiah belum divalidasi atau disimpan di server.
+            </p>
+        </section>
+
+        <div id="rouletteWinOverlay" role="dialog" aria-modal="true" aria-labelledby="rouletteWinTitle" hidden>
+            <div class="roulette-win-card" id="rouletteWinCard">
+                <div class="roulette-win-kicker">CRYSTAL REWARD UNLOCKED</div>
+                <div class="roulette-win-icon" id="rouletteWinIcon">💎</div>
+                <h2 class="roulette-win-title" id="rouletteWinTitle">Congratulations!</h2>
+                <div class="roulette-win-prize" id="rouletteWinPrize">Crystal Reward (DEMO)</div>
+                <p class="roulette-win-desc">
+                    Ini hanya hadiah simulasi untuk menguji tampilan Roulette.
+                    Belum ada item atau gems yang benar-benar ditambahkan ke akun.
+                </p>
+                <button class="roulette-win-close" id="rouletteWinCloseBtn" type="button">CONTINUE</button>
+            </div>
+        </div>
+
+
         <!-- INVENTORY MODAL -->
 
         <div class="inventory-modal" id="inventoryModal">
