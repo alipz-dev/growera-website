@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/css/shop.css">
     <link rel="stylesheet" href="/css/rewards.css">
     <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/roulette.css">
 </head>
 
 <body>
@@ -110,8 +111,7 @@
                     <span class="nav-text">Rewards</span>
                 </button>
 
-                <!-- ROULETTE NAV BUTTON -->
-                <button class="nav-button" id="rouletteNavButton" type="button">
+                <button class="nav-button" data-page="roulette" type="button">
                     <span class="nav-icon">💠</span>
                     <span class="nav-text">Roulette</span>
                 </button>
@@ -320,19 +320,19 @@
                             </span>
                         </button>
 
+                        <button class="quick-card" data-page="roulette" type="button">
+                            <span class="quick-icon">💠</span>
+                            <span>
+                                <span class="quick-title">Roulette</span>
+                                <div class="quick-description">Putar roda hadiah</div>
+                            </span>
+                        </button>
+
                         <button class="quick-card" data-page="topup" type="button">
                             <span class="quick-icon">💎</span>
                             <span>
                                 <span class="quick-title">Top Up</span>
                                 <div class="quick-description">Isi ulang gems</div>
-                            </span>
-                        </button>
-
-                        <button class="quick-card" data-page="history" type="button">
-                            <span class="quick-icon">📜</span>
-                            <span>
-                                <span class="quick-title">History</span>
-                                <div class="quick-description">Riwayat aktivitas</div>
                             </span>
                         </button>
                     </div>
@@ -495,6 +495,70 @@
                     </div>
                     <div class="rewards-featured-emblem">👑</div>
                 </section>
+
+            </section>
+
+
+            <!-- ROULETTE PAGE -->
+
+            <section class="app-page hidden" id="roulettePage">
+
+                <div class="roulette-header">
+                    <div class="eyebrow">GROWERA · LUCKY CRYSTALS</div>
+                    <h1 class="roulette-page-title">Crystal Roulette</h1>
+                    <p class="roulette-page-subtitle">
+                        Choose your wheel. Every spin uses one matching point.
+                    </p>
+                </div>
+
+                <div class="roulette-total-card">
+                    <span class="roulette-total-label">TOTAL AVAILABLE</span>
+                    <span class="roulette-total-value">
+                        <span id="roulettePanelTotal">5</span> PTS
+                    </span>
+                </div>
+
+                <div class="roulette-types">
+                    <button class="roulette-type is-selected"
+                            data-roulette-type="daily"
+                            type="button" aria-pressed="true">
+                        <span class="roulette-type-icon">☀️</span>
+                        <span class="roulette-type-name">DAILY ROULETTE</span>
+                        <span class="roulette-type-balance" id="rouletteDailyBalance">2 points</span>
+                    </button>
+                    <button class="roulette-type"
+                            data-roulette-type="online"
+                            type="button" aria-pressed="false">
+                        <span class="roulette-type-icon">🌐</span>
+                        <span class="roulette-type-name">ONLINE ROULETTE</span>
+                        <span class="roulette-type-balance" id="rouletteOnlineBalance">3 points</span>
+                    </button>
+                </div>
+
+                <div class="roulette-eyebrow roulette-wheel-heading" id="rouletteWheelHeading">
+                    DAILY ROULETTE
+                </div>
+
+                <div class="roulette-wheel-wrap">
+                    <div class="roulette-pointer" aria-hidden="true"></div>
+                    <div class="roulette-wheel-rim">
+                        <div class="roulette-wheel" id="rouletteWheel" aria-label="Roda hadiah">
+                            <div class="roulette-wheel-center">💎</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="roulette-wheel-status" id="rouletteWheelStatus" aria-live="polite">
+                    Gunakan poin Daily untuk memutar roda.
+                </p>
+
+                <button class="roulette-spin-btn" id="rouletteSpinBtn" type="button">
+                    ✦ SPIN ROULETTE · 1 POINT
+                </button>
+
+                <p class="roulette-disclaimer">
+                    UI DEMO · Poin dan hadiah belum divalidasi atau disimpan di server.
+                </p>
 
             </section>
 
@@ -972,8 +1036,6 @@
                             </div>
                         </div>
 
-                        <!-- QUEST CONFIG -->
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="rewardsFormQuestType">Quest Type</label>
@@ -1002,8 +1064,6 @@
                                        min="1" placeholder="100" />
                             </div>
                         </div>
-
-                        <!-- REWARD CONFIG -->
 
                         <div class="editor-form-row">
                             <div class="editor-form-group">
@@ -1243,7 +1303,7 @@
 
 
         <!-- =========================================
-             FLOATING QUICK MENU (DRAGGABLE + SERVER STATS)
+             FLOATING QUICK MENU
         ========================================= -->
 
         <button
@@ -1320,6 +1380,11 @@
                 <span>Rewards</span>
             </button>
 
+            <button class="floating-menu-item" data-page="roulette" role="menuitem" type="button">
+                <span class="fm-icon">💠</span>
+                <span>Roulette</span>
+            </button>
+
             <button class="floating-menu-item" data-page="topup" role="menuitem" type="button">
                 <span class="fm-icon">💎</span>
                 <span>Top Up</span>
@@ -1335,60 +1400,8 @@
 
 
         <!-- =========================================
-             GROWERA CRYSTAL ROULETTE (dibuka dari sidebar)
+             ROULETTE WIN OVERLAY
         ========================================= -->
-
-        <section id="roulettePanel" aria-label="Crystal Roulette" hidden>
-            <div class="roulette-panel-head">
-                <div>
-                    <div class="roulette-eyebrow">GROWERA · LUCKY CRYSTALS</div>
-                    <h2 class="roulette-panel-title">Crystal Roulette</h2>
-                    <p class="roulette-panel-subtitle">Choose your wheel. Every spin uses one matching point.</p>
-                </div>
-                <button class="roulette-close" id="rouletteCloseBtn" type="button" aria-label="Tutup Roulette">✕</button>
-            </div>
-
-            <div class="roulette-total-card">
-                <span class="roulette-total-label">TOTAL AVAILABLE</span>
-                <span class="roulette-total-value"><span id="roulettePanelTotal">5</span> PTS</span>
-            </div>
-
-            <div class="roulette-types">
-                <button class="roulette-type is-selected" data-roulette-type="daily" type="button" aria-pressed="true">
-                    <span class="roulette-type-icon">☀️</span>
-                    <span class="roulette-type-name">DAILY ROULETTE</span>
-                    <span class="roulette-type-balance" id="rouletteDailyBalance">2 points</span>
-                </button>
-                <button class="roulette-type" data-roulette-type="online" type="button" aria-pressed="false">
-                    <span class="roulette-type-icon">🌐</span>
-                    <span class="roulette-type-name">ONLINE ROULETTE</span>
-                    <span class="roulette-type-balance" id="rouletteOnlineBalance">3 points</span>
-                </button>
-            </div>
-
-            <div class="roulette-eyebrow" id="rouletteWheelHeading" style="text-align:center;margin-bottom:12px">DAILY ROULETTE</div>
-
-            <div class="roulette-wheel-wrap">
-                <div class="roulette-pointer" aria-hidden="true"></div>
-                <div class="roulette-wheel-rim">
-                    <div class="roulette-wheel" id="rouletteWheel" aria-label="Roda hadiah">
-                        <div class="roulette-wheel-center">💎</div>
-                    </div>
-                </div>
-            </div>
-
-            <p class="roulette-wheel-status" id="rouletteWheelStatus" aria-live="polite">
-                Gunakan poin Daily untuk memutar roda.
-            </p>
-
-            <button class="roulette-spin-btn" id="rouletteSpinBtn" type="button">
-                ✦ SPIN ROULETTE · 1 POINT
-            </button>
-
-            <p class="roulette-disclaimer">
-                UI DEMO · Poin dan hadiah belum divalidasi atau disimpan di server.
-            </p>
-        </section>
 
         <div id="rouletteWinOverlay" role="dialog" aria-modal="true" aria-labelledby="rouletteWinTitle" hidden>
             <div class="roulette-win-card" id="rouletteWinCard">
