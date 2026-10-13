@@ -1,0 +1,96 @@
+{
+    "version": 1,
+    "updatedAt": 0,
+    "categories": [
+        {
+            "key": "topup",
+            "eyebrow": "CRYSTAL STORE",
+            "title": "CRYSTAL STORE",
+            "subtitle": "Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.",
+            "currencyIcon": 112,
+            "currencyName": "GEMS",
+            "currencyKey": "gems",
+            "variant": "crystal",
+            "showBalance": true,
+            "order": 1,
+            "active": true,
+            "packages": [
+                {
+                    "id": "starter",
+                    "iconId": 112,
+                    "price": 15000,
+                    "tier": "starter",
+                    "badge": null,
+                    "order": 1,
+                    "active": true,
+                    "displayValue": 100,
+                    "displayUnit": "GEMS",
+                    "bonusText": null,
+                    "rewards": [
+                        { "type": "gems", "amount": 100 }
+                    ]
+                },
+                {
+                    "id": "popular",
+                    "iconId": 112,
+                    "price": 100000,
+                    "tier": "popular",
+                    "badge": "⭐ POPULER",
+                    "order": 3,
+                    "active": true,
+                    "displayValue": 800,
+                    "displayUnit": "GEMS",
+                    "bonusText": "+15% BONUS",
+                    "rewards": [
+                        { "type": "gems", "amount": 920 }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "roles",
+            "eyebrow": "ROLE STORE",
+            "title": "ROLE STORE",
+            "subtitle": "Beli role eksklusif untuk membuka fitur spesial di Crystal Era.",
+            "currencyIcon": 1458,
+            "currencyName": "GEMS",
+            "currencyKey": "gems",
+            "variant": "items",
+            "showBalance": true,
+            "order": 2,
+            "active": true,
+            "packages": [
+                {
+                    "id": "vip30",
+                    "iconId": 1458,
+                    "price": 50000,
+                    "tier": "basic",
+                    "badge": null,
+                    "order": 1,
+                    "active": true,
+                    "displayValue": 30,
+                    "displayUnit": "HARI",
+                    "bonusText": "Role VIP",
+                    "rewards": [
+                        { "type": "role", "roleId": 3, "durationDays": 30 }
+                    ]
+                },
+                {
+                    "id": "vip_perm",
+                    "iconId": 1458,
+                    "price": 500000,
+                    "tier": "divine",
+                    "badge": "🌈 PERMANENT",
+                    "order": 2,
+                    "active": true,
+                    "displayValue": 999,
+                    "displayUnit": "HARI",
+                    "bonusText": "Role VIP Permanen",
+                    "rewards": [
+                        { "type": "role", "roleId": 3, "durationDays": 0 }
+                    ]
+                }
+            ]
+        }
+    ]
+}
