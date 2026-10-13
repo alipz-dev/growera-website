@@ -1,13 +1,14 @@
 /* =========================================
    GROWERA Crystal Roulette — UI DEMO ONLY
-   Version: self-contained nav (tidak bergantung app.js whitelist)
+   - Wheel label positioning fixed (via CSS vars)
+   - Theme switch: daily = orange luxury, online = plain
 ========================================= */
 
 (function () {
     "use strict";
 
-    const PREFIX  = "growera_roulette_demo_v1:";
-    const DEFAULT = { daily: 2, online: 3 };
+    const PREFIX   = "growera_roulette_demo_v1:";
+    const DEFAULT  = { daily: 2, online: 3 };
     const PAGE_KEY = "roulette";
 
     const PRIZES = [
@@ -24,12 +25,12 @@
     const $ = id => document.getElementById(id);
 
     let page, overlay, wheel, spinBtn, statusEl;
-    let selected   = "daily";
-    let spinning   = false;
-    let rotation   = 0;
-    let accountKey = "";
-    let state      = { ...DEFAULT };
-    let observer   = null;
+    let selected    = "daily";
+    let spinning    = false;
+    let rotation    = 0;
+    let accountKey  = "";
+    let state       = { ...DEFAULT };
+    let observer    = null;
 
 
     /* =========================================
@@ -115,7 +116,18 @@
 
 
     /* =========================================
-       NAVIGATION (manual, tidak bergantung app.js)
+       THEME SWITCH
+    ========================================= */
+
+    function applyTheme(type) {
+        if (!page) return;
+        page.classList.toggle("theme-daily",  type === "daily");
+        page.classList.toggle("theme-online", type === "online");
+    }
+
+
+    /* =========================================
+       NAVIGATION
     ========================================= */
 
     function showRoulettePage() {
@@ -123,26 +135,24 @@
 
         loadState();
 
-        // Sembunyikan semua app-page di dalam main.content
+        // Hide semua app-page di #dashboardScreen
         document
             .querySelectorAll("#dashboardScreen .app-page")
             .forEach(p => p.classList.add("hidden"));
 
-        // Tampilkan roulette
+        // Show roulette page
         if (page) page.classList.remove("hidden");
 
-        // Update active state nav-button
+        // Update nav-button active state
         document
             .querySelectorAll("#dashboardScreen .nav-button")
             .forEach(b => b.classList.remove("active"));
 
-        // Aktifkan nav button roulette (cari by data-page)
         const rouletteNav = document.querySelector(
             '#dashboardScreen .nav-button[data-page="' + PAGE_KEY + '"]'
         );
         if (rouletteNav) rouletteNav.classList.add("active");
 
-        // Scroll top
         window.scrollTo({ top: 0, behavior: "smooth" });
 
         render();
@@ -167,7 +177,11 @@
         if (!card) return;
 
         const rect = card.getBoundingClientRect();
-        const colors = ["#65E7FF", "#9B7BFF", "#F1CC78", "#58FFAD", "#FFFFFF"];
+
+        // Warna partikel menyesuaikan tema
+        const colors = selected === "daily"
+            ? ["#FFD166", "#FFA94D", "#FF8C42", "#E63946", "#FFFFFF"]
+            : ["#65E7FF", "#9B7BFF", "#F1CC78", "#58FFAD", "#FFFFFF"];
 
         for (let i = 0; i < 30; i++) {
             const p = document.createElement("i");
@@ -200,6 +214,8 @@
     function select(type) {
         if (spinning) return;
         selected = type;
+
+        applyTheme(type);
 
         const heading = $("rouletteWheelHeading");
         if (heading) {
@@ -253,6 +269,8 @@
 
     /* =========================================
        WHEEL LABELS
+       - Konten di-center di dalam box kecil
+       - CSS handle posisi (via --label-angle & --label-distance)
     ========================================= */
 
     function drawLabels() {
@@ -261,10 +279,9 @@
         PRIZES.forEach(function (p, i) {
             const label = document.createElement("div");
             label.className = "roulette-wheel-label";
-            label.style.transform =
-                "rotate(" + (i * 45) + "deg) " +
-                "translateY(-82px) " +
-                "rotate(" + (-i * 45) + "deg)";
+
+            // Hanya set sudut — translateY & counter-rotate di-handle CSS
+            label.style.setProperty("--label-angle", (i * 45) + "deg");
 
             const icon = document.createElement("span");
             icon.textContent = p.icon;
@@ -298,16 +315,13 @@
         loadState();
         drawLabels();
 
-        /* ---------- NAV: semua tombol [data-page="roulette"] ---------- */
-        // Pakai event delegation di document, jadi tombol dinamis manapun
-        // tetap bekerja (sidebar nav, quick access, floating menu).
+        /* ---------- NAV: tombol [data-page="roulette"] ---------- */
         document.addEventListener("click", function (e) {
             const trigger = e.target.closest(
                 '[data-page="' + PAGE_KEY + '"]'
             );
             if (!trigger) return;
 
-            // Cek apakah ini benar-benar nav-button / quick-card / floating-menu-item
             const isNav =
                 trigger.classList.contains("nav-button") ||
                 trigger.classList.contains("quick-card") ||
@@ -318,12 +332,10 @@
             e.preventDefault();
             e.stopPropagation();
             showRoulettePage();
-        }, true); // capture=true → jalankan lebih dulu dari app.js
+        }, true);
 
 
-        /* ---------- TUTUP overlay saat pindah ke page lain ---------- */
-        // Kalau user klik nav-button data-page yang BUKAN roulette,
-        // tutup win overlay (kalau ada).
+        /* ---------- TUTUP overlay saat pindah page lain ---------- */
         document.addEventListener("click", function (e) {
             const navBtn = e.target.closest('.nav-button[data-page]');
             if (!navBtn) return;
@@ -331,7 +343,6 @@
             closeWin();
         });
 
-        // Floating menu & quick-card juga
         document.addEventListener("click", function (e) {
             const item = e.target.closest(
                 '.floating-menu-item[data-page], .quick-card[data-page]'
@@ -378,7 +389,7 @@
         });
 
 
-        /* ---------- MutationObserver: reset saat page ditampilkan ---------- */
+        /* ---------- MutationObserver: refresh saat page tampil ---------- */
         if ("MutationObserver" in window) {
             observer = new MutationObserver(function () {
                 const visible = !page.classList.contains("hidden");
@@ -386,7 +397,6 @@
                     loadState();
                     render();
                 } else {
-                    // Kalau page disembunyikan (user pindah), tutup overlay
                     closeWin();
                 }
             });
@@ -398,7 +408,7 @@
         }
 
 
-        /* ---------- Username berubah (user lain login) → reload state ---------- */
+        /* ---------- Username berubah → reload state ---------- */
         const nameEl = $("headerUsername");
         if (nameEl && "MutationObserver" in window) {
             new MutationObserver(function () {
@@ -423,11 +433,11 @@
         });
 
 
-        /* ---------- Init tampilan awal ---------- */
+        /* ---------- Init tampilan ---------- */
         select("daily");
 
-        console.log("[GROWERA ROULETTE] Ready. Page element:",
-            page.id, "| Nav triggers found:",
+        console.log("[GROWERA ROULETTE] Ready. Page:", page.id,
+            "| Nav triggers:",
             document.querySelectorAll('[data-page="roulette"]').length);
     }
 
@@ -447,6 +457,7 @@
         open:     showRoulettePage,
         closeWin: closeWin,
         refresh:  function () { loadState(); render(); },
+        setTheme: function (type) { select(type); },
         setDemoPoints: function (daily, online) {
             state.daily  = Math.max(0, Math.floor(Number(daily)  || 0));
             state.online = Math.max(0, Math.floor(Number(online) || 0));
