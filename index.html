@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="/css/rewards.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/roulette.css">
+
+    <!-- ITEM PICKER CSS -->
+    <link rel="stylesheet" href="/css/item-picker.css">
 </head>
 
 <body>
@@ -1018,10 +1021,14 @@
                         </div>
 
                         <div class="editor-form-row">
+                            <!-- ITEM PICKER: Icon reward -->
                             <div class="editor-form-group">
                                 <label for="rewardsFormIcon">Icon (emoji / karakter)</label>
                                 <input class="editor-input" id="rewardsFormIcon" type="text"
-                                       maxlength="8" placeholder="◇" />
+                                       maxlength="80" placeholder="◇"
+                                       data-item-picker="icon"
+                                       data-item-picker-format="name"
+                                       data-item-picker-title="Pilih Icon Reward" />
                             </div>
 
                             <div class="editor-form-group">
@@ -1052,10 +1059,14 @@
                         </div>
 
                         <div class="editor-form-row">
+                            <!-- ITEM PICKER: Target block/item -->
                             <div class="editor-form-group">
                                 <label for="rewardsFormTarget">Target (nama item/block, kosong = semua)</label>
                                 <input class="editor-input" id="rewardsFormTarget" type="text"
-                                       maxlength="80" placeholder="Dirt atau *" />
+                                       maxlength="80" placeholder="Dirt atau *"
+                                       data-item-picker="target"
+                                       data-item-picker-format="name"
+                                       data-item-picker-title="Pilih Target Item/Block" />
                             </div>
 
                             <div class="editor-form-group">
@@ -1066,10 +1077,14 @@
                         </div>
 
                         <div class="editor-form-row">
+                            <!-- ITEM PICKER: Reward item -->
                             <div class="editor-form-group">
                                 <label for="rewardsFormRewardItem">Reward Item</label>
                                 <input class="editor-input" id="rewardsFormRewardItem" type="text"
-                                       maxlength="80" placeholder="World Lock" />
+                                       maxlength="80" placeholder="World Lock"
+                                       data-item-picker="reward"
+                                       data-item-picker-format="name-id"
+                                       data-item-picker-title="Pilih Reward Item" />
                             </div>
 
                             <div class="editor-form-group">
@@ -1530,6 +1545,39 @@
     </section>
 
 
+    <!-- =========================================
+         ITEM PICKER MODAL
+         Modal reusable untuk memilih item dari database.
+         Dipakai oleh semua form admin (reward, quest, icon, dll).
+    ========================================= -->
+
+    <div class="item-picker-modal" id="itemPickerModal" hidden role="dialog" aria-modal="true" aria-labelledby="itemPickerTitle">
+        <div class="item-picker-dialog">
+
+            <div class="item-picker-header">
+                <h2 id="itemPickerTitle">Pilih Item</h2>
+                <button class="item-picker-close" id="itemPickerClose" type="button" aria-label="Tutup">✕</button>
+            </div>
+
+            <div class="item-picker-search">
+                <input
+                    type="text"
+                    id="itemPickerSearch"
+                    placeholder="Cari nama atau ID item (mis. World Lock, 242)..."
+                    autocomplete="off"
+                />
+            </div>
+
+            <div class="item-picker-meta" id="itemPickerMeta">Memuat...</div>
+
+            <div class="item-picker-grid" id="itemPickerGrid"></div>
+
+            <div class="item-picker-footer" id="itemPickerFooter"></div>
+
+        </div>
+    </div>
+
+
     <script src="/js/app.js"></script>
     <script src="/js/news.js"></script>
     <script src="/js/shop.js"></script>
@@ -1537,6 +1585,9 @@
     <script src="/js/rewards.js"></script>
     <script src="/js/floating-button.js"></script>
     <script src="/js/roulette.js"></script>
+
+    <!-- ITEM PICKER JS -->
+    <script src="/js/item-picker.js"></script>
 
 </body>
 </html>
