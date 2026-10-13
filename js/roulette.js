@@ -1,7 +1,6 @@
 /* =========================================
    GROWERA Crystal Roulette — UI DEMO ONLY
-   Version: app-page integrated
-   Trigger: nav button [data-page="roulette"] (handled by app.js)
+   Version: self-contained nav (tidak bergantung app.js whitelist)
 ========================================= */
 
 (function () {
@@ -9,6 +8,7 @@
 
     const PREFIX  = "growera_roulette_demo_v1:";
     const DEFAULT = { daily: 2, online: 3 };
+    const PAGE_KEY = "roulette";
 
     const PRIZES = [
         { icon: "💎", name: "Crystal", prize: "25 Gems (DEMO)" },
@@ -29,7 +29,7 @@
     let rotation   = 0;
     let accountKey = "";
     let state      = { ...DEFAULT };
-    let initialized = false;
+    let observer   = null;
 
 
     /* =========================================
@@ -43,8 +43,9 @@
             : ($("username")?.value.trim() || "demo-player");
     }
 
-    function pageVisible() {
-        return page && !page.classList.contains("hidden");
+    function dashboardVisible() {
+        const el = $("dashboardScreen");
+        return !!el && !el.classList.contains("hidden");
     }
 
     function loadState() {
@@ -110,6 +111,41 @@
 
     function status(text) {
         if (statusEl) statusEl.textContent = text;
+    }
+
+
+    /* =========================================
+       NAVIGATION (manual, tidak bergantung app.js)
+    ========================================= */
+
+    function showRoulettePage() {
+        if (!dashboardVisible()) return;
+
+        loadState();
+
+        // Sembunyikan semua app-page di dalam main.content
+        document
+            .querySelectorAll("#dashboardScreen .app-page")
+            .forEach(p => p.classList.add("hidden"));
+
+        // Tampilkan roulette
+        if (page) page.classList.remove("hidden");
+
+        // Update active state nav-button
+        document
+            .querySelectorAll("#dashboardScreen .nav-button")
+            .forEach(b => b.classList.remove("active"));
+
+        // Aktifkan nav button roulette (cari by data-page)
+        const rouletteNav = document.querySelector(
+            '#dashboardScreen .nav-button[data-page="' + PAGE_KEY + '"]'
+        );
+        if (rouletteNav) rouletteNav.classList.add("active");
+
+        // Scroll top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        render();
     }
 
 
@@ -254,18 +290,63 @@
         statusEl = $("rouletteWheelStatus");
 
         if (!page || !overlay || !wheel || !spinBtn) {
-            console.error("[GROWERA ROULETTE] Markup belum lengkap.");
+            console.error("[GROWERA ROULETTE] Markup belum lengkap.",
+                { page: !!page, overlay: !!overlay, wheel: !!wheel, spinBtn: !!spinBtn });
             return;
         }
 
-        initialized = true;
         loadState();
         drawLabels();
 
-        // Spin button
+        /* ---------- NAV: semua tombol [data-page="roulette"] ---------- */
+        // Pakai event delegation di document, jadi tombol dinamis manapun
+        // tetap bekerja (sidebar nav, quick access, floating menu).
+        document.addEventListener("click", function (e) {
+            const trigger = e.target.closest(
+                '[data-page="' + PAGE_KEY + '"]'
+            );
+            if (!trigger) return;
+
+            // Cek apakah ini benar-benar nav-button / quick-card / floating-menu-item
+            const isNav =
+                trigger.classList.contains("nav-button") ||
+                trigger.classList.contains("quick-card") ||
+                trigger.classList.contains("floating-menu-item");
+
+            if (!isNav) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            showRoulettePage();
+        }, true); // capture=true → jalankan lebih dulu dari app.js
+
+
+        /* ---------- TUTUP overlay saat pindah ke page lain ---------- */
+        // Kalau user klik nav-button data-page yang BUKAN roulette,
+        // tutup win overlay (kalau ada).
+        document.addEventListener("click", function (e) {
+            const navBtn = e.target.closest('.nav-button[data-page]');
+            if (!navBtn) return;
+            if (navBtn.dataset.page === PAGE_KEY) return;
+            closeWin();
+        });
+
+        // Floating menu & quick-card juga
+        document.addEventListener("click", function (e) {
+            const item = e.target.closest(
+                '.floating-menu-item[data-page], .quick-card[data-page]'
+            );
+            if (!item) return;
+            if (item.dataset.page === PAGE_KEY) return;
+            closeWin();
+        });
+
+
+        /* ---------- SPIN ---------- */
         spinBtn.addEventListener("click", spin);
 
-        // Win overlay
+
+        /* ---------- WIN OVERLAY ---------- */
         const winCloseBtn = $("rouletteWinCloseBtn");
         if (winCloseBtn) winCloseBtn.addEventListener("click", closeWin);
 
@@ -273,54 +354,58 @@
             if (e.target === overlay) closeWin();
         });
 
-        // Type selection
+
+        /* ---------- TYPE SELECT ---------- */
         document.querySelectorAll(".roulette-type").forEach(function (b) {
             b.addEventListener("click", function () {
                 select(b.dataset.rouletteType);
             });
         });
 
-        // ESC tutup win overlay saja (page ditutup via nav)
+
+        /* ---------- ESC ---------- */
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape") closeWin();
         });
 
-        // Ketika user pindah halaman lain, tutup overlay
-        document.querySelectorAll(".nav-button[data-page]").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                const target = btn.dataset.page;
-                if (target !== "roulette") closeWin();
+
+        /* ---------- Logout → tutup overlay ---------- */
+        ["logoutButton", "sidebarLogoutButton"].forEach(function (id) {
+            const el = $(id);
+            if (el) el.addEventListener("click", function () {
+                closeWin();
             });
         });
 
-        // Refresh state ketika page roulette ditampilkan
-        // MutationObserver detect kalau .hidden dihapus dari #roulettePage
+
+        /* ---------- MutationObserver: reset saat page ditampilkan ---------- */
         if ("MutationObserver" in window) {
-            new MutationObserver(function () {
-                if (pageVisible()) {
+            observer = new MutationObserver(function () {
+                const visible = !page.classList.contains("hidden");
+                if (visible) {
                     loadState();
                     render();
                 } else {
+                    // Kalau page disembunyikan (user pindah), tutup overlay
                     closeWin();
                 }
-            }).observe(page, {
+            });
+
+            observer.observe(page, {
                 attributes: true,
                 attributeFilter: ["class"]
             });
         }
 
-        // Logout → tutup overlay
-        ["logoutButton", "sidebarLogoutButton"].forEach(function (id) {
-            const el = $(id);
-            if (el) el.addEventListener("click", closeWin);
-        });
 
-        // Kalau username berubah (login user lain), reload state
+        /* ---------- Username berubah (user lain login) → reload state ---------- */
         const nameEl = $("headerUsername");
         if (nameEl && "MutationObserver" in window) {
             new MutationObserver(function () {
-                loadState();
-                render();
+                if (dashboardVisible()) {
+                    loadState();
+                    render();
+                }
             }).observe(nameEl, {
                 childList: true,
                 characterData: true,
@@ -328,7 +413,8 @@
             });
         }
 
-        // Multi-tab sync
+
+        /* ---------- Multi-tab sync ---------- */
         window.addEventListener("storage", function (e) {
             if (e.key === accountKey) {
                 loadState();
@@ -336,9 +422,15 @@
             }
         });
 
-        // Init awal
+
+        /* ---------- Init tampilan awal ---------- */
         select("daily");
+
+        console.log("[GROWERA ROULETTE] Ready. Page element:",
+            page.id, "| Nav triggers found:",
+            document.querySelectorAll('[data-page="roulette"]').length);
     }
+
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
@@ -352,6 +444,7 @@
     ========================================= */
 
     window.GroweraRoulette = {
+        open:     showRoulettePage,
         closeWin: closeWin,
         refresh:  function () { loadState(); render(); },
         setDemoPoints: function (daily, online) {
