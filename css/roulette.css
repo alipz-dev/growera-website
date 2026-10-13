@@ -1,6 +1,7 @@
 /* =========================================
-   GROWERA Crystal Roulette — Inline Page Version
-   Integrates with .app-page system
+   GROWERA Crystal Roulette
+   - Wheel label positioning fix
+   - Theme: daily = orange luxury, online = plain
 ========================================= */
 
 #roulettePage,
@@ -20,6 +21,28 @@
 
 
 /* =========================================
+   DEFAULT VARIABLES (dipakai online)
+========================================= */
+
+#roulettePage {
+    --accent: #65e7ff;
+    --accent-2: #9b7bff;
+    --accent-3: #f1cc78;
+    --title-grad: linear-gradient(90deg, #65E7FF, #9B7BFF, #F1CC78);
+    --wheel-sep: rgba(255, 255, 255, 0.44);
+    --rim-grad: linear-gradient(135deg, #65e7ff, #9b7bff 48%, #f1cc78);
+    --rim-glow: 0 0 28px #65e7ff24, 0 8px 30px #0005;
+    --rim-glow-hover: 0 0 28px #65e7ff24, 0 8px 30px #0005;
+    --panel-tint: linear-gradient(110deg, #f1cc7818, #9b7bff10);
+    --panel-border: #f1cc7833;
+    --spin-grad: linear-gradient(100deg, #65e7ff, #a8eaff 48%, #f1cc78);
+    --spin-fg: #07111e;
+    --spin-glow: none;
+    --wheel-glow: none;
+}
+
+
+/* =========================================
    PAGE HEADER
 ========================================= */
 
@@ -33,7 +56,7 @@
     line-height: 1.15;
     font-weight: 900;
     letter-spacing: 0.5px;
-    background-image: linear-gradient(90deg, #65E7FF, #9B7BFF, #F1CC78);
+    background-image: var(--title-grad);
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -56,7 +79,7 @@
 }
 
 .roulette-eyebrow {
-    color: #65e7ff;
+    color: var(--accent);
     font-size: 9px;
     letter-spacing: 2px;
     font-weight: 900;
@@ -74,9 +97,10 @@
     justify-content: space-between;
     padding: 14px 18px;
     margin-bottom: 16px;
-    border: 1px solid #f1cc7833;
+    border: 1px solid var(--panel-border);
     border-radius: 15px;
-    background: linear-gradient(110deg, #f1cc7818, #9b7bff10);
+    background: var(--panel-tint);
+    transition: border-color 0.3s, background 0.3s;
 }
 
 .roulette-total-label {
@@ -89,7 +113,8 @@
 .roulette-total-value {
     font-size: 22px;
     font-weight: 900;
-    color: #f1cc78;
+    color: var(--accent-3);
+    transition: color 0.3s;
 }
 
 
@@ -122,9 +147,11 @@
 }
 
 .roulette-type.is-selected {
-    border-color: #65e7ffb3;
-    background: #65e7ff14;
-    box-shadow: inset 0 0 0 1px #65e7ff12;
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--accent) 15%, transparent),
+        0 0 16px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .roulette-type-icon,
@@ -150,6 +177,10 @@
     font-size: 10px;
 }
 
+.roulette-type.is-selected .roulette-type-balance {
+    color: var(--accent);
+}
+
 
 /* =========================================
    WHEEL HEADING
@@ -173,6 +204,19 @@
     width: min(280px, 78vw);
     aspect-ratio: 1;
     margin: 0 auto 16px;
+    isolation: isolate;
+}
+
+/* Soft glow behind wheel (daily only) */
+.roulette-wheel-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -26px;
+    border-radius: 50%;
+    background: var(--wheel-glow);
+    pointer-events: none;
+    z-index: 0;
+    transition: background 0.4s;
 }
 
 .roulette-wheel-rim {
@@ -180,10 +224,10 @@
     inset: 0;
     padding: 7px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #65e7ff, #9b7bff 48%, #f1cc78);
-    box-shadow:
-        0 0 28px #65e7ff24,
-        0 8px 30px #0005;
+    background: var(--rim-grad);
+    box-shadow: var(--rim-glow);
+    transition: background 0.4s, box-shadow 0.4s;
+    z-index: 1;
 }
 
 .roulette-wheel {
@@ -205,6 +249,7 @@
         #4a3a25 315deg 360deg
     );
     will-change: transform;
+    transition: background 0.4s, border-color 0.4s;
 }
 
 .roulette-wheel:after {
@@ -215,37 +260,60 @@
     background: repeating-conic-gradient(
         from -22.5deg,
         transparent 0 44deg,
-        #ffffff70 44deg 45deg
+        var(--wheel-sep) 44deg 45deg
     );
     pointer-events: none;
+    transition: background 0.4s;
 }
+
+
+/* ---------- Wheel labels (FIXED positioning) ---------- */
 
 .roulette-wheel-label {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 44%;
-    height: 44%;
-    margin: -22%;
+    width: 58px;
+    height: 58px;
+    margin: -29px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 4px;
+    justify-content: center;
+    gap: 2px;
     text-align: center;
+
     transform-origin: center center;
+    transform:
+        rotate(var(--label-angle, 0deg))
+        translateY(calc(-1 * var(--label-distance, 90px)))
+        rotate(calc(-1 * var(--label-angle, 0deg)));
+
     color: #f4f7ff;
-    font-size: 9px;
-    line-height: 1.1;
+    font-size: 8.5px;
+    line-height: 1.05;
     font-weight: 800;
-    text-shadow: 0 1px 4px #000b;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
     pointer-events: none;
 }
 
 .roulette-wheel-label span {
-    font-size: 17px;
-    margin-bottom: 2px;
+    font-size: 19px;
+    line-height: 1;
+    display: block;
 }
+
+.roulette-wheel-label b {
+    font-size: 8px;
+    letter-spacing: 0.4px;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: block;
+}
+
+
+/* ---------- Wheel center + pointer ---------- */
 
 .roulette-wheel-center {
     position: absolute;
@@ -255,13 +323,14 @@
     transform: translate(-50%, -50%);
     width: 54px;
     height: 54px;
-    border: 3px solid #f1cc78cc;
+    border: 3px solid var(--accent-3);
     border-radius: 50%;
     display: grid;
     place-items: center;
     font-size: 22px;
     background: radial-gradient(circle at 30% 20%, #283a57, #080d19 75%);
-    box-shadow: 0 0 18px #f1cc7838;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent-3) 30%, transparent);
+    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
 }
 
 .roulette-pointer {
@@ -274,8 +343,11 @@
     height: 0;
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
-    border-top: 25px solid #f1cc78;
-    filter: drop-shadow(0 2px 4px #0009);
+    border-top: 25px solid var(--accent-3);
+    filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6))
+        drop-shadow(0 0 8px color-mix(in srgb, var(--accent-3) 50%, transparent));
+    transition: border-color 0.3s, filter 0.3s;
 }
 
 
@@ -302,19 +374,27 @@
     padding: 14px;
     border: 0;
     border-radius: 14px;
-    color: #07111e;
+    color: var(--spin-fg);
     font-size: 11.5px;
     font-weight: 1000;
     letter-spacing: 1.2px;
-    background: linear-gradient(100deg, #65e7ff, #a8eaff 48%, #f1cc78);
+    background: var(--spin-grad);
+    background-size: 100% 100%;
     cursor: pointer;
     font-family: inherit;
-    transition: transform 0.15s, filter 0.15s;
+    box-shadow: var(--spin-glow);
+    transition:
+        transform 0.15s,
+        filter 0.15s,
+        box-shadow 0.3s,
+        background 0.4s;
+    position: relative;
+    overflow: hidden;
 }
 
 .roulette-spin-btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    filter: brightness(1.05);
+    filter: brightness(1.06);
 }
 
 .roulette-spin-btn:disabled {
@@ -329,6 +409,194 @@
     font-size: 9.5px;
     line-height: 1.5;
     max-width: 480px;
+}
+
+
+/* =========================================
+   =========================================
+   THEME: DAILY — ORANGE + LUXURY
+   =========================================
+========================================= */
+
+#roulettePage.theme-daily {
+    --accent: #FFA94D;
+    --accent-2: #E63946;
+    --accent-3: #FFD166;
+    --title-grad: linear-gradient(90deg, #FFD166, #FF8C42 45%, #E63946 75%, #FFD166);
+    --wheel-sep: rgba(255, 209, 102, 0.65);
+    --rim-grad: linear-gradient(
+        135deg,
+        #FFD166 0%,
+        #FF8C42 30%,
+        #E63946 55%,
+        #FFA94D 80%,
+        #FFD166 100%
+    );
+    --rim-glow:
+        0 0 32px rgba(255, 169, 77, 0.5),
+        0 0 60px rgba(255, 140, 66, 0.25),
+        0 8px 30px rgba(0, 0, 0, 0.5);
+    --panel-tint: linear-gradient(110deg, #FFD16622, #E6394610);
+    --panel-border: rgba(255, 209, 102, 0.35);
+    --spin-grad: linear-gradient(
+        100deg,
+        #FFD166 0%,
+        #FF8C42 45%,
+        #FFB870 70%,
+        #FFD166 100%
+    );
+    --spin-fg: #2a1408;
+    --spin-glow:
+        0 0 22px rgba(255, 169, 77, 0.5),
+        0 0 44px rgba(255, 140, 66, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    --wheel-glow: radial-gradient(
+        circle,
+        rgba(255, 169, 77, 0.4) 0%,
+        rgba(230, 57, 70, 0.15) 45%,
+        transparent 70%
+    );
+}
+
+/* Warm wheel slices */
+#roulettePage.theme-daily .roulette-wheel {
+    border-color: #2a1408;
+    background: conic-gradient(
+        from -22.5deg,
+        #4a1f08 0 45deg,
+        #6b2e10 45deg 90deg,
+        #35130a 90deg 135deg,
+        #7a3a1a 135deg 180deg,
+        #4a1f08 180deg 225deg,
+        #6b2e10 225deg 270deg,
+        #35130a 270deg 315deg,
+        #7a3a1a 315deg 360deg
+    );
+}
+
+/* Warm center hub */
+#roulettePage.theme-daily .roulette-wheel-center {
+    border-color: #FFD166;
+    background:
+        radial-gradient(circle at 30% 20%, #6b2e10, #1a0806 75%);
+    box-shadow:
+        0 0 24px rgba(255, 209, 102, 0.55),
+        inset 0 0 14px rgba(255, 169, 77, 0.4);
+}
+
+/* Glow pulse on rim (daily only) */
+#roulettePage.theme-daily .roulette-wheel-rim {
+    animation: dailyRimPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes dailyRimPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 32px rgba(255, 169, 77, 0.45),
+            0 0 60px rgba(255, 140, 66, 0.2),
+            0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    50% {
+        box-shadow:
+            0 0 42px rgba(255, 209, 102, 0.7),
+            0 0 80px rgba(255, 140, 66, 0.35),
+            0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Warm glow behind wheel (daily only) */
+#roulettePage.theme-daily .roulette-wheel-wrap::before {
+    animation: dailyWheelGlow 4s ease-in-out infinite;
+}
+
+@keyframes dailyWheelGlow {
+    0%, 100% { opacity: 0.65; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.06); }
+}
+
+/* Gold shine sweep on spin button */
+#roulettePage.theme-daily .roulette-spin-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        100deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.55) 50%,
+        transparent 100%
+    );
+    transform: skewX(-20deg);
+    animation: dailyShine 3.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes dailyShine {
+    0%   { left: -120%; }
+    55%  { left: 130%; }
+    100% { left: 130%; }
+}
+
+/* Warmer total card */
+#roulettePage.theme-daily .roulette-total-card {
+    background:
+        linear-gradient(110deg, #FFD1661c, #E6394612),
+        radial-gradient(circle at 100% 0%, rgba(255, 169, 77, 0.12), transparent 60%);
+    box-shadow: 0 0 20px rgba(255, 169, 77, 0.08);
+}
+
+/* Warmer type buttons on hover */
+#roulettePage.theme-daily .roulette-type:hover {
+    border-color: rgba(255, 209, 102, 0.5);
+}
+
+/* Subtle gold sparkle accents on the header */
+#roulettePage.theme-daily .roulette-header {
+    position: relative;
+}
+
+#roulettePage.theme-daily .roulette-header::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    right: 0;
+    width: 120px;
+    height: 60px;
+    background:
+        radial-gradient(circle at 30% 40%, rgba(255, 209, 102, 0.5) 0.5px, transparent 2px),
+        radial-gradient(circle at 70% 20%, rgba(255, 169, 77, 0.4) 0.5px, transparent 2px),
+        radial-gradient(circle at 90% 70%, rgba(230, 57, 70, 0.35) 0.5px, transparent 2px),
+        radial-gradient(circle at 10% 80%, rgba(255, 209, 102, 0.35) 0.5px, transparent 2px);
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+
+/* =========================================
+   =========================================
+   THEME: ONLINE — PLAIN
+   =========================================
+========================================= */
+
+/* #roulettePage.theme-online sudah default via variabel di atas.
+   Sengaja tidak menambahkan glow / animasi apapun. */
+
+#roulettePage.theme-online .roulette-wheel-wrap::before {
+    background: none;
+}
+
+#roulettePage.theme-online .roulette-wheel-rim {
+    animation: none;
+}
+
+#roulettePage.theme-online .roulette-spin-btn::after {
+    display: none;
+}
+
+#roulettePage.theme-online .roulette-header::after {
+    display: none;
 }
 
 
@@ -480,11 +748,18 @@
     }
 
     .roulette-wheel-label {
-        font-size: 8px;
+        width: 50px;
+        height: 50px;
+        margin: -25px;
+        --label-distance: 76px;
     }
 
     .roulette-wheel-label span {
-        font-size: 15px;
+        font-size: 16px;
+    }
+
+    .roulette-wheel-label b {
+        font-size: 7.5px;
     }
 
     .roulette-wheel-center {
@@ -501,6 +776,12 @@
 
 @media (prefers-reduced-motion: reduce) {
     .roulette-page-title {
+        animation: none !important;
+    }
+
+    #roulettePage.theme-daily .roulette-wheel-rim,
+    #roulettePage.theme-daily .roulette-wheel-wrap::before,
+    #roulettePage.theme-daily .roulette-spin-btn::after {
         animation: none !important;
     }
 
