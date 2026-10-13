@@ -1752,6 +1752,1756 @@
       "source": "https://api.gtps.cloud/api/item/texture/1791/249",
       "downloadedAt": "2026-10-13T13:44:36.875Z"
     },
+    "250": {
+      "file": "250.png",
+      "bytes": 217,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/250",
+      "downloadedAt": "2026-10-13T13:45:49.090Z"
+    },
+    "251": {
+      "file": "251.png",
+      "bytes": 217,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/251",
+      "downloadedAt": "2026-10-13T13:45:49.092Z"
+    },
+    "252": {
+      "file": "252.png",
+      "bytes": 1660,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/252",
+      "downloadedAt": "2026-10-13T13:45:49.101Z"
+    },
+    "253": {
+      "file": "253.png",
+      "bytes": 1660,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/253",
+      "downloadedAt": "2026-10-13T13:45:49.450Z"
+    },
+    "254": {
+      "file": "254.png",
+      "bytes": 245,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/254",
+      "downloadedAt": "2026-10-13T13:45:49.451Z"
+    },
+    "255": {
+      "file": "255.png",
+      "bytes": 245,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/255",
+      "downloadedAt": "2026-10-13T13:45:49.460Z"
+    },
+    "256": {
+      "file": "256.png",
+      "bytes": 212,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/256",
+      "downloadedAt": "2026-10-13T13:45:49.795Z"
+    },
+    "257": {
+      "file": "257.png",
+      "bytes": 212,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/257",
+      "downloadedAt": "2026-10-13T13:45:49.795Z"
+    },
+    "258": {
+      "file": "258.png",
+      "bytes": 180,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/258",
+      "downloadedAt": "2026-10-13T13:45:49.803Z"
+    },
+    "259": {
+      "file": "259.png",
+      "bytes": 180,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/259",
+      "downloadedAt": "2026-10-13T13:45:50.143Z"
+    },
+    "260": {
+      "file": "260.png",
+      "bytes": 235,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/260",
+      "downloadedAt": "2026-10-13T13:45:50.149Z"
+    },
+    "261": {
+      "file": "261.png",
+      "bytes": 235,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/261",
+      "downloadedAt": "2026-10-13T13:45:50.158Z"
+    },
+    "262": {
+      "file": "262.png",
+      "bytes": 405,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/262",
+      "downloadedAt": "2026-10-13T13:45:50.495Z"
+    },
+    "263": {
+      "file": "263.png",
+      "bytes": 405,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/263",
+      "downloadedAt": "2026-10-13T13:45:50.506Z"
+    },
+    "264": {
+      "file": "264.png",
+      "bytes": 257,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/264",
+      "downloadedAt": "2026-10-13T13:45:50.513Z"
+    },
+    "265": {
+      "file": "265.png",
+      "bytes": 257,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/265",
+      "downloadedAt": "2026-10-13T13:45:51.290Z"
+    },
+    "266": {
+      "file": "266.png",
+      "bytes": 239,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/266",
+      "downloadedAt": "2026-10-13T13:45:50.855Z"
+    },
+    "267": {
+      "file": "267.png",
+      "bytes": 239,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/267",
+      "downloadedAt": "2026-10-13T13:45:50.856Z"
+    },
+    "268": {
+      "file": "268.png",
+      "bytes": 215,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/268",
+      "downloadedAt": "2026-10-13T13:45:51.653Z"
+    },
+    "269": {
+      "file": "269.png",
+      "bytes": 215,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/269",
+      "downloadedAt": "2026-10-13T13:45:51.183Z"
+    },
+    "270": {
+      "file": "270.png",
+      "bytes": 430,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/270",
+      "downloadedAt": "2026-10-13T13:45:51.505Z"
+    },
+    "271": {
+      "file": "271.png",
+      "bytes": 430,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/271",
+      "downloadedAt": "2026-10-13T13:45:51.635Z"
+    },
+    "272": {
+      "file": "272.png",
+      "bytes": 226,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/272",
+      "downloadedAt": "2026-10-13T13:45:51.862Z"
+    },
+    "273": {
+      "file": "273.png",
+      "bytes": 226,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/273",
+      "downloadedAt": "2026-10-13T13:45:51.981Z"
+    },
+    "274": {
+      "file": "274.png",
+      "bytes": 402,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/274",
+      "downloadedAt": "2026-10-13T13:45:51.992Z"
+    },
+    "275": {
+      "file": "275.png",
+      "bytes": 402,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/275",
+      "downloadedAt": "2026-10-13T13:45:52.206Z"
+    },
+    "276": {
+      "file": "276.png",
+      "bytes": 402,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/276",
+      "downloadedAt": "2026-10-13T13:45:52.339Z"
+    },
+    "277": {
+      "file": "277.png",
+      "bytes": 402,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/277",
+      "downloadedAt": "2026-10-13T13:45:52.328Z"
+    },
+    "278": {
+      "file": "278.png",
+      "bytes": 402,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/278",
+      "downloadedAt": "2026-10-13T13:45:52.538Z"
+    },
+    "279": {
+      "file": "279.png",
+      "bytes": 402,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/279",
+      "downloadedAt": "2026-10-13T13:45:52.667Z"
+    },
+    "280": {
+      "file": "280.png",
+      "bytes": 295,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/280",
+      "downloadedAt": "2026-10-13T13:45:52.692Z"
+    },
+    "281": {
+      "file": "281.png",
+      "bytes": 295,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/281",
+      "downloadedAt": "2026-10-13T13:45:52.871Z"
+    },
+    "282": {
+      "file": "282.png",
+      "bytes": 396,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/282",
+      "downloadedAt": "2026-10-13T13:45:53.068Z"
+    },
+    "283": {
+      "file": "283.png",
+      "bytes": 396,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/283",
+      "downloadedAt": "2026-10-13T13:45:53.542Z"
+    },
+    "284": {
+      "file": "284.png",
+      "bytes": 131,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/284",
+      "downloadedAt": "2026-10-13T13:45:53.202Z"
+    },
+    "285": {
+      "file": "285.png",
+      "bytes": 131,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/285",
+      "downloadedAt": "2026-10-13T13:45:53.542Z"
+    },
+    "286": {
+      "file": "286.png",
+      "bytes": 292,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/286",
+      "downloadedAt": "2026-10-13T13:45:53.587Z"
+    },
+    "287": {
+      "file": "287.png",
+      "bytes": 292,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/287",
+      "downloadedAt": "2026-10-13T13:45:53.874Z"
+    },
+    "288": {
+      "file": "288.png",
+      "bytes": 237,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/288",
+      "downloadedAt": "2026-10-13T13:45:53.869Z"
+    },
+    "289": {
+      "file": "289.png",
+      "bytes": 237,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/289",
+      "downloadedAt": "2026-10-13T13:45:53.912Z"
+    },
+    "290": {
+      "file": "290.png",
+      "bytes": 186,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/290",
+      "downloadedAt": "2026-10-13T13:45:54.191Z"
+    },
+    "291": {
+      "file": "291.png",
+      "bytes": 186,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/291",
+      "downloadedAt": "2026-10-13T13:45:54.198Z"
+    },
+    "292": {
+      "file": "292.png",
+      "bytes": 142,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/292",
+      "downloadedAt": "2026-10-13T13:45:54.236Z"
+    },
+    "293": {
+      "file": "293.png",
+      "bytes": 142,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/293",
+      "downloadedAt": "2026-10-13T13:45:54.514Z"
+    },
+    "294": {
+      "file": "294.png",
+      "bytes": 150,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/294",
+      "downloadedAt": "2026-10-13T13:45:54.537Z"
+    },
+    "295": {
+      "file": "295.png",
+      "bytes": 150,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/295",
+      "downloadedAt": "2026-10-13T13:45:54.562Z"
+    },
+    "296": {
+      "file": "296.png",
+      "bytes": 180,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/296",
+      "downloadedAt": "2026-10-13T13:45:54.836Z"
+    },
+    "297": {
+      "file": "297.png",
+      "bytes": 180,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/297",
+      "downloadedAt": "2026-10-13T13:45:54.864Z"
+    },
+    "298": {
+      "file": "298.png",
+      "bytes": 78,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/298",
+      "downloadedAt": "2026-10-13T13:45:54.900Z"
+    },
+    "299": {
+      "file": "299.png",
+      "bytes": 78,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/299",
+      "downloadedAt": "2026-10-13T13:45:55.202Z"
+    },
+    "300": {
+      "file": "300.png",
+      "bytes": 310,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/300",
+      "downloadedAt": "2026-10-13T13:45:55.200Z"
+    },
+    "301": {
+      "file": "301.png",
+      "bytes": 310,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/301",
+      "downloadedAt": "2026-10-13T13:45:55.256Z"
+    },
+    "302": {
+      "file": "302.png",
+      "bytes": 183,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/302",
+      "downloadedAt": "2026-10-13T13:45:55.545Z"
+    },
+    "303": {
+      "file": "303.png",
+      "bytes": 183,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/303",
+      "downloadedAt": "2026-10-13T13:45:55.529Z"
+    },
+    "304": {
+      "file": "304.png",
+      "bytes": 279,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/304",
+      "downloadedAt": "2026-10-13T13:45:55.599Z"
+    },
+    "305": {
+      "file": "305.png",
+      "bytes": 279,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/305",
+      "downloadedAt": "2026-10-13T13:45:55.852Z"
+    },
+    "306": {
+      "file": "306.png",
+      "bytes": 1814,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/306",
+      "downloadedAt": "2026-10-13T13:45:55.893Z"
+    },
+    "307": {
+      "file": "307.png",
+      "bytes": 1814,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/307",
+      "downloadedAt": "2026-10-13T13:45:55.926Z"
+    },
+    "308": {
+      "file": "308.png",
+      "bytes": 645,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/308",
+      "downloadedAt": "2026-10-13T13:45:56.187Z"
+    },
+    "309": {
+      "file": "309.png",
+      "bytes": 645,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/309",
+      "downloadedAt": "2026-10-13T13:45:56.248Z"
+    },
+    "310": {
+      "file": "310.png",
+      "bytes": 212,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/310",
+      "downloadedAt": "2026-10-13T13:45:56.253Z"
+    },
+    "311": {
+      "file": "311.png",
+      "bytes": 212,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/311",
+      "downloadedAt": "2026-10-13T13:45:56.510Z"
+    },
+    "312": {
+      "file": "312.png",
+      "bytes": 241,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/312",
+      "downloadedAt": "2026-10-13T13:45:56.576Z"
+    },
+    "313": {
+      "file": "313.png",
+      "bytes": 241,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/313",
+      "downloadedAt": "2026-10-13T13:45:56.599Z"
+    },
+    "314": {
+      "file": "314.png",
+      "bytes": 143,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/314",
+      "downloadedAt": "2026-10-13T13:45:56.854Z"
+    },
+    "315": {
+      "file": "315.png",
+      "bytes": 143,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/315",
+      "downloadedAt": "2026-10-13T13:45:56.902Z"
+    },
+    "316": {
+      "file": "316.png",
+      "bytes": 216,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/316",
+      "downloadedAt": "2026-10-13T13:45:56.944Z"
+    },
+    "317": {
+      "file": "317.png",
+      "bytes": 216,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/317",
+      "downloadedAt": "2026-10-13T13:45:57.176Z"
+    },
+    "318": {
+      "file": "318.png",
+      "bytes": 177,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/318",
+      "downloadedAt": "2026-10-13T13:45:57.228Z"
+    },
+    "319": {
+      "file": "319.png",
+      "bytes": 177,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/319",
+      "downloadedAt": "2026-10-13T13:45:57.287Z"
+    },
+    "320": {
+      "file": "320.png",
+      "bytes": 379,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/320",
+      "downloadedAt": "2026-10-13T13:45:57.507Z"
+    },
+    "321": {
+      "file": "321.png",
+      "bytes": 379,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/321",
+      "downloadedAt": "2026-10-13T13:45:57.564Z"
+    },
+    "322": {
+      "file": "322.png",
+      "bytes": 178,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/322",
+      "downloadedAt": "2026-10-13T13:45:57.623Z"
+    },
+    "323": {
+      "file": "323.png",
+      "bytes": 178,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/323",
+      "downloadedAt": "2026-10-13T13:45:57.863Z"
+    },
+    "324": {
+      "file": "324.png",
+      "bytes": 188,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/324",
+      "downloadedAt": "2026-10-13T13:45:57.902Z"
+    },
+    "325": {
+      "file": "325.png",
+      "bytes": 188,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/325",
+      "downloadedAt": "2026-10-13T13:45:57.963Z"
+    },
+    "326": {
+      "file": "326.png",
+      "bytes": 273,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/326",
+      "downloadedAt": "2026-10-13T13:45:58.195Z"
+    },
+    "327": {
+      "file": "327.png",
+      "bytes": 273,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/327",
+      "downloadedAt": "2026-10-13T13:45:58.246Z"
+    },
+    "328": {
+      "file": "328.png",
+      "bytes": 2137,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/328",
+      "downloadedAt": "2026-10-13T13:45:58.300Z"
+    },
+    "329": {
+      "file": "329.png",
+      "bytes": 2137,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/329",
+      "downloadedAt": "2026-10-13T13:45:58.532Z"
+    },
+    "330": {
+      "file": "330.png",
+      "bytes": 353,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/330",
+      "downloadedAt": "2026-10-13T13:45:58.582Z"
+    },
+    "331": {
+      "file": "331.png",
+      "bytes": 353,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/331",
+      "downloadedAt": "2026-10-13T13:45:58.639Z"
+    },
+    "332": {
+      "file": "332.png",
+      "bytes": 214,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/332",
+      "downloadedAt": "2026-10-13T13:45:58.866Z"
+    },
+    "333": {
+      "file": "333.png",
+      "bytes": 214,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/333",
+      "downloadedAt": "2026-10-13T13:45:58.918Z"
+    },
+    "334": {
+      "file": "334.png",
+      "bytes": 113,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/334",
+      "downloadedAt": "2026-10-13T13:45:58.976Z"
+    },
+    "335": {
+      "file": "335.png",
+      "bytes": 113,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/335",
+      "downloadedAt": "2026-10-13T13:45:59.198Z"
+    },
+    "336": {
+      "file": "336.png",
+      "bytes": 420,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/336",
+      "downloadedAt": "2026-10-13T13:45:59.257Z"
+    },
+    "337": {
+      "file": "337.png",
+      "bytes": 420,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/337",
+      "downloadedAt": "2026-10-13T13:45:59.316Z"
+    },
+    "338": {
+      "file": "338.png",
+      "bytes": 288,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/338",
+      "downloadedAt": "2026-10-13T13:45:59.529Z"
+    },
+    "339": {
+      "file": "339.png",
+      "bytes": 288,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/339",
+      "downloadedAt": "2026-10-13T13:45:59.595Z"
+    },
+    "340": {
+      "file": "340.png",
+      "bytes": 323,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/340",
+      "downloadedAt": "2026-10-13T13:45:59.653Z"
+    },
+    "341": {
+      "file": "341.png",
+      "bytes": 323,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/341",
+      "downloadedAt": "2026-10-13T13:45:59.860Z"
+    },
+    "342": {
+      "file": "342.png",
+      "bytes": 254,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/342",
+      "downloadedAt": "2026-10-13T13:45:59.936Z"
+    },
+    "343": {
+      "file": "343.png",
+      "bytes": 254,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/343",
+      "downloadedAt": "2026-10-13T13:45:59.997Z"
+    },
+    "344": {
+      "file": "344.png",
+      "bytes": 172,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/344",
+      "downloadedAt": "2026-10-13T13:46:00.203Z"
+    },
+    "345": {
+      "file": "345.png",
+      "bytes": 172,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/345",
+      "downloadedAt": "2026-10-13T13:46:00.261Z"
+    },
+    "346": {
+      "file": "346.png",
+      "bytes": 209,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/346",
+      "downloadedAt": "2026-10-13T13:46:00.334Z"
+    },
+    "347": {
+      "file": "347.png",
+      "bytes": 209,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/347",
+      "downloadedAt": "2026-10-13T13:46:00.525Z"
+    },
+    "348": {
+      "file": "348.png",
+      "bytes": 163,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/348",
+      "downloadedAt": "2026-10-13T13:46:00.588Z"
+    },
+    "349": {
+      "file": "349.png",
+      "bytes": 163,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/349",
+      "downloadedAt": "2026-10-13T13:46:00.662Z"
+    },
+    "350": {
+      "file": "350.png",
+      "bytes": 186,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/350",
+      "downloadedAt": "2026-10-13T13:46:00.854Z"
+    },
+    "351": {
+      "file": "351.png",
+      "bytes": 186,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/351",
+      "downloadedAt": "2026-10-13T13:46:00.914Z"
+    },
+    "352": {
+      "file": "352.png",
+      "bytes": 170,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/352",
+      "downloadedAt": "2026-10-13T13:46:00.990Z"
+    },
+    "353": {
+      "file": "353.png",
+      "bytes": 170,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/353",
+      "downloadedAt": "2026-10-13T13:46:01.177Z"
+    },
+    "354": {
+      "file": "354.png",
+      "bytes": 289,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/354",
+      "downloadedAt": "2026-10-13T13:46:01.262Z"
+    },
+    "355": {
+      "file": "355.png",
+      "bytes": 289,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/355",
+      "downloadedAt": "2026-10-13T13:46:01.317Z"
+    },
+    "356": {
+      "file": "356.png",
+      "bytes": 247,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/356",
+      "downloadedAt": "2026-10-13T13:46:01.504Z"
+    },
+    "357": {
+      "file": "357.png",
+      "bytes": 247,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/357",
+      "downloadedAt": "2026-10-13T13:46:01.590Z"
+    },
+    "358": {
+      "file": "358.png",
+      "bytes": 489,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/358",
+      "downloadedAt": "2026-10-13T13:46:01.654Z"
+    },
+    "359": {
+      "file": "359.png",
+      "bytes": 489,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/359",
+      "downloadedAt": "2026-10-13T13:46:01.836Z"
+    },
+    "360": {
+      "file": "360.png",
+      "bytes": 617,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/360",
+      "downloadedAt": "2026-10-13T13:46:01.928Z"
+    },
+    "361": {
+      "file": "361.png",
+      "bytes": 617,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/361",
+      "downloadedAt": "2026-10-13T13:46:01.990Z"
+    },
+    "362": {
+      "file": "362.png",
+      "bytes": 240,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/362",
+      "downloadedAt": "2026-10-13T13:46:02.162Z"
+    },
+    "363": {
+      "file": "363.png",
+      "bytes": 240,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/363",
+      "downloadedAt": "2026-10-13T13:46:02.255Z"
+    },
+    "364": {
+      "file": "364.png",
+      "bytes": 156,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/364",
+      "downloadedAt": "2026-10-13T13:46:02.319Z"
+    },
+    "365": {
+      "file": "365.png",
+      "bytes": 156,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/365",
+      "downloadedAt": "2026-10-13T13:46:02.492Z"
+    },
+    "366": {
+      "file": "366.png",
+      "bytes": 227,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/366",
+      "downloadedAt": "2026-10-13T13:46:02.583Z"
+    },
+    "367": {
+      "file": "367.png",
+      "bytes": 227,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/367",
+      "downloadedAt": "2026-10-13T13:46:02.647Z"
+    },
+    "368": {
+      "file": "368.png",
+      "bytes": 337,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/368",
+      "downloadedAt": "2026-10-13T13:46:02.824Z"
+    },
+    "369": {
+      "file": "369.png",
+      "bytes": 337,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/369",
+      "downloadedAt": "2026-10-13T13:46:02.920Z"
+    },
+    "370": {
+      "file": "370.png",
+      "bytes": 142,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/370",
+      "downloadedAt": "2026-10-13T13:46:02.976Z"
+    },
+    "371": {
+      "file": "371.png",
+      "bytes": 142,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/371",
+      "downloadedAt": "2026-10-13T13:46:03.152Z"
+    },
+    "372": {
+      "file": "372.png",
+      "bytes": 255,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/372",
+      "downloadedAt": "2026-10-13T13:46:03.250Z"
+    },
+    "373": {
+      "file": "373.png",
+      "bytes": 255,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/373",
+      "downloadedAt": "2026-10-13T13:46:03.303Z"
+    },
+    "374": {
+      "file": "374.png",
+      "bytes": 156,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/374",
+      "downloadedAt": "2026-10-13T13:46:03.474Z"
+    },
+    "375": {
+      "file": "375.png",
+      "bytes": 156,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/375",
+      "downloadedAt": "2026-10-13T13:46:03.590Z"
+    },
+    "376": {
+      "file": "376.png",
+      "bytes": 272,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/376",
+      "downloadedAt": "2026-10-13T13:46:03.640Z"
+    },
+    "377": {
+      "file": "377.png",
+      "bytes": 272,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/377",
+      "downloadedAt": "2026-10-13T13:46:03.806Z"
+    },
+    "378": {
+      "file": "378.png",
+      "bytes": 246,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/378",
+      "downloadedAt": "2026-10-13T13:46:03.929Z"
+    },
+    "379": {
+      "file": "379.png",
+      "bytes": 246,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/379",
+      "downloadedAt": "2026-10-13T13:46:04.002Z"
+    },
+    "380": {
+      "file": "380.png",
+      "bytes": 414,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/380",
+      "downloadedAt": "2026-10-13T13:46:04.139Z"
+    },
+    "381": {
+      "file": "381.png",
+      "bytes": 414,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/381",
+      "downloadedAt": "2026-10-13T13:46:04.269Z"
+    },
+    "382": {
+      "file": "382.png",
+      "bytes": 361,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/382",
+      "downloadedAt": "2026-10-13T13:46:04.334Z"
+    },
+    "383": {
+      "file": "383.png",
+      "bytes": 361,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/383",
+      "downloadedAt": "2026-10-13T13:46:04.537Z"
+    },
+    "384": {
+      "file": "384.png",
+      "bytes": 270,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/384",
+      "downloadedAt": "2026-10-13T13:46:04.602Z"
+    },
+    "385": {
+      "file": "385.png",
+      "bytes": 270,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/385",
+      "downloadedAt": "2026-10-13T13:46:04.672Z"
+    },
+    "386": {
+      "file": "386.png",
+      "bytes": 304,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/386",
+      "downloadedAt": "2026-10-13T13:46:04.871Z"
+    },
+    "387": {
+      "file": "387.png",
+      "bytes": 304,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/387",
+      "downloadedAt": "2026-10-13T13:46:04.940Z"
+    },
+    "388": {
+      "file": "388.png",
+      "bytes": 374,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/388",
+      "downloadedAt": "2026-10-13T13:46:05.010Z"
+    },
+    "389": {
+      "file": "389.png",
+      "bytes": 374,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/389",
+      "downloadedAt": "2026-10-13T13:46:05.255Z"
+    },
+    "390": {
+      "file": "390.png",
+      "bytes": 260,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/390",
+      "downloadedAt": "2026-10-13T13:46:05.282Z"
+    },
+    "391": {
+      "file": "391.png",
+      "bytes": 260,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/391",
+      "downloadedAt": "2026-10-13T13:46:05.350Z"
+    },
+    "392": {
+      "file": "392.png",
+      "bytes": 386,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/392",
+      "downloadedAt": "2026-10-13T13:46:05.588Z"
+    },
+    "393": {
+      "file": "393.png",
+      "bytes": 386,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/393",
+      "downloadedAt": "2026-10-13T13:46:05.776Z"
+    },
+    "394": {
+      "file": "394.png",
+      "bytes": 271,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/394",
+      "downloadedAt": "2026-10-13T13:46:05.691Z"
+    },
+    "395": {
+      "file": "395.png",
+      "bytes": 271,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/395",
+      "downloadedAt": "2026-10-13T13:46:05.925Z"
+    },
+    "396": {
+      "file": "396.png",
+      "bytes": 271,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/396",
+      "downloadedAt": "2026-10-13T13:46:06.036Z"
+    },
+    "397": {
+      "file": "397.png",
+      "bytes": 271,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/397",
+      "downloadedAt": "2026-10-13T13:46:06.110Z"
+    },
+    "398": {
+      "file": "398.png",
+      "bytes": 318,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/398",
+      "downloadedAt": "2026-10-13T13:46:06.265Z"
+    },
+    "399": {
+      "file": "399.png",
+      "bytes": 318,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/399",
+      "downloadedAt": "2026-10-13T13:46:06.375Z"
+    },
+    "400": {
+      "file": "400.png",
+      "bytes": 157,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/400",
+      "downloadedAt": "2026-10-13T13:46:06.439Z"
+    },
+    "401": {
+      "file": "401.png",
+      "bytes": 157,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/401",
+      "downloadedAt": "2026-10-13T13:46:06.613Z"
+    },
+    "402": {
+      "file": "402.png",
+      "bytes": 204,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/402",
+      "downloadedAt": "2026-10-13T13:46:06.703Z"
+    },
+    "403": {
+      "file": "403.png",
+      "bytes": 204,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/403",
+      "downloadedAt": "2026-10-13T13:46:06.768Z"
+    },
+    "404": {
+      "file": "404.png",
+      "bytes": 206,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/404",
+      "downloadedAt": "2026-10-13T13:46:06.943Z"
+    },
+    "405": {
+      "file": "405.png",
+      "bytes": 206,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/405",
+      "downloadedAt": "2026-10-13T13:46:07.035Z"
+    },
+    "406": {
+      "file": "406.png",
+      "bytes": 870,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/406",
+      "downloadedAt": "2026-10-13T13:46:07.106Z"
+    },
+    "407": {
+      "file": "407.png",
+      "bytes": 870,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/407",
+      "downloadedAt": "2026-10-13T13:46:07.279Z"
+    },
+    "408": {
+      "file": "408.png",
+      "bytes": 173,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/408",
+      "downloadedAt": "2026-10-13T13:46:07.364Z"
+    },
+    "409": {
+      "file": "409.png",
+      "bytes": 173,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/409",
+      "downloadedAt": "2026-10-13T13:46:07.434Z"
+    },
+    "410": {
+      "file": "410.png",
+      "bytes": 274,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/410",
+      "downloadedAt": "2026-10-13T13:46:07.615Z"
+    },
+    "411": {
+      "file": "411.png",
+      "bytes": 274,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/411",
+      "downloadedAt": "2026-10-13T13:46:07.701Z"
+    },
+    "412": {
+      "file": "412.png",
+      "bytes": 114,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/412",
+      "downloadedAt": "2026-10-13T13:46:07.772Z"
+    },
+    "413": {
+      "file": "413.png",
+      "bytes": 114,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/413",
+      "downloadedAt": "2026-10-13T13:46:07.953Z"
+    },
+    "414": {
+      "file": "414.png",
+      "bytes": 197,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/414",
+      "downloadedAt": "2026-10-13T13:46:08.040Z"
+    },
+    "415": {
+      "file": "415.png",
+      "bytes": 197,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/415",
+      "downloadedAt": "2026-10-13T13:46:08.110Z"
+    },
+    "416": {
+      "file": "416.png",
+      "bytes": 222,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/416",
+      "downloadedAt": "2026-10-13T13:46:08.305Z"
+    },
+    "417": {
+      "file": "417.png",
+      "bytes": 222,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/417",
+      "downloadedAt": "2026-10-13T13:46:08.385Z"
+    },
+    "418": {
+      "file": "418.png",
+      "bytes": 228,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/418",
+      "downloadedAt": "2026-10-13T13:46:08.448Z"
+    },
+    "419": {
+      "file": "419.png",
+      "bytes": 228,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/419",
+      "downloadedAt": "2026-10-13T13:46:08.646Z"
+    },
+    "420": {
+      "file": "420.png",
+      "bytes": 197,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/420",
+      "downloadedAt": "2026-10-13T13:46:08.726Z"
+    },
+    "421": {
+      "file": "421.png",
+      "bytes": 197,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/421",
+      "downloadedAt": "2026-10-13T13:46:08.786Z"
+    },
+    "422": {
+      "file": "422.png",
+      "bytes": 222,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/422",
+      "downloadedAt": "2026-10-13T13:46:08.985Z"
+    },
+    "423": {
+      "file": "423.png",
+      "bytes": 222,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/423",
+      "downloadedAt": "2026-10-13T13:46:09.063Z"
+    },
+    "424": {
+      "file": "424.png",
+      "bytes": 228,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/424",
+      "downloadedAt": "2026-10-13T13:46:09.124Z"
+    },
+    "425": {
+      "file": "425.png",
+      "bytes": 228,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/425",
+      "downloadedAt": "2026-10-13T13:46:09.323Z"
+    },
+    "426": {
+      "file": "426.png",
+      "bytes": 237,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/426",
+      "downloadedAt": "2026-10-13T13:46:09.459Z"
+    },
+    "427": {
+      "file": "427.png",
+      "bytes": 237,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/427",
+      "downloadedAt": "2026-10-13T13:46:09.462Z"
+    },
+    "428": {
+      "file": "428.png",
+      "bytes": 544,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/428",
+      "downloadedAt": "2026-10-13T13:46:09.659Z"
+    },
+    "429": {
+      "file": "429.png",
+      "bytes": 544,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/429",
+      "downloadedAt": "2026-10-13T13:46:09.800Z"
+    },
+    "430": {
+      "file": "430.png",
+      "bytes": 428,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/430",
+      "downloadedAt": "2026-10-13T13:46:09.799Z"
+    },
+    "431": {
+      "file": "431.png",
+      "bytes": 428,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/431",
+      "downloadedAt": "2026-10-13T13:46:09.996Z"
+    },
+    "432": {
+      "file": "432.png",
+      "bytes": 755,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/432",
+      "downloadedAt": "2026-10-13T13:46:10.137Z"
+    },
+    "433": {
+      "file": "433.png",
+      "bytes": 755,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/433",
+      "downloadedAt": "2026-10-13T13:46:10.137Z"
+    },
+    "434": {
+      "file": "434.png",
+      "bytes": 181,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/434",
+      "downloadedAt": "2026-10-13T13:46:10.331Z"
+    },
+    "435": {
+      "file": "435.png",
+      "bytes": 181,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/435",
+      "downloadedAt": "2026-10-13T13:46:10.477Z"
+    },
+    "436": {
+      "file": "436.png",
+      "bytes": 264,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/436",
+      "downloadedAt": "2026-10-13T13:46:10.476Z"
+    },
+    "437": {
+      "file": "437.png",
+      "bytes": 264,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/437",
+      "downloadedAt": "2026-10-13T13:46:10.668Z"
+    },
+    "438": {
+      "file": "438.png",
+      "bytes": 182,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/438",
+      "downloadedAt": "2026-10-13T13:46:10.815Z"
+    },
+    "439": {
+      "file": "439.png",
+      "bytes": 182,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/439",
+      "downloadedAt": "2026-10-13T13:46:10.815Z"
+    },
+    "440": {
+      "file": "440.png",
+      "bytes": 349,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/440",
+      "downloadedAt": "2026-10-13T13:46:11.003Z"
+    },
+    "441": {
+      "file": "441.png",
+      "bytes": 349,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/441",
+      "downloadedAt": "2026-10-13T13:46:11.153Z"
+    },
+    "442": {
+      "file": "442.png",
+      "bytes": 465,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/442",
+      "downloadedAt": "2026-10-13T13:46:11.153Z"
+    },
+    "443": {
+      "file": "443.png",
+      "bytes": 465,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/443",
+      "downloadedAt": "2026-10-13T13:46:11.339Z"
+    },
+    "444": {
+      "file": "444.png",
+      "bytes": 362,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/444",
+      "downloadedAt": "2026-10-13T13:46:11.493Z"
+    },
+    "445": {
+      "file": "445.png",
+      "bytes": 362,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/445",
+      "downloadedAt": "2026-10-13T13:46:11.493Z"
+    },
+    "446": {
+      "file": "446.png",
+      "bytes": 196,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/446",
+      "downloadedAt": "2026-10-13T13:46:11.669Z"
+    },
+    "447": {
+      "file": "447.png",
+      "bytes": 196,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/447",
+      "downloadedAt": "2026-10-13T13:46:11.820Z"
+    },
+    "448": {
+      "file": "448.png",
+      "bytes": 221,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/448",
+      "downloadedAt": "2026-10-13T13:46:11.819Z"
+    },
+    "449": {
+      "file": "449.png",
+      "bytes": 221,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/449",
+      "downloadedAt": "2026-10-13T13:46:11.995Z"
+    },
+    "450": {
+      "file": "450.png",
+      "bytes": 330,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/450",
+      "downloadedAt": "2026-10-13T13:46:12.147Z"
+    },
+    "451": {
+      "file": "451.png",
+      "bytes": 330,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/451",
+      "downloadedAt": "2026-10-13T13:46:12.147Z"
+    },
+    "452": {
+      "file": "452.png",
+      "bytes": 199,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/452",
+      "downloadedAt": "2026-10-13T13:46:12.320Z"
+    },
+    "453": {
+      "file": "453.png",
+      "bytes": 199,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/453",
+      "downloadedAt": "2026-10-13T13:46:12.476Z"
+    },
+    "454": {
+      "file": "454.png",
+      "bytes": 363,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/454",
+      "downloadedAt": "2026-10-13T13:46:12.486Z"
+    },
+    "455": {
+      "file": "455.png",
+      "bytes": 363,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/455",
+      "downloadedAt": "2026-10-13T13:46:12.654Z"
+    },
+    "456": {
+      "file": "456.png",
+      "bytes": 195,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/456",
+      "downloadedAt": "2026-10-13T13:46:12.818Z"
+    },
+    "457": {
+      "file": "457.png",
+      "bytes": 195,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/457",
+      "downloadedAt": "2026-10-13T13:46:12.822Z"
+    },
+    "458": {
+      "file": "458.png",
+      "bytes": 211,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/458",
+      "downloadedAt": "2026-10-13T13:46:12.990Z"
+    },
+    "459": {
+      "file": "459.png",
+      "bytes": 211,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/459",
+      "downloadedAt": "2026-10-13T13:46:13.156Z"
+    },
+    "460": {
+      "file": "460.png",
+      "bytes": 344,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/460",
+      "downloadedAt": "2026-10-13T13:46:13.158Z"
+    },
+    "461": {
+      "file": "461.png",
+      "bytes": 344,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/461",
+      "downloadedAt": "2026-10-13T13:46:13.325Z"
+    },
+    "462": {
+      "file": "462.png",
+      "bytes": 211,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/462",
+      "downloadedAt": "2026-10-13T13:46:13.490Z"
+    },
+    "463": {
+      "file": "463.png",
+      "bytes": 211,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/463",
+      "downloadedAt": "2026-10-13T13:46:13.485Z"
+    },
+    "464": {
+      "file": "464.png",
+      "bytes": 296,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/464",
+      "downloadedAt": "2026-10-13T13:46:13.651Z"
+    },
+    "465": {
+      "file": "465.png",
+      "bytes": 296,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/465",
+      "downloadedAt": "2026-10-13T13:46:13.820Z"
+    },
+    "466": {
+      "file": "466.png",
+      "bytes": 207,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/466",
+      "downloadedAt": "2026-10-13T13:46:13.817Z"
+    },
+    "467": {
+      "file": "467.png",
+      "bytes": 207,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/467",
+      "downloadedAt": "2026-10-13T13:46:13.987Z"
+    },
+    "468": {
+      "file": "468.png",
+      "bytes": 166,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/468",
+      "downloadedAt": "2026-10-13T13:46:14.143Z"
+    },
+    "469": {
+      "file": "469.png",
+      "bytes": 166,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/469",
+      "downloadedAt": "2026-10-13T13:46:14.146Z"
+    },
+    "470": {
+      "file": "470.png",
+      "bytes": 156,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/470",
+      "downloadedAt": "2026-10-13T13:46:14.315Z"
+    },
+    "471": {
+      "file": "471.png",
+      "bytes": 156,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/471",
+      "downloadedAt": "2026-10-13T13:46:14.480Z"
+    },
+    "472": {
+      "file": "472.png",
+      "bytes": 180,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/472",
+      "downloadedAt": "2026-10-13T13:46:14.473Z"
+    },
+    "473": {
+      "file": "473.png",
+      "bytes": 180,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/473",
+      "downloadedAt": "2026-10-13T13:46:14.640Z"
+    },
+    "474": {
+      "file": "474.png",
+      "bytes": 288,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/474",
+      "downloadedAt": "2026-10-13T13:46:14.808Z"
+    },
+    "475": {
+      "file": "475.png",
+      "bytes": 288,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/475",
+      "downloadedAt": "2026-10-13T13:46:14.805Z"
+    },
+    "476": {
+      "file": "476.png",
+      "bytes": 195,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/476",
+      "downloadedAt": "2026-10-13T13:46:14.967Z"
+    },
+    "477": {
+      "file": "477.png",
+      "bytes": 195,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/477",
+      "downloadedAt": "2026-10-13T13:46:15.134Z"
+    },
+    "478": {
+      "file": "478.png",
+      "bytes": 198,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/478",
+      "downloadedAt": "2026-10-13T13:46:15.145Z"
+    },
+    "479": {
+      "file": "479.png",
+      "bytes": 198,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/479",
+      "downloadedAt": "2026-10-13T13:46:15.303Z"
+    },
+    "480": {
+      "file": "480.png",
+      "bytes": 766,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/480",
+      "downloadedAt": "2026-10-13T13:46:15.471Z"
+    },
+    "481": {
+      "file": "481.png",
+      "bytes": 766,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/481",
+      "downloadedAt": "2026-10-13T13:46:15.481Z"
+    },
+    "482": {
+      "file": "482.png",
+      "bytes": 233,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/482",
+      "downloadedAt": "2026-10-13T13:46:15.639Z"
+    },
+    "483": {
+      "file": "483.png",
+      "bytes": 233,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/483",
+      "downloadedAt": "2026-10-13T13:46:15.809Z"
+    },
+    "484": {
+      "file": "484.png",
+      "bytes": 225,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/484",
+      "downloadedAt": "2026-10-13T13:46:15.819Z"
+    },
+    "485": {
+      "file": "485.png",
+      "bytes": 225,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/485",
+      "downloadedAt": "2026-10-13T13:46:15.978Z"
+    },
+    "486": {
+      "file": "486.png",
+      "bytes": 221,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/486",
+      "downloadedAt": "2026-10-13T13:46:16.164Z"
+    },
+    "487": {
+      "file": "487.png",
+      "bytes": 221,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/487",
+      "downloadedAt": "2026-10-13T13:46:16.157Z"
+    },
+    "488": {
+      "file": "488.png",
+      "bytes": 148,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/488",
+      "downloadedAt": "2026-10-13T13:46:16.305Z"
+    },
+    "489": {
+      "file": "489.png",
+      "bytes": 148,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/489",
+      "downloadedAt": "2026-10-13T13:46:16.488Z"
+    },
+    "490": {
+      "file": "490.png",
+      "bytes": 151,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/490",
+      "downloadedAt": "2026-10-13T13:46:16.497Z"
+    },
+    "491": {
+      "file": "491.png",
+      "bytes": 151,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/491",
+      "downloadedAt": "2026-10-13T13:46:16.636Z"
+    },
+    "492": {
+      "file": "492.png",
+      "bytes": 153,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/492",
+      "downloadedAt": "2026-10-13T13:46:16.817Z"
+    },
+    "493": {
+      "file": "493.png",
+      "bytes": 153,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/493",
+      "downloadedAt": "2026-10-13T13:46:16.824Z"
+    },
+    "494": {
+      "file": "494.png",
+      "bytes": 154,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/494",
+      "downloadedAt": "2026-10-13T13:46:16.963Z"
+    },
+    "495": {
+      "file": "495.png",
+      "bytes": 154,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/495",
+      "downloadedAt": "2026-10-13T13:46:17.144Z"
+    },
+    "496": {
+      "file": "496.png",
+      "bytes": 235,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/496",
+      "downloadedAt": "2026-10-13T13:46:17.149Z"
+    },
+    "497": {
+      "file": "497.png",
+      "bytes": 235,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/497",
+      "downloadedAt": "2026-10-13T13:46:17.297Z"
+    },
+    "498": {
+      "file": "498.png",
+      "bytes": 195,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/498",
+      "downloadedAt": "2026-10-13T13:46:17.469Z"
+    },
+    "499": {
+      "file": "499.png",
+      "bytes": 195,
+      "status": "downloaded",
+      "source": "https://api.gtps.cloud/api/item/texture/1791/499",
+      "downloadedAt": "2026-10-13T13:46:17.475Z"
+    },
     "1962": {
       "file": "1962.png",
       "contentType": "image/png",
@@ -1764,14 +3514,14 @@
     }
   },
   "failed": {},
-  "updatedAt": "2026-10-13T13:44:37.025Z",
+  "updatedAt": "2026-10-13T13:46:17.626Z",
   "stats": {
     "totalIds": 13728,
-    "batchStartIndex": 0,
-    "batchEndIndex": 250,
+    "batchStartIndex": 250,
+    "batchEndIndex": 500,
     "batchSize": 250,
-    "downloadedThisRun": 249,
-    "skippedExistingThisRun": 1,
+    "downloadedThisRun": 250,
+    "skippedExistingThisRun": 0,
     "failedThisRun": 0
   }
 }
