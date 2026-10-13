@@ -346,3 +346,89 @@ body.item-picker-open { overflow: hidden; }
     .item-picker-meta { padding: 0 14px 8px; font-size: 10px; }
     .item-picker-footer { padding: 10px 14px; }
 }
+
+/* =========================================
+   ITEM PICKER — PREVIEW & UNIVERSAL ICON
+========================================= */
+
+/* Preview icon di samping input form */
+.item-picker-preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(101, 231, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(5, 16, 31, 0.5);
+    overflow: hidden;
+    transition: transform 0.15s, border-color 0.15s;
+}
+
+.item-picker-preview:hover {
+    border-color: rgba(101, 231, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.item-picker-preview img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    display: block;
+}
+
+.item-picker-preview[hidden] { display: none; }
+
+/* =========================================
+   UNIVERSAL ITEM ICON
+   Pakai: <span class="item-icon" data-item-icon="242"></span>
+   Custom size: <span data-item-icon="242" data-item-icon-size="32"></span>
+========================================= */
+
+.item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    line-height: 0;
+}
+
+.item-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    display: block;
+}
+
+/* Varian ukuran siap pakai */
+.item-icon.is-sm  { width: 16px; height: 16px; }
+.item-icon.is-md  { width: 24px; height: 24px; }
+.item-icon.is-lg  { width: 32px; height: 32px; }
+.item-icon.is-xl  { width: 48px; height: 48px; }
+
+/* Biar bisa nyempil di tengah teks */
+.item-icon.is-inline {
+    vertical-align: -0.2em;
+    margin-right: 4px;
+}
+
+/* Biar pas di dalam tombol nav / list */
+.item-icon.is-block {
+    margin-right: 8px;
+}
