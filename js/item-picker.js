@@ -1,11 +1,10 @@
 /* =========================================
-   GROWERA — ITEM PICKER (FINAL)
+   GROWERA — ITEM PICKER (FINAL v2)
+   + Lookup ID dari nama (untuk preview manual)
 ========================================= */
 
 (function () {
     "use strict";
-
-    /* ====== KONFIG ====== */
 
     var IMAGE = {
         localDir: "/assets/itemimage",
@@ -18,10 +17,9 @@
     var DATA_URL  = "/data/itemregister.json";
     var PAGE_SIZE = 120;
 
-    /* ====== STATE ====== */
-
     var allItems    = [];
     var idToItem    = new Map();
+    var nameToItem  = new Map();
     var loadPromise = null;
     var isDataReady = false;
 
@@ -37,8 +35,6 @@
     };
 
     var dom = {};
-
-    /* ====== DOM ====== */
 
     function cacheDom() {
         dom.modal       = document.getElementById("itemPickerModal");
@@ -70,7 +66,12 @@
                     .sort(function (a, b) { return a.id - b.id; });
 
                 idToItem.clear();
-                allItems.forEach(function (it) { idToItem.set(it.id, it); });
+                nameToItem.clear();
+                allItems.forEach(function (it) {
+                    idToItem.set(it.id, it);
+                    var key = it.name.toLowerCase();
+                    if (!nameToItem.has(key)) nameToItem.set(key, it);
+                });
 
                 isDataReady = true;
                 return allItems;
@@ -83,8 +84,6 @@
 
         return loadPromise;
     }
-
-    /* ====== FILTER ====== */
 
     function applyFilter() {
         var q = (state.search || "").trim().toLowerCase();
@@ -105,7 +104,7 @@
         state.page = 1;
     }
 
-    /* ====== ICON HELPERS ====== */
+    /* ====== ICON ====== */
 
     function getItemColor(id) {
         var palette = [
@@ -126,7 +125,6 @@
 
     function createIconImg(id, size) {
         size = size || 20;
-
         var img = document.createElement("img");
         img.src = buildImageUrl(id);
         img.alt = "";
@@ -178,34 +176,42 @@
             + 'loading="lazy" decoding="async" draggable="false" alt="">';
     }
 
-    /* ====== AUTO-INJECT ICONS ====== */
-
     function autoAttachIcons(root) {
         var scope = root || document;
         scope.querySelectorAll("[data-item-icon]").forEach(function (el) {
             if (el.dataset.itemIconAttached === "1") return;
             el.dataset.itemIconAttached = "1";
-
             var id = parseInt(el.dataset.itemIcon, 10);
             if (isNaN(id)) return;
-
             var size = parseInt(el.dataset.itemIconSize || "20", 10);
             el.replaceChildren(createIconImg(id, size));
         });
     }
 
-    /* ====== PARSE ID ====== */
+    /* ====== PARSE ID (dengan lookup nama) ====== */
 
     function parseItemId(text) {
         if (!text) return null;
-        var m = String(text).match(/\[#(\d+)\]/);
+        var s = String(text).trim();
+        if (!s) return null;
+
+        // Format "Name [#242]"
+        var m = s.match(/\[#(\d+)\]/);
         if (m) return parseInt(m[1], 10);
-        var n = String(text).trim();
-        if (/^\d+$/.test(n)) return parseInt(n, 10);
+
+        // Format "242"
+        if (/^\d+$/.test(s)) return parseInt(s, 10);
+
+        // Lookup dari nama (case-insensitive)
+        if (isDataReady) {
+            var byName = nameToItem.get(s.toLowerCase());
+            if (byName) return byName.id;
+        }
+
         return null;
     }
 
-    /* ====== PREVIEW DI FORM ====== */
+    /* ====== PREVIEW FORM ====== */
 
     function updateFormPreview(input, item) {
         var wrap = input.parentElement;
@@ -234,6 +240,18 @@
             preview.hidden = true;
             preview.title = "";
         }
+    }
+
+    function refreshAllPreviews() {
+        document.querySelectorAll("[data-item-picker]").forEach(function (input) {
+            var id = parseItemId(input.value);
+            if (id === null) {
+                updateFormPreview(input, null);
+            } else {
+                var item = idToItem.get(id);
+                updateFormPreview(input, item || { id: id, name: "Item #" + id });
+            }
+        });
     }
 
     /* ====== RENDER PICKER ====== */
@@ -523,9 +541,12 @@
             observer.observe(document.body, { childList: true, subtree: true });
         }
 
-        loadData().catch(function () {});
-
-        console.log("[ItemPicker] Ready. Images:", IMAGE.localDir);
+        loadData()
+            .then(function () {
+                refreshAllPreviews();
+                console.log("[ItemPicker] Ready. " + allItems.length + " item dimuat.");
+            })
+            .catch(function () {});
     }
 
     /* ====== EXPORT ====== */
@@ -543,6 +564,7 @@
         iconHTML: iconHTML,
         parseItemId: parseItemId,
         renderIcons: autoAttachIcons,
+        refreshPreviews: refreshAllPreviews,
         config: IMAGE,
         getImageUrl: buildImageUrl
     };
