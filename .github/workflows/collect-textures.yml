@@ -1,0 +1,40 @@
+name: Collect item textures
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: growera-texture-collector
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Collect textures
+        run: node scripts/texture-collector.mjs
+        env:
+          GT_SERVER_ID: "1791"
+          REQUEST_DELAY_MS: "750"
+          MAX_IMAGE_BYTES: "5000000"
+      - name: Commit new textures
+        run: |
+          if [[ -n "$(git status --porcelain assets/items)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add assets/items
+            git commit -m "chore: collect item textures"
+            git push
+          else
+            echo "No new texture changes."
+          fi
