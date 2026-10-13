@@ -1,6 +1,7 @@
 /* =========================================
    GROWERA Crystal Roulette — UI DEMO ONLY
-   Trigger: sidebar nav button (#rouletteNavButton)
+   Version: app-page integrated
+   Trigger: nav button [data-page="roulette"] (handled by app.js)
 ========================================= */
 
 (function () {
@@ -22,12 +23,13 @@
 
     const $ = id => document.getElementById(id);
 
-    let navBtn, panel, overlay, wheel, spinBtn, statusEl;
+    let page, overlay, wheel, spinBtn, statusEl;
     let selected   = "daily";
     let spinning   = false;
     let rotation   = 0;
     let accountKey = "";
     let state      = { ...DEFAULT };
+    let initialized = false;
 
 
     /* =========================================
@@ -41,9 +43,8 @@
             : ($("username")?.value.trim() || "demo-player");
     }
 
-    function dashboardVisible() {
-        const el = $("dashboardScreen");
-        return !!el && !el.classList.contains("hidden");
+    function pageVisible() {
+        return page && !page.classList.contains("hidden");
     }
 
     function loadState() {
@@ -109,57 +110,6 @@
 
     function status(text) {
         if (statusEl) statusEl.textContent = text;
-    }
-
-
-    /* =========================================
-       PANEL OPEN / CLOSE
-    ========================================= */
-
-    function isPanelOpen() {
-        return panel
-            && !panel.hasAttribute("hidden")
-            && panel.classList.contains("is-open");
-    }
-
-    function openPanel() {
-        if (!dashboardVisible()) return;
-        loadState();
-
-        // Sembunyikan semua app-page supaya roulette tampil sebagai "halaman"
-        document
-            .querySelectorAll("#dashboardScreen .app-page")
-            .forEach(p => p.classList.add("hidden"));
-
-        // Tandai nav button Roulette aktif, matikan yang lain
-        document
-            .querySelectorAll(".sidebar-nav .nav-button")
-            .forEach(b => b.classList.remove("active"));
-        navBtn?.classList.add("active");
-
-        panel.removeAttribute("hidden");
-        requestAnimationFrame(() => panel.classList.add("is-open"));
-        render();
-    }
-
-    // restoreHome = true (default) → tampilkan kembali homePage
-    // restoreHome = false          → biarkan app.js yang atur halaman
-    function closePanel(restoreHome) {
-        if (!panel) return;
-
-        panel.classList.remove("is-open");
-        panel.setAttribute("hidden", "");
-        navBtn?.classList.remove("active");
-
-        if (restoreHome !== false) {
-            const homePage = $("homePage");
-            if (homePage) homePage.classList.remove("hidden");
-
-            const homeBtn = document.querySelector(
-                '.sidebar-nav .nav-button[data-page="home"]'
-            );
-            if (homeBtn) homeBtn.classList.add("active");
-        }
     }
 
 
@@ -245,8 +195,8 @@
         status("Crystal wheel sedang berputar...");
         spinBtn.textContent = "SPINNING...";
 
-        const winner = Math.floor(Math.random() * PRIZES.length);
-        const seg    = 360 / PRIZES.length;
+        const winner  = Math.floor(Math.random() * PRIZES.length);
+        const seg     = 360 / PRIZES.length;
         const current = ((rotation % 360) + 360) % 360;
         const target  = (360 - winner * seg) % 360;
 
@@ -270,7 +220,6 @@
     ========================================= */
 
     function drawLabels() {
-        // Hindari duplikat kalau init dipanggil ulang
         wheel.querySelectorAll(".roulette-wheel-label").forEach(el => el.remove());
 
         PRIZES.forEach(function (p, i) {
@@ -298,34 +247,22 @@
     ========================================= */
 
     function init() {
-        navBtn   = $("rouletteNavButton");
-        panel    = $("roulettePanel");
+        page     = $("roulettePage");
         overlay  = $("rouletteWinOverlay");
         wheel    = $("rouletteWheel");
         spinBtn  = $("rouletteSpinBtn");
         statusEl = $("rouletteWheelStatus");
 
-        if (!navBtn || !panel || !overlay || !wheel || !spinBtn) {
+        if (!page || !overlay || !wheel || !spinBtn) {
             console.error("[GROWERA ROULETTE] Markup belum lengkap.");
             return;
         }
 
+        initialized = true;
         loadState();
         drawLabels();
 
-        // Toggle panel via sidebar nav button
-        navBtn.addEventListener("click", function () {
-            if (isPanelOpen()) closePanel();   // restore home
-            else               openPanel();
-        });
-
-        // Tombol close di dalam panel
-        const closeBtn = $("rouletteCloseBtn");
-        if (closeBtn) {
-            closeBtn.addEventListener("click", function () { closePanel(); });
-        }
-
-        // Spin
+        // Spin button
         spinBtn.addEventListener("click", spin);
 
         // Win overlay
@@ -336,65 +273,54 @@
             if (e.target === overlay) closeWin();
         });
 
-        // Pilih tipe roulette
+        // Type selection
         document.querySelectorAll(".roulette-type").forEach(function (b) {
             b.addEventListener("click", function () {
                 select(b.dataset.rouletteType);
             });
         });
 
-        // ESC menutup panel & overlay
+        // ESC tutup win overlay saja (page ditutup via nav)
         document.addEventListener("keydown", function (e) {
-            if (e.key === "Escape") {
-                closePanel();
-                closeWin();
-            }
+            if (e.key === "Escape") closeWin();
         });
 
-        // Kalau user klik nav button lain (Home/Profile/Rewards/Topup/More),
-        // tutup panel Roulette tanpa restore home — biarkan app.js yang atur.
-        document
-            .querySelectorAll('.sidebar-nav .nav-button[data-page]')
-            .forEach(function (btn) {
-                btn.addEventListener("click", function () {
-                    if (isPanelOpen()) closePanel(false);
-                });
-            });
-
-        // Logout → tutup panel & overlay
-        ["logoutButton", "sidebarLogoutButton"].forEach(function (id) {
-            const el = $(id);
-            if (el) el.addEventListener("click", function () {
-                closePanel(false);
-                closeWin();
+        // Ketika user pindah halaman lain, tutup overlay
+        document.querySelectorAll(".nav-button[data-page]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                const target = btn.dataset.page;
+                if (target !== "roulette") closeWin();
             });
         });
 
-        // Kalau dashboard disembunyikan (logout), tutup semua
-        const dashboard = $("dashboardScreen");
-        if (dashboard && "MutationObserver" in window) {
+        // Refresh state ketika page roulette ditampilkan
+        // MutationObserver detect kalau .hidden dihapus dari #roulettePage
+        if ("MutationObserver" in window) {
             new MutationObserver(function () {
-                if (!dashboardVisible()) {
-                    closePanel(false);
-                    closeWin();
-                } else {
+                if (pageVisible()) {
                     loadState();
                     render();
+                } else {
+                    closeWin();
                 }
-            }).observe(dashboard, {
+            }).observe(page, {
                 attributes: true,
-                attributeFilter: ["class", "style"]
+                attributeFilter: ["class"]
             });
         }
+
+        // Logout → tutup overlay
+        ["logoutButton", "sidebarLogoutButton"].forEach(function (id) {
+            const el = $(id);
+            if (el) el.addEventListener("click", closeWin);
+        });
 
         // Kalau username berubah (login user lain), reload state
         const nameEl = $("headerUsername");
         if (nameEl && "MutationObserver" in window) {
             new MutationObserver(function () {
-                if (dashboardVisible()) {
-                    loadState();
-                    render();
-                }
+                loadState();
+                render();
             }).observe(nameEl, {
                 childList: true,
                 characterData: true,
@@ -410,6 +336,7 @@
             }
         });
 
+        // Init awal
         select("daily");
     }
 
@@ -425,8 +352,6 @@
     ========================================= */
 
     window.GroweraRoulette = {
-        open:     openPanel,
-        close:    closePanel,
         closeWin: closeWin,
         refresh:  function () { loadState(); render(); },
         setDemoPoints: function (daily, online) {
