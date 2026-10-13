@@ -1,81 +1,58 @@
 /* =========================================
-   GROWERA Crystal Roulette — isolated styles
-   Version: sidebar-nav trigger (no floating launcher)
+   GROWERA Crystal Roulette — Inline Page Version
+   Integrates with .app-page system
 ========================================= */
 
-#roulettePanel,
+#roulettePage,
 #rouletteWinOverlay {
     box-sizing: border-box;
 }
 
-#roulettePanel *,
+#roulettePage *,
 #rouletteWinOverlay * {
     box-sizing: border-box;
 }
 
-/* [hidden] selalu menang, di manapun */
-#roulettePanel[hidden],
+#roulettePage[hidden],
 #rouletteWinOverlay[hidden] {
     display: none !important;
 }
 
 
 /* =========================================
-   ROULETTE PANEL — centered modal-style
+   PAGE HEADER
 ========================================= */
 
-#roulettePanel {
-    position: fixed;
-    z-index: 99991;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, calc(-50% + 14px)) scale(0.97);
-
-    width: min(480px, calc(100vw - 32px));
-    max-height: calc(100dvh - 60px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-
-    padding: 22px;
-    border: 1px solid #82a0d23d;
-    border-radius: 24px;
-    color: #f4f7ff;
-    background:
-        radial-gradient(circle at 90% 0%, #9b7bff28, transparent 40%),
-        radial-gradient(circle at 0% 100%, #65e7ff18, transparent 40%),
-        #080d19f7;
-    box-shadow:
-        0 24px 80px #0009,
-        0 0 30px #65e7ff14;
-    backdrop-filter: blur(20px);
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition:
-        opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-        visibility 0.22s;
+.roulette-header {
+    margin-bottom: 22px;
 }
 
-#roulettePanel.is-open {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translate(-50%, -50%) scale(1);
+.roulette-page-title {
+    margin: 10px 0 8px;
+    font-size: clamp(24px, 5vw, 32px);
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    background-image: linear-gradient(90deg, #65E7FF, #9B7BFF, #F1CC78);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: rouletteTitleShift 8s linear infinite;
 }
 
+@keyframes rouletteTitleShift {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
 
-/* =========================================
-   PANEL HEADER
-========================================= */
-
-.roulette-panel-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 16px;
+.roulette-page-subtitle {
+    margin: 0;
+    color: var(--muted, #9baac3);
+    font-size: 12.5px;
+    line-height: 1.6;
+    max-width: 520px;
 }
 
 .roulette-eyebrow {
@@ -83,39 +60,7 @@
     font-size: 9px;
     letter-spacing: 2px;
     font-weight: 900;
-}
-
-.roulette-panel-title {
-    margin: 5px 0;
-    font-size: 22px;
-    line-height: 1.2;
-    color: #f4f7ff;
-}
-
-.roulette-panel-subtitle {
-    margin: 0;
-    color: #9baac3;
-    font-size: 11px;
-    line-height: 1.6;
-}
-
-.roulette-close {
-    width: 34px;
-    height: 34px;
-    flex: none;
-    border: 1px solid #82a0d233;
-    border-radius: 11px;
-    color: #9baac3;
-    background: #ffffff08;
-    cursor: pointer;
-    font-size: 14px;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
-}
-
-.roulette-close:hover {
-    color: #f4f7ff;
-    border-color: #82a0d266;
-    background: #ffffff12;
+    text-transform: uppercase;
 }
 
 
@@ -127,8 +72,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
-    margin-bottom: 14px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
     border: 1px solid #f1cc7833;
     border-radius: 15px;
     background: linear-gradient(110deg, #f1cc7818, #9b7bff10);
@@ -142,26 +87,27 @@
 }
 
 .roulette-total-value {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 900;
     color: #f1cc78;
 }
 
 
 /* =========================================
-   TYPE SELECTOR (Daily / Online)
+   TYPE SELECTOR
 ========================================= */
 
 .roulette-types {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 9px;
-    margin-bottom: 16px;
+    gap: 10px;
+    margin-bottom: 20px;
+    max-width: 480px;
 }
 
 .roulette-type {
     text-align: left;
-    padding: 12px 10px;
+    padding: 14px 12px;
     border: 1px solid #82a0d22e;
     border-radius: 15px;
     color: #f4f7ff;
@@ -188,7 +134,7 @@
 }
 
 .roulette-type-icon {
-    font-size: 19px;
+    font-size: 20px;
     margin-bottom: 7px;
 }
 
@@ -206,14 +152,27 @@
 
 
 /* =========================================
+   WHEEL HEADING
+========================================= */
+
+.roulette-wheel-heading {
+    display: block;
+    text-align: center;
+    margin-bottom: 14px;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+}
+
+
+/* =========================================
    WHEEL
 ========================================= */
 
 .roulette-wheel-wrap {
     position: relative;
-    width: min(260px, 76vw);
+    width: min(280px, 78vw);
     aspect-ratio: 1;
-    margin: 0 auto 15px;
+    margin: 0 auto 16px;
 }
 
 .roulette-wheel-rim {
@@ -321,28 +280,35 @@
 
 
 /* =========================================
-   SPIN BUTTON + STATUS
+   STATUS + SPIN BUTTON
 ========================================= */
 
 .roulette-wheel-status {
     min-height: 18px;
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     color: #9baac3;
     text-align: center;
-    font-size: 11px;
+    font-size: 11.5px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .roulette-spin-btn {
+    display: block;
     width: 100%;
-    padding: 13px;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 14px;
     border: 0;
     border-radius: 14px;
     color: #07111e;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 1000;
     letter-spacing: 1.2px;
     background: linear-gradient(100deg, #65e7ff, #a8eaff 48%, #f1cc78);
     cursor: pointer;
+    font-family: inherit;
     transition: transform 0.15s, filter 0.15s;
 }
 
@@ -357,11 +323,12 @@
 }
 
 .roulette-disclaimer {
-    margin: 10px 0 0;
+    margin: 12px auto 0;
     text-align: center;
     color: #72819c;
-    font-size: 9px;
+    font-size: 9.5px;
     line-height: 1.5;
+    max-width: 480px;
 }
 
 
@@ -452,7 +419,7 @@
     background: #f1cc7817;
     font-weight: 900;
     cursor: pointer;
-    font: inherit;
+    font-family: inherit;
     transition: background 0.15s, border-color 0.15s;
 }
 
@@ -496,32 +463,20 @@
 
 
 /* =========================================
-   MOBILE — bottom sheet style
+   MOBILE
 ========================================= */
 
 @media (max-width: 560px) {
-    #roulettePanel {
-        top: auto;
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        width: auto;
-        max-height: 82dvh;
-        padding: 18px 16px 20px;
-        border-radius: 22px 22px 18px 18px;
-        transform: translateY(14px) scale(0.98);
+    .roulette-page-title {
+        font-size: 24px;
     }
 
-    #roulettePanel.is-open {
-        transform: translateY(0) scale(1);
-    }
-
-    .roulette-panel-title {
-        font-size: 20px;
+    .roulette-types {
+        grid-template-columns: 1fr;
     }
 
     .roulette-wheel-wrap {
-        width: min(238px, 72vw);
+        width: min(240px, 72vw);
     }
 
     .roulette-wheel-label {
@@ -545,7 +500,10 @@
 ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
-    #roulettePanel,
+    .roulette-page-title {
+        animation: none !important;
+    }
+
     #rouletteWinOverlay,
     .roulette-win-card {
         transition: none !important;
