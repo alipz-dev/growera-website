@@ -1,18 +1,162 @@
 /* =========================================
-   GROWERA — SHOP STYLES (v2)
+   GROWERA — SHOP STYLES (v3)
 ========================================= */
+
+/* ===== HEADER ===== */
+
+.shop-header {
+    margin-bottom: 20px;
+}
+
+.shop-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.shop-title {
+    margin: 0 0 12px;
+    font-size: clamp(26px, 5.5vw, 38px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.shop-subtitle {
+    margin: 0 0 16px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 560px;
+}
+
+.shop-header[data-variant="crystal"] .shop-title {
+    background-image: linear-gradient(90deg,#FF5C8A,#FFB347,#FFE066,#58FFAD,#55E6F5,#9B7BFF,#D8B66A,#FF5C8A);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: shop-rainbow 6s linear infinite;
+    filter: drop-shadow(0 0 24px rgba(155,123,255,.35));
+}
+
+@keyframes shop-rainbow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.shop-header[data-variant="assets"] .shop-title {
+    background-image: linear-gradient(90deg,#FFB347,#FF8C42,#FFB347);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.shop-header[data-variant="items"] .shop-title {
+    background-image: linear-gradient(90deg,#9B7BFF,#D8B66A);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* ===== CURRENCY ===== */
+
+.shop-currency {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(5,16,31,.5);
+}
+
+.shop-currency-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.shop-currency-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.3);
+}
+
+.shop-currency-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+}
+
+.shop-currency-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    display: block;
+}
+
+.shop-currency-name {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--text);
+}
+
+/* ===== BALANCE ===== */
+
+.shop-balance {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 7px 14px;
+    border: 1px solid rgba(101,231,255,.25);
+    border-radius: 999px;
+    background: rgba(5,16,31,.5);
+}
+
+.shop-balance.hidden { display: none; }
+
+.shop-balance-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+}
+
+.shop-balance-value {
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: bold;
+    font-family: monospace;
+}
 
 /* ===== TABS ===== */
 
-.topup-tabs {
+.shop-tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 16px;
-    margin-top: 12px;
 }
 
-.topup-tab {
+.shop-tab {
     padding: 8px 16px;
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -27,147 +171,39 @@
     white-space: nowrap;
     cursor: pointer;
     font-family: inherit;
-    transition: color .15s, background .15s, border-color .15s, box-shadow .2s, transform .15s;
+    transition: all .15s;
 }
 
-.topup-tab:hover {
+.shop-tab:hover {
     color: var(--text);
-    border-color: rgba(101, 231, 255, .3);
+    border-color: rgba(101,231,255,.3);
     transform: translateY(-1px);
 }
 
-.topup-tab:active { transform: translateY(0) scale(.97); }
-
-.topup-tab.active {
+.shop-tab.active {
     color: var(--text);
     border-color: var(--cyan);
-    background: rgba(101, 231, 255, .1);
-    box-shadow: 0 0 14px rgba(101, 231, 255, .2);
+    background: rgba(101,231,255,.1);
+    box-shadow: 0 0 14px rgba(101,231,255,.2);
 }
 
-/* ===== HEADER ===== */
-
-.topup-header { margin-bottom: 20px; }
-
-.topup-header .eyebrow {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 10px;
-    letter-spacing: 2.5px;
-    color: var(--muted);
+.shop-tab img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    image-rendering: pixelated;
 }
 
-.topup-title {
-    margin: 0 0 12px;
-    font-size: clamp(26px, 5.5vw, 38px);
-    font-weight: 900;
-    letter-spacing: 2px;
-    line-height: 1.1;
-    overflow-wrap: anywhere;
+/* ===== PANELS ===== */
+
+.shop-panel { animation: shop-fade .3s ease-out; }
+
+@keyframes shop-fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
 }
 
-.topup-subtitle {
-    margin: 0 0 16px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.7;
-    max-width: 560px;
-}
-
-.topup-header[data-variant="crystal"] .topup-title {
-    background-image: linear-gradient(90deg,#FF5C8A 0%,#FFB347 14%,#FFE066 28%,#58FFAD 42%,#55E6F5 56%,#9B7BFF 70%,#D8B66A 84%,#FF5C8A 100%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    animation: crystal-rainbow 6s linear infinite;
-    filter: drop-shadow(0 0 24px rgba(155,123,255,.35));
-}
-
-@keyframes crystal-rainbow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-}
-
-.topup-header[data-variant="assets"] .topup-title {
-    background-image: linear-gradient(90deg,#FFB347 0%,#FF8C42 50%,#FFB347 100%);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent;
-    filter: drop-shadow(0 0 20px rgba(255,179,71,.3));
-}
-
-.topup-header[data-variant="items"] .topup-title {
-    background-image: linear-gradient(90deg,#9B7BFF 0%,#D8B66A 100%);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent;
-    filter: drop-shadow(0 0 20px rgba(155,123,255,.3));
-}
-
-/* ===== CURRENCY ===== */
-
-.store-currency {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 6px 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: rgba(5,16,31,.5);
-}
-
-.store-currency-label {
-    font-size: 9px; letter-spacing: 1.5px;
-    color: var(--muted); font-weight: bold;
-    text-transform: uppercase;
-}
-
-.store-currency-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 12px; border-radius: 999px;
-    background: rgba(0,0,0,.3);
-}
-
-.store-currency-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 18px; height: 18px;
-}
-
-.store-currency-name {
-    font-family: monospace; font-size: 11px;
-    font-weight: bold; letter-spacing: .5px;
-    color: var(--text);
-}
-
-/* ===== BALANCE ===== */
-
-.topup-balance {
-    display: inline-flex; align-items: center; gap: 8px;
-    margin-bottom: 12px; padding: 7px 14px;
-    border: 1px solid rgba(101,231,255,.25);
-    border-radius: 999px;
-    background: rgba(5,16,31,.5);
-}
-
-.topup-balance.hidden { display: none; }
-
-.topup-balance-label {
-    color: var(--muted); font-size: 10px;
-    letter-spacing: 1.5px; font-weight: bold;
-}
-
-.topup-balance-value {
-    color: var(--gold); font-size: 13px;
-    font-weight: bold; font-family: monospace;
-    overflow-wrap: anywhere;
-}
-
-/* ===== PANEL ===== */
-
-.topup-tab-panel { animation: pageEnter .3s ease-out both; }
-.topup-tab-panel.hidden { display: none; }
-
-.topup-placeholder {
+.shop-empty {
     padding: 50px 24px;
     border: 1px dashed var(--border);
     border-radius: 16px;
@@ -175,40 +211,49 @@
     text-align: center;
 }
 
-.topup-placeholder-icon {
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 12px; opacity: .7;
+.shop-empty h3 {
+    margin: 12px 0 8px;
+    font-size: 15px;
+    color: var(--text);
 }
 
-.topup-placeholder h3 {
-    margin: 0 0 8px; font-size: 15px;
-    color: var(--text); letter-spacing: .5px;
+.shop-empty p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    max-width: 320px;
+    margin: 0 auto;
 }
 
-.topup-placeholder p {
-    margin: 0 0 8px; color: var(--muted);
-    font-size: 12px; line-height: 1.7;
-    max-width: 320px; margin-left: auto; margin-right: auto;
+.shop-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    opacity: .6;
 }
 
-.topup-placeholder-hint {
-    font-size: 10px !important;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    color: #5C6078 !important; margin-top: 12px !important;
-    font-family: monospace;
+.shop-empty-icon img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    image-rendering: pixelated;
 }
 
-/* ===== GRID ===== */
+/* ===== GRID & CARDS ===== */
 
-.topup-grid {
+.shop-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 12px; margin-bottom: 32px;
+    gap: 12px;
+    margin-bottom: 28px;
 }
 
-.topup-card {
+.shop-card {
     position: relative;
-    display: flex; flex-direction: column; gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 18px 14px 14px;
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -217,244 +262,275 @@
     transition: border-color .25s, transform .25s, box-shadow .25s;
 }
 
-.topup-card:hover {
+.shop-card:hover {
     border-color: rgba(101,231,255,.4);
     transform: translateY(-2px);
     box-shadow: 0 14px 32px rgba(0,0,0,.35);
 }
 
-.topup-card.featured {
+.shop-card.featured {
     border-color: rgba(101,231,255,.55);
     background: radial-gradient(circle at 100% 0%, rgba(155,123,255,.25), transparent 55%),
-                linear-gradient(145deg, #112C49, #15152F);
-    box-shadow: 0 0 24px rgba(101,231,255,.15);
+                linear-gradient(145deg,#112C49,#15152F);
 }
 
-.topup-card.tier-mega {
+.shop-card.tier-mega {
     border: 2px solid rgba(255,179,71,.5);
     background: radial-gradient(circle at 100% 0%, rgba(255,179,71,.22), transparent 55%),
-                linear-gradient(145deg, #2A1F14, #15152F);
-    box-shadow: 0 0 24px rgba(255,179,71,.15), inset 0 0 30px rgba(255,179,71,.04);
+                linear-gradient(145deg,#2A1F14,#15152F);
 }
 
-.topup-card.tier-divine {
+.shop-card.tier-divine {
     border: 2px solid transparent;
-    background: linear-gradient(145deg,#1A1228 0%,#0A0D18 100%) padding-box,
-                linear-gradient(135deg,#FF5C8A 0%,#FFB347 16%,#FFE066 32%,#58FFAD 48%,#55E6F5 64%,#9B7BFF 80%,#FF5C8A 100%) border-box;
+    background: linear-gradient(145deg,#1A1228,#0A0D18) padding-box,
+                linear-gradient(135deg,#FF5C8A,#FFB347,#FFE066,#58FFAD,#55E6F5,#9B7BFF,#FF5C8A) border-box;
     background-size: auto, 200% 200%;
-    animation: divine-border-shift 6s linear infinite;
-    box-shadow: 0 0 24px rgba(155,123,255,.3), 0 0 48px rgba(85,230,245,.15);
+    animation: shop-divine 6s linear infinite;
 }
 
-@keyframes divine-border-shift {
+@keyframes shop-divine {
     0% { background-position: 0 0, 0% 50%; }
     100% { background-position: 0 0, 200% 50%; }
 }
 
-.topup-card-badge {
-    position: absolute; top: -10px; right: 10px;
-    padding: 3px 10px; border-radius: 999px;
-    font-size: 8px; font-weight: 900;
-    letter-spacing: .8px; color: #04131E;
+.shop-card-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .8px;
+    color: #04131E;
     background: linear-gradient(90deg, var(--cyan), var(--violet));
-    box-shadow: 0 4px 12px rgba(101,231,255,.35);
     white-space: nowrap;
 }
 
-.topup-card-badge.mega {
+.shop-card-badge.mega {
     background: linear-gradient(90deg,#FFB347,#FF8C42);
     color: #1A1408;
 }
 
-.topup-card-badge.divine {
-    background: linear-gradient(90deg,#FF5C8A 0%,#FFB347 16%,#FFE066 32%,#58FFAD 48%,#55E6F5 64%,#9B7BFF 80%,#FF5C8A 100%);
+.shop-card-badge.divine {
+    background: linear-gradient(90deg,#FF5C8A,#FFB347,#FFE066,#58FFAD,#55E6F5,#9B7BFF,#FF5C8A);
     background-size: 200% 100%;
-    animation: rainbow-badge 4s linear infinite;
+    animation: shop-rainbow 4s linear infinite;
     color: #0A0D18;
 }
 
-@keyframes rainbow-badge {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
+.shop-card-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.topup-card-gems {
-    display: flex; align-items: center; gap: 10px;
+.shop-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
 }
 
-.topup-card-gems-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px; flex-shrink: 0;
+.shop-card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
 }
 
-.topup-card-gems-value {
-    color: var(--text); font-size: 18px;
-    font-weight: 900; line-height: 1;
-    overflow-wrap: anywhere; letter-spacing: -.3px;
+.shop-card-value {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--text);
 }
 
-.topup-card.tier-mega .topup-card-gems-value {
+.shop-card-unit {
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.shop-card.tier-mega .shop-card-value {
     background: linear-gradient(90deg,#FFB347,#F0D9A0);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 20px;
 }
 
-.topup-card.tier-divine .topup-card-gems-value {
+.shop-card.tier-divine .shop-card-value {
     background: linear-gradient(90deg,#FF5C8A,#FFB347,#FFE066,#58FFAD,#55E6F5,#9B7BFF);
     background-size: 200% 100%;
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 22px;
-    animation: rainbow-badge 5s linear infinite;
+    animation: shop-rainbow 5s linear infinite;
 }
 
-.topup-card-gems-unit {
-    color: var(--muted); font-size: 9px;
-    letter-spacing: 1px; font-weight: bold; margin-top: 3px;
-}
-
-.topup-card.tier-mega .topup-card-gems-unit { color: #FFB347; }
-.topup-card.tier-divine .topup-card-gems-unit { color: #9B7BFF; }
-
-.topup-card-bonus {
-    display: inline-block; padding: 2px 8px;
+.shop-card-bonus {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 2px 8px;
     border-radius: 6px;
     background: rgba(88,255,173,.1);
     border: 1px solid rgba(88,255,173,.3);
-    color: var(--success);
-    font-size: 9px; font-weight: bold;
-    letter-spacing: .5px; align-self: flex-start;
+    color: #58FFAD;
+    font-size: 9px;
+    font-weight: bold;
 }
 
-.topup-card-divider {
+.shop-card-divider {
     height: 1px;
     background: rgba(130,160,210,.12);
     margin: 4px 0;
 }
 
-.topup-card-price {
-    color: var(--cyan); font-size: 14px;
-    font-weight: bold; font-family: monospace;
+.shop-card-price {
+    color: var(--cyan);
+    font-size: 14px;
+    font-weight: bold;
+    font-family: monospace;
 }
 
-.topup-card-total {
-    color: #7186A4; font-size: 9px; line-height: 1.4;
-    display: flex; align-items: center; gap: 4px;
+.shop-card-rewards {
+    color: #7186A4;
+    font-size: 9px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     flex-wrap: wrap;
 }
 
-.topup-card-total strong { color: var(--text); }
+.shop-card-rewards img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    vertical-align: middle;
+}
 
-.topup-buy-btn {
-    width: 100%; margin-top: auto;
+.shop-buy-btn {
+    width: 100%;
+    margin-top: auto;
     padding: 9px 10px;
     border: 1px solid rgba(101,231,255,.3);
     border-radius: 9px;
     color: var(--cyan);
     background: rgba(5,16,31,.5);
-    font-size: 11px; font-weight: bold;
-    letter-spacing: .3px; cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
     font-family: inherit;
-    transition: background .15s, border-color .15s, transform .15s, box-shadow .2s;
+    transition: all .15s;
 }
 
-.topup-buy-btn:hover {
+.shop-buy-btn:hover {
     background: rgba(101,231,255,.12);
     border-color: var(--cyan);
-    transform: translateY(-1px);
 }
 
-.topup-buy-btn:active { transform: translateY(0) scale(.97); }
-
-.topup-card.featured .topup-buy-btn {
+.shop-card.featured .shop-buy-btn {
     color: #04131E;
     background: linear-gradient(90deg,#79EFFF,#39B9FF);
     border: 0;
 }
 
-.topup-card.tier-mega .topup-buy-btn {
+.shop-card.tier-mega .shop-buy-btn {
     color: #1A1408;
     background: linear-gradient(90deg,#FFB347,#FF8C42);
     border: 0;
 }
 
-.topup-card.tier-divine .topup-buy-btn {
+.shop-card.tier-divine .shop-buy-btn {
     color: #0A0D18;
     background: linear-gradient(90deg,#FF5C8A,#FFB347,#FFE066,#58FFAD,#55E6F5,#9B7BFF);
     background-size: 200% 100%;
+    animation: shop-rainbow 5s linear infinite;
     border: 0;
-    animation: rainbow-badge 5s linear infinite;
     font-weight: 900;
 }
 
-/* ===== SECTIONS ===== */
+/* ===== HOW TO SECTION ===== */
 
-.topup-section { margin-top: 32px; }
+.shop-section { margin-top: 28px; }
 
-.topup-section-heading {
-    display: flex; align-items: center; gap: 10px;
-    margin: 0 0 16px; font-size: 16px;
+.shop-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-size: 15px;
 }
 
-.topup-section-heading span {
-    color: var(--muted); font-size: 11px;
-    font-weight: normal; margin-left: auto;
+.shop-section-heading img {
+    width: 22px;
+    height: 22px;
+    image-rendering: pixelated;
 }
 
-.topup-steps {
+.shop-steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
     gap: 12px;
 }
 
-.topup-step {
-    display: flex; align-items: flex-start; gap: 12px;
+.shop-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
     padding: 14px 16px;
     border: 1px solid var(--border);
-    border-radius: 14px; background: var(--surface);
-}
-
-.topup-step-num {
-    display: flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px; flex-shrink: 0;
-    border-radius: 8px; color: #04131E;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    font-size: 13px; font-weight: bold;
-}
-
-.topup-step-text {
-    color: var(--muted); font-size: 12px; line-height: 1.5;
-}
-
-.topup-step-text strong { color: var(--text); }
-
-.topup-payments {
-    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
-}
-
-.topup-payment {
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--text);
+    border-radius: 14px;
     background: var(--surface);
-    font-size: 11px; font-weight: bold;
-    letter-spacing: .5px;
 }
 
-.topup-note {
-    margin-top: 20px; padding: 12px 16px;
-    border-left: 3px solid var(--cyan);
+.shop-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
     border-radius: 8px;
-    background: rgba(101,231,255,.06);
-    color: var(--muted); font-size: 11px; line-height: 1.7;
+    color: #04131E;
+    background: linear-gradient(135deg,var(--cyan),var(--violet));
+    font-size: 13px;
+    font-weight: bold;
 }
 
-/* ===== EDITOR STYLES ===== */
+.shop-step-text {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.shop-step-text strong { color: var(--text); }
+
+/* ===== EDITOR ===== */
+
+.shop-editor-subhead {
+    margin: 20px 0 10px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(101,231,255,.15);
+    padding-bottom: 6px;
+}
 
 .shop-editor-item {
-    display: flex; gap: 10px; align-items: center;
+    display: flex;
+    gap: 10px;
+    align-items: center;
     padding: 12px;
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -463,24 +539,41 @@
 }
 
 .shop-editor-item-icon {
-    width: 40px; height: 40px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 8px;
     background: rgba(101,231,255,.05);
     border: 1px solid rgba(101,231,255,.1);
     overflow: hidden;
 }
 
+.shop-editor-item-icon img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
 .shop-editor-item-info { flex: 1; min-width: 0; }
 
 .shop-editor-item-title {
-    font-weight: bold; color: var(--text);
-    font-size: 13px; margin-bottom: 2px;
+    font-weight: bold;
+    color: var(--text);
+    font-size: 13px;
+    margin-bottom: 2px;
 }
 
 .shop-editor-item-meta {
-    color: var(--muted); font-size: 11px;
-    display: flex; gap: 6px; flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 11px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .shop-editor-item-meta .badge {
@@ -492,14 +585,10 @@
     font-size: 10px;
 }
 
-.shop-editor-item-meta .badge.off {
-    background: rgba(255,92,138,.1);
-    border-color: rgba(255,92,138,.3);
-    color: #FF5C8A;
-}
-
 .shop-editor-actions {
-    display: flex; gap: 6px; flex-shrink: 0;
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .shop-editor-btn {
@@ -508,7 +597,8 @@
     border-radius: 8px;
     background: rgba(5,16,31,.6);
     color: var(--text);
-    font-size: 11px; font-weight: bold;
+    font-size: 11px;
+    font-weight: bold;
     cursor: pointer;
     font-family: inherit;
 }
@@ -523,18 +613,24 @@
     border-color: rgba(255,92,138,.3);
 }
 
-.shop-editor-btn.danger:hover {
-    background: rgba(255,92,138,.08);
-    border-color: rgba(255,92,138,.5);
+.shop-editor-json-area {
+    width: 100%;
+    min-height: 300px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(5,16,31,.5);
+    color: var(--text);
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
 }
 
-.shop-editor-btn.primary {
-    color: #04131E;
-    background: linear-gradient(90deg,#79EFFF,#39B9FF);
-    border: 0;
-}
+/* ===== REWARDS ROW ===== */
 
-/* Reward row di form */
 .reward-row {
     display: flex;
     gap: 8px;
@@ -577,74 +673,32 @@
     font-family: inherit;
 }
 
-.shop-editor-subhead {
-    margin: 20px 0 10px;
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: var(--cyan);
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(101,231,255,.15);
-    padding-bottom: 6px;
-}
-
-.shop-editor-json-area {
-    width: 100%;
-    min-height: 300px;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: rgba(5,16,31,.5);
-    color: var(--text);
-    font-family: monospace;
-    font-size: 11px;
-    line-height: 1.5;
-    resize: vertical;
-    outline: none;
-}
-
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 850px) {
-    .topup-grid {
-        grid-template-columns: repeat(3, minmax(0,1fr));
-        gap: 10px;
-    }
+    .shop-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
 }
 
 @media (max-width: 560px) {
-    .topup-tabs { gap: 4px; }
-    .topup-tab { padding: 7px 10px; font-size: 9px; letter-spacing: 1px; }
-    .topup-title { font-size: 24px; letter-spacing: 1.5px; }
-    .topup-subtitle { font-size: 11.5px; }
-    .store-currency { padding: 5px 5px 5px 12px; }
-    .store-currency-name { font-size: 10px; }
-    .topup-balance { padding: 6px 12px; }
-    .topup-balance-value { font-size: 12px; }
-    .topup-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
-    .topup-card { padding: 12px 7px 10px; gap: 7px; border-radius: 12px; }
-    .topup-card.tier-mega, .topup-card.tier-divine { border-width: 1.5px; }
-    .topup-card-gems { gap: 5px; }
-    .topup-card-gems-icon { width: 22px; height: 22px; }
-    .topup-card-gems-value { font-size: 13px; }
-    .topup-card.tier-mega .topup-card-gems-value { font-size: 14px; }
-    .topup-card.tier-divine .topup-card-gems-value { font-size: 14px; }
-    .topup-card-gems-unit { font-size: 7px; letter-spacing: .5px; margin-top: 2px; }
-    .topup-card-bonus { padding: 2px 5px; font-size: 7px; }
-    .topup-card-price { font-size: 11px; }
-    .topup-card-total { font-size: 7.5px; line-height: 1.3; }
-    .topup-buy-btn { padding: 6px 3px; font-size: 9px; letter-spacing: 0; }
-    .topup-card-badge { font-size: 6.5px; padding: 2px 6px; top: -7px; right: 6px; }
+    .shop-tabs { gap: 4px; }
+    .shop-tab { padding: 7px 10px; font-size: 9px; }
+    .shop-title { font-size: 24px; }
+    .shop-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+    .shop-card { padding: 12px 7px 10px; gap: 7px; }
+    .shop-card-icon { width: 30px; height: 30px; }
+    .shop-card-value { font-size: 13px; }
+    .shop-card-price { font-size: 11px; }
+    .shop-buy-btn { padding: 6px 3px; font-size: 9px; }
     .shop-editor-item { flex-wrap: wrap; }
     .shop-editor-actions { width: 100%; justify-content: flex-end; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .topup-header[data-variant="crystal"] .topup-title,
-    .topup-card.tier-divine,
-    .topup-card.tier-divine .topup-card-gems-value,
-    .topup-card.tier-divine .topup-buy-btn,
-    .topup-card-badge.divine {
+    .shop-header[data-variant="crystal"] .shop-title,
+    .shop-card.tier-divine,
+    .shop-card.tier-divine .shop-card-value,
+    .shop-card.tier-divine .shop-buy-btn,
+    .shop-card-badge.divine {
         animation: none !important;
     }
 }
