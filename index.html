@@ -17,7 +17,7 @@
 
 <body>
 
-    <!-- LOGIN -->
+    <!-- ============ LOGIN ============ -->
     <section id="loginScreen">
         <main class="login-box">
             <h1 class="logo">GROWERA</h1>
@@ -48,7 +48,7 @@
     </section>
 
 
-    <!-- DASHBOARD -->
+    <!-- ============ DASHBOARD ============ -->
     <section id="dashboardScreen" class="hidden">
 
         <aside class="sidebar">
@@ -125,7 +125,7 @@
 
         <main class="content">
 
-            <!-- HOME -->
+            <!-- ============ HOME ============ -->
             <section class="app-page" id="homePage">
                 <section class="news-card" id="newsHeroCard">
                     <div class="news-badge" id="newsBadge">GROWERA NEWS</div>
@@ -238,7 +238,7 @@
             </section>
 
 
-            <!-- PROFILE -->
+            <!-- ============ PROFILE ============ -->
             <section class="app-page hidden" id="profilePage">
                 <div class="welcome">
                     <div class="eyebrow">PLAYER ACCOUNT</div>
@@ -331,7 +331,7 @@
             </section>
 
 
-            <!-- REWARDS -->
+            <!-- ============ REWARDS ============ -->
             <section class="app-page hidden" id="rewardsPage">
                 <div class="rewards-header">
                     <div class="eyebrow">CRYSTAL REWARDS</div>
@@ -374,7 +374,7 @@
             </section>
 
 
-            <!-- ROULETTE -->
+            <!-- ============ ROULETTE ============ -->
             <section class="app-page hidden" id="roulettePage">
                 <div class="roulette-header">
                     <div class="eyebrow">GROWERA · LUCKY CRYSTALS</div>
@@ -433,37 +433,38 @@
             </section>
 
 
-            <!-- TOP UP / SHOP -->
+            <!-- ============ TOP UP / SHOP ============ -->
             <section class="app-page hidden" id="topupPage">
 
-    <div class="shop-header" id="shopHeader" data-variant="crystal">
-        <div class="shop-eyebrow" id="shopEyebrow">CRYSTAL STORE</div>
-        <h1 class="shop-title" id="shopTitle">CRYSTAL STORE</h1>
-        <p class="shop-subtitle" id="shopSubtitle">
-            Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.
-        </p>
+                <div class="shop-header" id="shopHeader" data-variant="crystal">
+                    <div class="shop-eyebrow" id="shopEyebrow">CRYSTAL STORE</div>
+                    <h1 class="shop-title" id="shopTitle">CRYSTAL STORE</h1>
+                    <p class="shop-subtitle" id="shopSubtitle">
+                        Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.
+                    </p>
 
-        <div class="shop-currency">
-            <span class="shop-currency-label">CURRENCY</span>
-            <span class="shop-currency-chip">
-                <span class="shop-currency-icon" id="shopCurrencyIcon"></span>
-                <span class="shop-currency-name" id="shopCurrencyName">GEMS</span>
-            </span>
-        </div>
-    </div>
+                    <div class="shop-currency">
+                        <span class="shop-currency-label">CURRENCY</span>
+                        <span class="shop-currency-chip">
+                            <span class="shop-currency-icon" id="shopCurrencyIcon"></span>
+                            <span class="shop-currency-name" id="shopCurrencyName">GEMS</span>
+                        </span>
+                    </div>
+                </div>
 
-    <div class="shop-balance" id="shopBalanceWrap">
-        <span class="shop-balance-label">SALDO</span>
-        <span class="shop-balance-value" id="shopBalance">—</span>
-    </div>
+                <div class="shop-balance" id="shopBalanceWrap">
+                    <span class="shop-balance-label">SALDO</span>
+                    <span class="shop-balance-value" id="shopBalance">—</span>
+                </div>
 
-    <div class="shop-tabs" id="shopTabs"></div>
+                <div class="shop-tabs" id="shopTabs"></div>
 
-    <div class="shop-panels" id="shopPanels"></div>
+                <div class="shop-panels" id="shopPanels"></div>
 
-</section>
+            </section>
 
-            <!-- MORE -->
+
+            <!-- ============ MORE ============ -->
             <section class="app-page hidden" id="morePage">
                 <div class="welcome">
                     <div class="eyebrow">EXPLORE</div>
@@ -506,7 +507,7 @@
             </section>
 
 
-            <!-- EDITOR -->
+            <!-- ============ EDITOR ============ -->
             <section class="app-page hidden" id="editorPage">
                 <div class="welcome">
                     <div class="eyebrow">ADMIN PANEL</div>
@@ -778,72 +779,65 @@
                     </div>
                 </div>
 
-                <!-- SHOP EDITOR: CATEGORY LIST -->
-                <div class="editor-view hidden" id="editorViewTopupList">
+                <!-- ================= SHOP EDITOR: CATEGORY LIST ================= -->
+                <div class="editor-view hidden" id="editorViewShopCategories">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2>🛒 Shop Categories</h2>
+                            <h2>🛒 Shop Editor</h2>
                             <div class="editor-view-actions">
-                                <button class="profile-button" id="topupBackToRoadmap" type="button">← Back</button>
-                                <button class="profile-button" id="topupExportBtn" type="button">📤 Export</button>
-                                <button class="profile-button" id="topupImportBtn" type="button">📥 Import</button>
-                                <button class="profile-button" id="topupResetBtn" type="button" style="color:#FF5C8A">🔄 Reset</button>
-                                <button class="primary-button" id="topupCreateBtn" type="button" style="width:auto">+ Kategori</button>
+                                <button class="profile-button" id="shopEditorBackToRoadmap" type="button">← Back</button>
+                                <button class="profile-button" id="shopEditorExportBtn" type="button">📤 Export</button>
+                                <button class="profile-button" id="shopEditorImportBtn" type="button">📥 Import</button>
+                                <button class="profile-button" id="shopEditorResetBtn" type="button" style="color:#FF5C8A">🔄 Reset</button>
+                                <button class="primary-button" id="shopEditorCreateCategoryBtn" type="button" style="width:auto">+ Kategori</button>
                             </div>
                         </div>
 
                         <p style="color:var(--muted);font-size:11px;margin:0 0 14px;line-height:1.6">
-                            Klik <strong>📦 Paket</strong> untuk mengelola paket di kategori tersebut.
-                            Klik <strong>✏️</strong> untuk mengubah detail kategori.
-                            Setelah selesai, klik <strong>📤 Export</strong> → simpan ke <code>data/shop-config.json</code> di repo → push.
+                            Klik <strong>📦 Paket</strong> untuk kelola paket di kategori tersebut.
+                            Klik <strong>✏️</strong> untuk ubah detail kategori.
+                            Setelah selesai, klik <strong>📤 Export</strong> lalu simpan ke
+                            <code>data/shop-config.json</code> di repo.
                         </p>
 
-                        <div id="topupCategoryList">
-                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
-                                Memuat kategori...
-                            </p>
-                        </div>
+                        <div id="shopCategoryList"></div>
                     </div>
                 </div>
 
-                <!-- SHOP EDITOR: PACKAGE LIST -->
-                <div class="editor-view hidden" id="editorViewTopupPackages">
+                <!-- ================= SHOP EDITOR: PACKAGE LIST ================= -->
+                <div class="editor-view hidden" id="editorViewShopPackages">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2 id="topupPackagesTitle">📦 Paket</h2>
+                            <h2 id="shopPackagesTitle">📦 Paket</h2>
                             <div class="editor-view-actions">
-                                <button class="profile-button" id="topupPackagesBack" type="button">← Back</button>
-                                <button class="primary-button" id="topupCreatePkgBtn" type="button" style="width:auto">+ Paket</button>
+                                <button class="profile-button" id="shopEditorBackToCategoriesBtn" type="button">← Back</button>
+                                <button class="primary-button" id="shopEditorCreatePackageBtn" type="button" style="width:auto">+ Paket</button>
                             </div>
                         </div>
 
-                        <div id="topupPackageList">
-                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
-                                Memuat paket...
-                            </p>
-                        </div>
+                        <div id="shopPackageList"></div>
                     </div>
                 </div>
 
-                <!-- SHOP EDITOR: FORM (kategori atau paket) -->
-                <div class="editor-view hidden" id="editorViewTopupForm">
+                <!-- ================= SHOP EDITOR: FORM ================= -->
+                <div class="editor-view hidden" id="editorViewShopForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2 id="topupFormTitle">Buat Baru</h2>
-                            <button class="profile-button" id="topupFormBack" type="button">← Back</button>
+                            <h2 id="shopFormTitle">Buat Baru</h2>
+                            <button class="profile-button" id="shopFormBackBtn" type="button">← Back</button>
                         </div>
 
                         <div class="editor-form-row">
                             <div class="editor-form-group">
-                                <label for="topupFormKey">Key</label>
-                                <input class="editor-input" id="topupFormKey" type="text" maxlength="40" />
+                                <label for="shopFormKey">Key</label>
+                                <input class="editor-input" id="shopFormKey" type="text" maxlength="40" />
                             </div>
                             <div class="editor-form-group">
-                                <label for="topupFormTier">Tier / Variant</label>
-                                <select class="editor-input" id="topupFormTier">
-                                    <option value="crystal">Crystal (rainbow)</option>
-                                    <option value="assets">Assets (orange)</option>
-                                    <option value="items">Items (purple)</option>
+                                <label for="shopFormTier">Tier / Variant</label>
+                                <select class="editor-input" id="shopFormTier">
+                                    <option value="crystal">Crystal</option>
+                                    <option value="assets">Assets</option>
+                                    <option value="items">Items</option>
                                     <option value="starter">Starter</option>
                                     <option value="basic">Basic</option>
                                     <option value="popular">Popular ⭐</option>
@@ -855,71 +849,70 @@
                         </div>
 
                         <div class="editor-form-group">
-                            <label for="topupFormIcon">Icon Item ID</label>
-                            <input class="editor-input" id="topupFormIcon" type="text" maxlength="8"
-                                   data-item-picker="topup-icon"
+                            <label for="shopFormIcon">Icon Item ID</label>
+                            <input class="editor-input" id="shopFormIcon" type="text" maxlength="8"
+                                   data-item-picker="shop-icon"
                                    data-item-picker-format="id"
                                    data-item-picker-title="Pilih Icon" />
                         </div>
 
                         <div class="editor-form-row">
                             <div class="editor-form-group">
-                                <label for="topupFormGems">Display Value</label>
-                                <input class="editor-input" id="topupFormGems" type="text" />
+                                <label for="shopFormValue">Display Value</label>
+                                <input class="editor-input" id="shopFormValue" type="text" />
                             </div>
                             <div class="editor-form-group">
-                                <label for="topupFormBonus">Display Unit</label>
-                                <input class="editor-input" id="topupFormBonus" type="text" />
+                                <label for="shopFormUnit">Display Unit</label>
+                                <input class="editor-input" id="shopFormUnit" type="text" />
                             </div>
                         </div>
 
                         <div class="editor-form-row">
                             <div class="editor-form-group">
-                                <label for="topupFormPrice">Harga (Rp)</label>
-                                <input class="editor-input" id="topupFormPrice" type="number" min="0" />
+                                <label for="shopFormPrice">Harga (Rp)</label>
+                                <input class="editor-input" id="shopFormPrice" type="number" min="0" />
                             </div>
                             <div class="editor-form-group">
-                                <label for="topupFormOrder">Order</label>
-                                <input class="editor-input" id="topupFormOrder" type="number" min="0" />
+                                <label for="shopFormOrder">Order</label>
+                                <input class="editor-input" id="shopFormOrder" type="number" min="0" />
                             </div>
                         </div>
 
                         <div class="editor-form-group">
-                            <label for="topupFormBadge">Badge / Title</label>
-                            <input class="editor-input" id="topupFormBadge" type="text" maxlength="60" />
+                            <label for="shopFormBadge">Badge / Title</label>
+                            <input class="editor-input" id="shopFormBadge" type="text" maxlength="60" />
                         </div>
 
                         <div class="editor-form-group">
-                            <label for="topupFormActive">Status</label>
-                            <select class="editor-input" id="topupFormActive">
+                            <label for="shopFormActive">Status</label>
+                            <select class="editor-input" id="shopFormActive">
                                 <option value="1">Aktif</option>
                                 <option value="0">Nonaktif</option>
                             </select>
                         </div>
 
-                        <!-- Rewards (muncul saat edit paket) -->
-                        <div id="topupFormRewardsSection">
+                        <div id="shopFormRewardsSection" style="display:none">
                             <div class="shop-editor-subhead">Hadiah (Rewards)</div>
-                            <div id="topupFormRewardsList"></div>
-                            <button class="profile-button" id="topupFormAddReward"
-                                    type="button" style="margin-top:6px">
+                            <div id="shopFormRewardsList"></div>
+                            <button class="profile-button" id="shopFormAddRewardBtn" type="button" style="margin-top:6px">
                                 + Tambah Hadiah
                             </button>
                         </div>
 
                         <div class="editor-form-actions">
-                            <button class="profile-button" id="topupFormCancel" type="button">Cancel</button>
-                            <button class="primary-button" id="topupFormSave" type="button" style="width:auto">Save</button>
+                            <button class="profile-button" id="shopFormCancelBtn" type="button">Cancel</button>
+                            <button class="primary-button" id="shopFormSaveBtn" type="button" style="width:auto">Save</button>
                         </div>
                     </div>
                 </div>
+
             </section>
 
             <div class="app-footer">GROWERA • CRYSTAL ERA</div>
         </main>
 
 
-        <!-- RIGHT PANEL -->
+        <!-- ============ RIGHT PANEL ============ -->
         <aside class="right-panel">
             <section class="right-panel-card">
                 <h2 class="right-panel-title">Player Information</h2>
@@ -980,7 +973,7 @@
         </aside>
 
 
-        <!-- FLOATING QUICK MENU -->
+        <!-- ============ FLOATING QUICK MENU ============ -->
         <button class="floating-quick-btn" id="floatingQuickBtn" type="button"
                 aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
             <span class="floating-quick-icon" data-item-icon="1360" data-item-icon-size="26"></span>
@@ -1049,7 +1042,7 @@
         </div>
 
 
-        <!-- ROULETTE WIN OVERLAY -->
+        <!-- ============ ROULETTE WIN OVERLAY ============ -->
         <div id="rouletteWinOverlay" role="dialog" aria-modal="true"
              aria-labelledby="rouletteWinTitle" hidden>
             <div class="roulette-win-card" id="rouletteWinCard">
@@ -1066,7 +1059,7 @@
         </div>
 
 
-        <!-- INVENTORY MODAL -->
+        <!-- ============ INVENTORY MODAL ============ -->
         <div class="inventory-modal" id="inventoryModal">
             <div class="inventory-modal-content">
                 <div class="inventory-modal-header">
@@ -1081,7 +1074,7 @@
         </div>
 
 
-        <!-- NEWS DETAIL MODAL -->
+        <!-- ============ NEWS DETAIL MODAL ============ -->
         <div class="news-modal" id="newsModal">
             <div class="news-modal-content">
                 <div class="news-modal-header">
@@ -1113,7 +1106,7 @@
         </div>
 
 
-        <!-- REWARDS MODAL -->
+        <!-- ============ REWARDS MODAL ============ -->
         <div class="rewards-modal" id="rewardsModal">
             <div class="rewards-modal-content" id="rewardsModalContent" data-variant="milestone">
                 <div class="rewards-modal-header" id="rewardsModalHeader">
@@ -1132,7 +1125,7 @@
     </section>
 
 
-    <!-- ITEM PICKER MODAL -->
+    <!-- ============ ITEM PICKER MODAL ============ -->
     <div class="item-picker-modal" id="itemPickerModal" hidden role="dialog"
          aria-modal="true" aria-labelledby="itemPickerTitle">
         <div class="item-picker-dialog">
@@ -1152,7 +1145,7 @@
     </div>
 
 
-    <!-- SHOP EXPORT MODAL -->
+    <!-- ============ SHOP EXPORT MODAL ============ -->
     <div class="item-picker-modal" id="shopExportModal" hidden role="dialog" aria-modal="true">
         <div class="item-picker-dialog" style="max-width:720px">
             <div class="item-picker-header">
@@ -1168,20 +1161,14 @@
                 <textarea class="shop-editor-json-area" id="shopExportTextarea" readonly></textarea>
             </div>
             <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-                <button class="profile-button" type="button"
-                        onclick="var ta=document.getElementById('shopExportTextarea');ta.select();try{document.execCommand('copy');alert('Tersalin ke clipboard!');}catch(e){alert('Gagal copy, pilih manual ya.');}">
-                    📋 Copy
-                </button>
-                <button class="profile-button" type="button"
-                        onclick="var ta=document.getElementById('shopExportTextarea');var blob=new Blob([ta.value],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shop-config.json';a.click();">
-                    💾 Download
-                </button>
+                <button class="profile-button" type="button" id="shopExportCopyBtn">📋 Copy</button>
+                <button class="profile-button" type="button" id="shopExportDownloadBtn">💾 Download</button>
             </div>
         </div>
     </div>
 
 
-    <!-- SHOP IMPORT MODAL -->
+    <!-- ============ SHOP IMPORT MODAL ============ -->
     <div class="item-picker-modal" id="shopImportModal" hidden role="dialog" aria-modal="true">
         <div class="item-picker-dialog" style="max-width:720px">
             <div class="item-picker-header">
@@ -1199,8 +1186,7 @@
             <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end">
                 <button class="profile-button" type="button"
                         onclick="document.getElementById('shopImportModal').hidden=true">Cancel</button>
-                <button class="primary-button" type="button" style="width:auto"
-                        onclick="var json=document.getElementById('shopImportTextarea').value;window.GroweraShopEditor.applyImport(json);document.getElementById('shopImportModal').hidden=true;">
+                <button class="primary-button" type="button" style="width:auto" id="shopImportApplyBtn">
                     Import
                 </button>
             </div>
