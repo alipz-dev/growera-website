@@ -1,5 +1,5 @@
 /* =========================================
-   GROWERA — SHOP EDITOR (v2)
+   GROWERA — SHOP EDITOR (v3, FIXED)
    Editor lengkap: kategori + paket + rewards.
 ========================================= */
 
@@ -13,6 +13,7 @@
         "editorViewRewardsList",
         "editorViewRewardsForm",
         "editorViewTopupList",
+        "editorViewTopupPackages",   // ← FIX 1: tambah ini
         "editorViewTopupForm"
     ];
 
@@ -53,7 +54,8 @@
         img.src = "/assets/itemimage/" + id + ".png";
         img.width = size;
         img.height = size;
-        img.style.cssText = "width:" + size + "px;height:" + size + "px;object-fit:contain;image-rendering:pixelated;display:block";
+        img.style.cssText = "width:" + size + "px;height:" + size +
+            "px;object-fit:contain;image-rendering:pixelated;display:block";
         img.alt = "";
         return img;
     }
@@ -82,8 +84,11 @@
        ============================================================ */
 
     function renderCategoryList() {
-        var container = $("topupAdminList");
-        if (!container) return;
+        var container = $("topupCategoryList"); // FIX 2
+        if (!container) {
+            console.warn("[ShopEditor] #topupCategoryList tidak ada di DOM.");
+            return;
+        }
 
         container.replaceChildren();
 
@@ -95,7 +100,7 @@
         if (cats.length === 0) {
             var empty = document.createElement("p");
             empty.style.cssText = "color:var(--muted);font-size:12px;text-align:center;padding:20px";
-            empty.textContent = "Belum ada kategori. Klik '+ Baru' untuk menambah.";
+            empty.textContent = "Belum ada kategori. Klik '+ Kategori' untuk menambah.";
             container.appendChild(empty);
             return;
         }
@@ -117,7 +122,6 @@
             title.textContent = cat.title || cat.key;
             if (cat.active === false) {
                 var off = document.createElement("span");
-                off.className = "badge off";
                 off.style.cssText = "margin-left:6px;padding:1px 6px;border-radius:4px;background:rgba(255,92,138,.1);color:#FF5C8A;font-size:10px";
                 off.textContent = "OFF";
                 title.appendChild(off);
@@ -152,7 +156,7 @@
             var editBtn = document.createElement("button");
             editBtn.type = "button";
             editBtn.className = "shop-editor-btn";
-            editBtn.textContent = "✏️ Edit";
+            editBtn.textContent = "✏️";
             editBtn.addEventListener("click", function () { openCategoryForm(cat.key); });
             actions.appendChild(editBtn);
 
@@ -161,7 +165,7 @@
             delBtn.className = "shop-editor-btn danger";
             delBtn.textContent = "🗑";
             delBtn.addEventListener("click", function () {
-                if (!confirm("Hapus kategori '" + cat.title + "' dan semua paketnya?")) return;
+                if (!confirm("Hapus kategori '" + (cat.title || cat.key) + "' dan semua paketnya?")) return;
                 var newCfg = getConfig();
                 newCfg.categories = newCfg.categories.filter(function (c) { return c.key !== cat.key; });
                 saveConfig(newCfg);
@@ -180,6 +184,7 @@
 
     function openCategoryForm(editKey) {
         state.editingCategoryKey = editKey || null;
+        state.editingPackageId = null;
 
         var cfg = getConfig();
         var cat = editKey
@@ -189,28 +194,31 @@
         var titleEl = $("topupFormTitle");
         if (titleEl) titleEl.textContent = cat ? "Edit Kategori" : "Buat Kategori Baru";
 
-        $("topupFormKey").value          = cat ? (cat.key || "") : "";
-        $("topupFormTier").value         = cat ? (cat.variant || "crystal") : "crystal";
-        $("topupFormIcon").value         = cat ? (cat.currencyIcon || 112) : 112;
-        $("topupFormGems").value         = cat ? (cat.currencyName || "") : "GEMS";
-        $("topupFormBonus").value        = cat ? (cat.subtitle || "") : "";
-        $("topupFormPrice").value        = cat ? (cat.eyebrow || "") : "";
-        $("topupFormOrder").value        = cat ? (cat.order || 0) : 0;
-        $("topupFormBadge").value        = cat ? (cat.title || "") : "";
-        $("topupFormActive").value       = cat && cat.active === false ? "0" : "1";
+        $("topupFormKey").value    = cat ? (cat.key || "") : "";
+        $("topupFormTier").value   = cat ? (cat.variant || "crystal") : "crystal";
+        $("topupFormIcon").value   = cat ? (cat.currencyIcon || 112) : 112;
+        $("topupFormGems").value   = cat ? (cat.currencyName || "") : "GEMS";
+        $("topupFormBonus").value  = cat ? (cat.subtitle || "") : "";
+        $("topupFormPrice").value  = cat ? (cat.eyebrow || "") : "";
+        $("topupFormOrder").value  = cat ? (cat.order || 0) : 0;
+        $("topupFormBadge").value  = cat ? (cat.title || "") : "";
+        $("topupFormActive").value = cat && cat.active === false ? "0" : "1";
 
-        // Label khusus kategori
         setFieldLabels({
             key: "Kategori Key (unik, huruf kecil)",
             tier: "Variant (tema warna)",
             icon: "Currency Icon (item ID)",
-            gems: "Currency Name",
+            gems: "Currency Name (mis. GEMS)",
             bonus: "Subtitle",
             price: "Eyebrow (kecil di atas judul)",
             order: "Order",
             badge: "Judul (Title)",
             active: "Status"
         });
+
+        // Hide rewards section saat edit kategori
+        var rewardsSection = $("topupFormRewardsSection");
+        if (rewardsSection) rewardsSection.style.display = "none";
 
         showView("editorViewTopupForm");
 
@@ -227,7 +235,7 @@
             variant: $("topupFormTier").value || "crystal",
             currencyIcon: parseInt($("topupFormIcon").value, 10) || 112,
             currencyName: ($("topupFormGems").value || "GEMS").trim(),
-            currencyKey: key,
+            currencyKey: ($("topupFormGems").value || "gems").trim().toLowerCase() || "gems",
             subtitle: ($("topupFormBonus").value || "").trim(),
             eyebrow: ($("topupFormPrice").value || "").trim(),
             order: parseInt($("topupFormOrder").value, 10) || 0,
@@ -240,16 +248,17 @@
         var cfg = getConfig();
 
         if (state.editingCategoryKey) {
-            var idx = cfg.categories.findIndex(function (c) { return c.key === state.editingCategoryKey; });
+            var idx = cfg.categories.findIndex(function (c) {
+                return c.key === state.editingCategoryKey;
+            });
             if (idx >= 0) {
                 // Pertahankan packages lama
                 newCat.packages = cfg.categories[idx].packages || [];
                 cfg.categories[idx] = newCat;
             }
         } else {
-            // Cek duplikat
             if (cfg.categories.some(function (c) { return c.key === key; })) {
-                alert("Kategori '" + key + "' sudah ada.");
+                alert("Kategori '" + key + "' sudah ada. Gunakan key lain.");
                 return;
             }
             cfg.categories.push(newCat);
@@ -266,12 +275,19 @@
        ============================================================ */
 
     function renderPackageList() {
-        var container = $("topupAdminList");
+        var container = $("topupPackageList"); // FIX 3
         var titleEl = $("topupPackagesTitle");
-        if (!container) return;
+
+        if (!container) {
+            console.warn("[ShopEditor] #topupPackageList tidak ada di DOM.");
+            return;
+        }
 
         var cfg = getConfig();
-        var cat = cfg.categories.filter(function (c) { return c.key === state.editingCategoryKeyForPackage; })[0];
+        var cat = cfg.categories.filter(function (c) {
+            return c.key === state.editingCategoryKeyForPackage;
+        })[0];
+
         if (!cat) {
             alert("Kategori tidak ditemukan.");
             showView("editorViewTopupList");
@@ -290,7 +306,7 @@
         if (pkgs.length === 0) {
             var empty = document.createElement("p");
             empty.style.cssText = "color:var(--muted);font-size:12px;text-align:center;padding:20px";
-            empty.textContent = "Belum ada paket. Klik '+ Baru' untuk menambah.";
+            empty.textContent = "Belum ada paket. Klik '+ Paket' untuk menambah.";
             container.appendChild(empty);
             return;
         }
@@ -364,9 +380,12 @@
 
     function openPackageForm(editId) {
         state.editingPackageId = editId || null;
+        state.editingCategoryKey = null;
 
         var cfg = getConfig();
-        var cat = cfg.categories.filter(function (c) { return c.key === state.editingCategoryKeyForPackage; })[0];
+        var cat = cfg.categories.filter(function (c) {
+            return c.key === state.editingCategoryKeyForPackage;
+        })[0];
         if (!cat) return;
 
         var pkg = editId
@@ -376,17 +395,16 @@
         var titleEl = $("topupFormTitle");
         if (titleEl) titleEl.textContent = pkg ? "Edit Paket" : "Buat Paket Baru";
 
-        $("topupFormKey").value      = pkg ? (pkg.id || "") : "";
-        $("topupFormTier").value     = pkg ? (pkg.tier || "starter") : "starter";
-        $("topupFormIcon").value     = pkg ? (pkg.iconId || 112) : 112;
-        $("topupFormGems").value     = pkg ? (pkg.displayValue || 0) : "";
-        $("topupFormBonus").value    = pkg ? (pkg.displayUnit || "GEMS") : "GEMS";
-        $("topupFormPrice").value    = pkg ? (pkg.price || 0) : "";
-        $("topupFormOrder").value    = pkg ? (pkg.order || 0) : 0;
-        $("topupFormBadge").value    = pkg ? (pkg.badge || "") : "";
-        $("topupFormActive").value   = pkg && pkg.active === false ? "0" : "1";
+        $("topupFormKey").value    = pkg ? (pkg.id || "") : "";
+        $("topupFormTier").value   = pkg ? (pkg.tier || "starter") : "starter";
+        $("topupFormIcon").value   = pkg ? (pkg.iconId || 112) : 112;
+        $("topupFormGems").value   = pkg ? (pkg.displayValue || 0) : "";
+        $("topupFormBonus").value  = pkg ? (pkg.displayUnit || "GEMS") : "GEMS";
+        $("topupFormPrice").value  = pkg ? (pkg.price || 0) : "";
+        $("topupFormOrder").value  = pkg ? (pkg.order || 0) : 0;
+        $("topupFormBadge").value  = pkg ? (pkg.badge || "") : "";
+        $("topupFormActive").value = pkg && pkg.active === false ? "0" : "1";
 
-        // Rewards
         state.editingRewards = pkg ? JSON.parse(JSON.stringify(pkg.rewards || [])) : [];
         renderRewardsList();
 
@@ -401,6 +419,10 @@
             badge: "Badge (opsional, mis. ⭐ POPULER)",
             active: "Status"
         });
+
+        // Show rewards section saat edit paket
+        var rewardsSection = $("topupFormRewardsSection");
+        if (rewardsSection) rewardsSection.style.display = "";
 
         showView("editorViewTopupForm");
 
@@ -436,7 +458,9 @@
         if (!id) { alert("Package ID wajib diisi."); return; }
 
         var cfg = getConfig();
-        var cat = cfg.categories.filter(function (c) { return c.key === state.editingCategoryKeyForPackage; })[0];
+        var cat = cfg.categories.filter(function (c) {
+            return c.key === state.editingCategoryKeyForPackage;
+        })[0];
         if (!cat) return;
 
         var newPkg = {
@@ -454,7 +478,9 @@
         };
 
         if (state.editingPackageId) {
-            var idx = cat.packages.findIndex(function (p) { return p.id === state.editingPackageId; });
+            var idx = cat.packages.findIndex(function (p) {
+                return p.id === state.editingPackageId;
+            });
             if (idx >= 0) cat.packages[idx] = newPkg;
         } else {
             if (cat.packages.some(function (p) { return p.id === id; })) {
@@ -497,12 +523,11 @@
         var row = document.createElement("div");
         row.className = "reward-row";
 
-        // Type select
         var typeSel = document.createElement("select");
         [
-            { v: "gems", t: "💎 Gems" },
-            { v: "item", t: "📦 Item" },
-            { v: "role", t: "👑 Role" },
+            { v: "gems",     t: "💎 Gems" },
+            { v: "item",     t: "📦 Item" },
+            { v: "role",     t: "👑 Role" },
             { v: "currency", t: "🪙 Custom Currency" }
         ].forEach(function (opt) {
             var o = document.createElement("option");
@@ -510,10 +535,9 @@
             o.textContent = opt.t;
             typeSel.appendChild(o);
         });
-        typeSel.value = reward.type;
+        typeSel.value = reward.type || "gems";
         row.appendChild(typeSel);
 
-        // Field dinamis
         if (reward.type === "gems") {
             var amountInput = document.createElement("input");
             amountInput.type = "number";
@@ -549,7 +573,7 @@
         } else if (reward.type === "role") {
             var roleInput = document.createElement("input");
             roleInput.type = "number";
-            roleInput.placeholder = "Role ID (angka)";
+            roleInput.placeholder = "Role ID";
             roleInput.value = reward.roleId || "";
             roleInput.addEventListener("input", function () {
                 reward.roleId = parseInt(roleInput.value, 10) || 0;
@@ -585,7 +609,6 @@
             row.appendChild(curAmt);
         }
 
-        // Remove button
         var rmBtn = document.createElement("button");
         rmBtn.type = "button";
         rmBtn.className = "reward-remove";
@@ -597,7 +620,6 @@
         });
         row.appendChild(rmBtn);
 
-        // Handle type change
         typeSel.addEventListener("change", function () {
             state.editingRewards[index] = { type: typeSel.value, amount: 0 };
             renderRewardsList();
@@ -614,11 +636,15 @@
     }
 
     function reattachItemPickers() {
-        // Trigger MutationObserver di item-picker.js untuk auto-attach
-        // dengan memaksa re-scan
         if (window.GroweraItemPicker && window.GroweraItemPicker.renderIcons) {
             window.GroweraItemPicker.renderIcons(document);
         }
+        // Trigger MutationObserver dengan menambahkan node dummy
+        setTimeout(function () {
+            var dummy = document.createElement("span");
+            document.body.appendChild(dummy);
+            document.body.removeChild(dummy);
+        }, 30);
     }
 
     /* ============================================================
@@ -626,7 +652,7 @@
        ============================================================ */
 
     function wire() {
-        // Klik modul "Top Up Packages" di roadmap
+        // Modul "Shop Editor" di roadmap
         document.querySelectorAll('[data-editor-module="topup"]').forEach(function (btn) {
             btn.addEventListener("click", function () {
                 showView("editorViewTopupList");
@@ -651,7 +677,7 @@
 
         var formBack = $("topupFormBack");
         if (formBack) formBack.addEventListener("click", function () {
-            if (state.editingPackageId !== null || state.editingCategoryKeyForPackage) {
+            if (state.editingPackageId !== null || state.editingCategoryKey === null && state.editingCategoryKeyForPackage) {
                 showView("editorViewTopupPackages");
                 renderPackageList();
             } else {
@@ -662,7 +688,7 @@
 
         var formCancel = $("topupFormCancel");
         if (formCancel) formCancel.addEventListener("click", function () {
-            if (state.editingPackageId !== null || state.editingCategoryKeyForPackage) {
+            if (state.editingPackageId !== null || state.editingCategoryKey === null && state.editingCategoryKeyForPackage) {
                 showView("editorViewTopupPackages");
                 renderPackageList();
             } else {
@@ -673,19 +699,17 @@
 
         var formSave = $("topupFormSave");
         if (formSave) formSave.addEventListener("click", function () {
-            // Deteksi apakah sedang edit kategori atau paket
-            var title = $("topupFormTitle");
-            if (title && title.textContent.indexOf("Paket") !== -1) {
-                savePackageForm();
-            } else {
+            // Deteksi: edit kategori atau paket?
+            if (state.editingCategoryKey !== null) {
                 saveCategoryForm();
+            } else {
+                savePackageForm();
             }
         });
 
         var addRewardBtn = $("topupFormAddReward");
         if (addRewardBtn) addRewardBtn.addEventListener("click", addReward);
 
-        // Export / Import
         var exportBtn = $("topupExportBtn");
         if (exportBtn) exportBtn.addEventListener("click", openExportDialog);
 
@@ -701,6 +725,19 @@
                 alert("Config direset ke default.");
             }
         });
+
+        // Tombol Export/Import modal
+        var exportTextarea = $("shopExportTextarea");
+        var importBtnModal = document.querySelector('#shopImportModal .primary-button');
+        if (importBtnModal && !importBtnModal.dataset.wired) {
+            importBtnModal.dataset.wired = "1";
+            importBtnModal.addEventListener("click", function () {
+                var json = ($("shopImportTextarea") || {}).value || "";
+                applyImport(json);
+                var modal = $("shopImportModal");
+                if (modal) modal.hidden = true;
+            });
+        }
 
         console.log("[ShopEditor] Ready.");
     }
@@ -718,7 +755,6 @@
             modal.hidden = false;
             ta.select();
         } else {
-            // Fallback ke prompt
             prompt("Copy JSON config ini:", json);
         }
     }
@@ -761,12 +797,12 @@
         wire();
     }
 
-    // Expose untuk debug / dipanggil manual
     window.GroweraShopEditor = {
         openExportDialog: openExportDialog,
         openImportDialog: openImportDialog,
         applyImport: applyImport,
-        renderCategoryList: renderCategoryList
+        renderCategoryList: renderCategoryList,
+        renderPackageList: renderPackageList
     };
 
 })();
