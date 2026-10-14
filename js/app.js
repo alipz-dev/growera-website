@@ -1,56 +1,41 @@
 /* =========================================
-   GROWERA — CORE (v2, FIXED)
+   GROWERA — CORE (v3, FINAL)
 ========================================= */
 
-/* =========================================
-   API CONFIG
-========================================= */
+/* ===== API CONFIG ===== */
 
-const API_LOGIN_URL = "/api/growera/login";
-const API_LOGOUT_URL = "/api/growera/logout";
+const API_LOGIN_URL       = "/api/growera/login";
+const API_LOGOUT_URL      = "/api/growera/logout";
 const API_ADMIN_CHECK_URL = "/api/growera/admin/check";
 
-
-/* =========================================
-   STORAGE KEYS
-========================================= */
+/* ===== STORAGE KEYS ===== */
 
 const STORAGE_KEYS = {
-    token: "growera_token",
-    username: "growera_username",
+    token:     "growera_token",
+    username:  "growera_username",
     expiresAt: "growera_expires_at"
 };
 
+/* ===== DOM REFS ===== */
 
-/* =========================================
-   DOM REFS (login)
-========================================= */
+const loginScreen      = document.getElementById("loginScreen");
+const dashboardScreen  = document.getElementById("dashboardScreen");
+const loginForm        = document.getElementById("loginForm");
+const loginButton      = document.getElementById("loginButton");
+const loginMessage     = document.getElementById("loginMessage");
+const usernameInput    = document.getElementById("username");
+const passwordInput    = document.getElementById("password");
 
-const loginScreen = document.getElementById("loginScreen");
-const dashboardScreen = document.getElementById("dashboardScreen");
-const loginForm = document.getElementById("loginForm");
-const loginButton = document.getElementById("loginButton");
-const loginMessage = document.getElementById("loginMessage");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-
-
-/* =========================================
-   STATE
-========================================= */
+/* ===== STATE ===== */
 
 let currentUserIsAdmin = false;
 
-
 /* =========================================
-   SAFE CALL HELPER
-   Panggil method opsional tanpa bikin error kalau tidak ada.
+   SAFE CALL
 ========================================= */
 
 function safeCall(obj, methodName, args) {
-    if (!obj) return Promise.resolve();
-    if (typeof obj[methodName] !== "function") return Promise.resolve();
-
+    if (!obj || typeof obj[methodName] !== "function") return Promise.resolve();
     try {
         const result = obj[methodName].apply(obj, args || []);
         if (result && typeof result.catch === "function") {
@@ -65,6 +50,19 @@ function safeCall(obj, methodName, args) {
     }
 }
 
+/* =========================================
+   WAIT FOR GLOBAL MODULE
+========================================= */
+
+async function waitForGlobal(name, timeoutMs) {
+    if (window[name]) return window[name];
+    const start = Date.now();
+    const maxWait = timeoutMs || 5000;
+    while (!window[name] && (Date.now() - start) < maxWait) {
+        await new Promise(function (r) { setTimeout(r, 50); });
+    }
+    return window[name] || null;
+}
 
 /* =========================================
    STORAGE HELPERS
@@ -92,15 +90,15 @@ function loadSession() {
     let token = null, username = null, expiresAt = null;
 
     try {
-        token = localStorage.getItem(STORAGE_KEYS.token);
-        username = localStorage.getItem(STORAGE_KEYS.username);
+        token     = localStorage.getItem(STORAGE_KEYS.token);
+        username  = localStorage.getItem(STORAGE_KEYS.username);
         expiresAt = localStorage.getItem(STORAGE_KEYS.expiresAt);
     } catch (error) { console.warn("[GROWERA] Baca localStorage gagal:", error); }
 
     if (!token || !username) {
         try {
-            token = token || sessionStorage.getItem(STORAGE_KEYS.token);
-            username = username || sessionStorage.getItem(STORAGE_KEYS.username);
+            token     = token     || sessionStorage.getItem(STORAGE_KEYS.token);
+            username  = username  || sessionStorage.getItem(STORAGE_KEYS.username);
             expiresAt = expiresAt || sessionStorage.getItem(STORAGE_KEYS.expiresAt);
         } catch (error) { console.warn("[GROWERA] Baca sessionStorage gagal:", error); }
     }
@@ -122,7 +120,6 @@ function clearSession() {
     } catch (error) { console.warn("[GROWERA] Hapus sessionStorage gagal:", error); }
 }
 
-
 /* =========================================
    HELPERS
 ========================================= */
@@ -137,16 +134,12 @@ function formatNumber(value) {
     if (value === null || value === undefined || value === "") return "—";
     const number = Number(value);
     if (!Number.isFinite(number)) return "—";
-    return new Intl.NumberFormat("id-ID", {
-        maximumFractionDigits: 0
-    }).format(number);
+    return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(number);
 }
 
 function formatRupiah(amount) {
     const number = Number(amount) || 0;
-    return "Rp " + new Intl.NumberFormat("id-ID", {
-        maximumFractionDigits: 0
-    }).format(number);
+    return "Rp " + new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(number);
 }
 
 function formatDateTime(unixSeconds) {
@@ -164,9 +157,7 @@ async function readJSONResponse(response) {
     try {
         return JSON.parse(raw);
     } catch (error) {
-        throw new Error(
-            "Respons API bukan JSON yang valid. HTTP " + response.status
-        );
+        throw new Error("Respons API bukan JSON yang valid. HTTP " + response.status);
     }
 }
 
@@ -194,24 +185,20 @@ function setProfileStatus(message, color) {
     setStatusElement(document.getElementById("profileStatusMessage"), message, color);
 }
 
-
 /* =========================================
-   SCROLL RESET HELPER
+   SCROLL RESET
 ========================================= */
 
 function resetContentScroll() {
     const content = document.querySelector(".content");
     if (!content) return;
-
     content.scrollTop = 0;
-
     requestAnimationFrame(function () {
         requestAnimationFrame(function () {
             content.scrollTop = 0;
         });
     });
 }
-
 
 /* =========================================
    SCREEN SWITCHERS
@@ -225,7 +212,6 @@ function showLoginScreen() {
 function hideLoginScreen() {
     if (loginScreen) loginScreen.classList.add("hidden");
 }
-
 
 /* =========================================
    ADMIN CHECK
@@ -275,7 +261,6 @@ async function checkAdminStatus() {
     }
 }
 
-
 /* =========================================
    LOGIN REQUEST
 ========================================= */
@@ -312,7 +297,6 @@ async function loginRequest(username, password) {
     };
 }
 
-
 /* =========================================
    SHOW DASHBOARD
 ========================================= */
@@ -338,7 +322,6 @@ function showDashboard(username) {
     hideLoginScreen();
     if (dashboardScreen) dashboardScreen.classList.remove("hidden");
 
-    // FIX: set status default, jangan biarkan "Memuat..." dari HTML
     setPlayerStatus("Menyambung ke server...", "#65E7FF");
     setProfileStatus("Menyambung ke server...", "#65E7FF");
 
@@ -346,23 +329,22 @@ function showDashboard(username) {
     navigateTo("home");
 }
 
-
 /* =========================================
    EDITOR VIEW SWITCHER
 ========================================= */
 
 function showEditorView(viewName) {
     const views = {
-        roadmap:          "editorViewRoadmap",
-        list:             "editorViewNewsList",
-        form:             "editorViewNewsForm",
-        "rewards-list":   "editorViewRewardsList",
-        "rewards-form":   "editorViewRewardsForm",
-        "topup-list":     "editorViewTopupList",
-        "topup-form":     "editorViewTopupForm",
+        roadmap:           "editorViewRoadmap",
+        list:              "editorViewNewsList",
+        form:              "editorViewNewsForm",
+        "rewards-list":    "editorViewRewardsList",
+        "rewards-form":    "editorViewRewardsForm",
+        "topup-list":      "editorViewTopupList",
+        "topup-form":      "editorViewTopupForm",
         "shop-categories": "editorViewShopCategories",
-        "shop-packages":  "editorViewShopPackages",
-        "shop-form":      "editorViewShopForm"
+        "shop-packages":   "editorViewShopPackages",
+        "shop-form":       "editorViewShopForm"
     };
 
     Object.keys(views).forEach(function (key) {
@@ -373,7 +355,6 @@ function showEditorView(viewName) {
 
     resetContentScroll();
 }
-
 
 /* =========================================
    PAGE NAVIGATION
@@ -417,7 +398,6 @@ function navigateTo(pageName) {
         showEditorView("roadmap");
     }
 
-    // FIX: pakai safeCall supaya tidak error kalau method tidak ada
     if (pageName === "rewards") {
         safeCall(window.GroweraRewards, "onNavigate");
     }
@@ -434,7 +414,6 @@ document.querySelectorAll("[data-page]").forEach(function (button) {
         navigateTo(button.dataset.page);
     });
 });
-
 
 /* =========================================
    LOGIN HANDLER
@@ -464,13 +443,13 @@ if (loginForm) {
 
             showDashboard(result.username);
 
-            // FIX: pakai safeCall, admin check paralel
+            await waitForGlobal("GroweraProfile", 3000);
             await safeCall(window.GroweraProfile, "fetch");
 
             await checkAdminStatus();
 
-            await safeCall(window.GroweraNews, "loadHome");
-            await safeCall(window.GroweraShop, "loadPublic");
+            await safeCall(window.GroweraNews,    "loadHome");
+            await safeCall(window.GroweraShop,    "loadPublic");
             await safeCall(window.GroweraRewards, "loadPublic");
         } catch (error) {
             console.error("[GROWERA LOGIN ERROR]", error);
@@ -484,7 +463,6 @@ if (loginForm) {
         }
     });
 }
-
 
 /* =========================================
    BUTTON EVENTS
@@ -500,11 +478,10 @@ if (accountButton) {
 document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
         safeCall(window.GroweraProfile, "closeInventory");
-        safeCall(window.GroweraNews, "closeModal");
+        safeCall(window.GroweraNews,    "closeModal");
         safeCall(window.GroweraRewards, "closeModal");
     }
 });
-
 
 /* =========================================
    LOGOUT
@@ -536,11 +513,11 @@ async function performLogout() {
     updateAdminUI();
 
     safeCall(window.GroweraProfile, "closeInventory");
-    safeCall(window.GroweraNews, "closeModal");
+    safeCall(window.GroweraNews,    "closeModal");
     safeCall(window.GroweraRewards, "closeModal");
 
     if (dashboardScreen) dashboardScreen.classList.add("hidden");
-    if (loginScreen) loginScreen.classList.remove("hidden");
+    if (loginScreen)     loginScreen.classList.remove("hidden");
 
     if (loginForm) loginForm.reset();
 
@@ -550,18 +527,13 @@ async function performLogout() {
 }
 
 const logoutButton = document.getElementById("logoutButton");
-if (logoutButton) {
-    logoutButton.addEventListener("click", performLogout);
-}
+if (logoutButton) logoutButton.addEventListener("click", performLogout);
 
 const sidebarLogoutButton = document.getElementById("sidebarLogoutButton");
-if (sidebarLogoutButton) {
-    sidebarLogoutButton.addEventListener("click", performLogout);
-}
-
+if (sidebarLogoutButton) sidebarLogoutButton.addEventListener("click", performLogout);
 
 /* =========================================
-   BOOTSTRAP (FIXED)
+   BOOTSTRAP (v3)
 ========================================= */
 
 async function bootstrap() {
@@ -574,23 +546,35 @@ async function bootstrap() {
         return;
     }
 
-    if (dbg) {
-        dbg.textContent = "Sesi ditemukan untuk: " + session.username +
-            " · mencoba memulihkan...";
-    }
+    if (dbg) dbg.textContent = "Sesi ditemukan untuk: " + session.username + " · memulihkan...";
 
     showDashboard(session.username);
 
-    // FIX #1: cek admin PARALEL dengan fetch profile.
-    // Jangan sampai admin button tidak muncul hanya karena profile gagal.
-    const adminPromise = checkAdminStatus();
+    // ---- FIX UTAMA: tunggu GroweraProfile ready dulu ----
+    if (dbg) dbg.textContent = "Menunggu modul profile siap...";
+    const Profile = await waitForGlobal("GroweraProfile", 5000);
 
-    let profileResult = "error";
-    if (window.GroweraProfile && typeof window.GroweraProfile.fetch === "function") {
-        profileResult = await window.GroweraProfile.fetch();
+    if (!Profile || typeof Profile.fetch !== "function") {
+        if (dbg) dbg.textContent = "⚠ Modul profile.js tidak ter-load.";
+        setPlayerStatus("Gagal memuat modul profile", "#FF8585");
+        setProfileStatus("Gagal memuat modul profile", "#FF8585");
+        return;
     }
 
-    // FIX #2: kalau unauthorized, bersihkan sesi & balik ke login
+    if (dbg) dbg.textContent = "Modul profile siap · memuat data...";
+
+    // Cek admin paralel (biar tombol admin cepat muncul)
+    const adminPromise = checkAdminStatus();
+
+    // Load profile
+    let profileResult = "error";
+    try {
+        profileResult = await Profile.fetch();
+    } catch (err) {
+        console.error("[GROWERA BOOTSTRAP] Profile fetch threw:", err);
+        profileResult = "error";
+    }
+
     if (profileResult === "unauthorized") {
         clearSession();
         showLoginScreen();
@@ -598,31 +582,33 @@ async function bootstrap() {
             "Sesi sebelumnya telah berakhir. Silakan login kembali.",
             "#FF8585"
         );
-        if (dbg) dbg.textContent = "Sesi ditolak oleh server (401).";
+        if (dbg) dbg.textContent = "Sesi ditolak server (401).";
         return;
     }
 
-    // FIX #3: kalau error, tetap tunggu admin check, jangan return diam-diam
     if (profileResult === "error") {
-        if (dbg) dbg.textContent =
-            "Sesi tersimpan, tapi server tidak merespons. Coba refresh.";
+        if (dbg) dbg.textContent = "Sesi tersimpan, tapi server tidak merespons.";
         await adminPromise.catch(function () {});
         return;
     }
 
     if (dbg) dbg.textContent = "Sesi valid: " + session.username;
 
-    // Tunggu admin check selesai (kalau belum)
+    // Tunggu admin check kalau belum selesai
     await adminPromise.catch(function () {});
 
-    // FIX #4: pakai safeCall — jangan error kalau method tidak ada
-    await safeCall(window.GroweraNews, "loadHome");
-    await safeCall(window.GroweraShop, "loadPublic");
+    // Load modul publik lainnya
+    await safeCall(window.GroweraNews,    "loadHome");
+    await safeCall(window.GroweraShop,    "loadPublic");
     await safeCall(window.GroweraRewards, "loadPublic");
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bootstrap);
-} else {
+// ---- FIX: jalan setelah semua script dieksekusi ----
+// Kalau document sudah complete, jalankan langsung.
+// Kalau masih loading, tunggu event "load" (bukan DOMContentLoaded),
+// supaya semua <script> di bawah sudah selesai dieksekusi.
+if (document.readyState === "complete") {
     bootstrap();
+} else {
+    window.addEventListener("load", bootstrap);
 }
