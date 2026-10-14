@@ -1,5 +1,6 @@
 /* =========================================
-   GROWERA — CORE (v3, FINAL)
+   GROWERA — CORE (v4, FINAL)
+   + Fitur: ingat halaman terakhir setelah refresh
 ========================================= */
 
 /* ===== API CONFIG ===== */
@@ -13,7 +14,8 @@ const API_ADMIN_CHECK_URL = "/api/growera/admin/check";
 const STORAGE_KEYS = {
     token:     "growera_token",
     username:  "growera_username",
-    expiresAt: "growera_expires_at"
+    expiresAt: "growera_expires_at",
+    lastPage:  "growera_last_page"
 };
 
 /* ===== DOM REFS ===== */
@@ -118,6 +120,22 @@ function clearSession() {
         sessionStorage.removeItem(STORAGE_KEYS.username);
         sessionStorage.removeItem(STORAGE_KEYS.expiresAt);
     } catch (error) { console.warn("[GROWERA] Hapus sessionStorage gagal:", error); }
+}
+
+/* ===== LAST PAGE (untuk restore setelah refresh) ===== */
+
+function saveLastPage(pageName) {
+    try { localStorage.setItem(STORAGE_KEYS.lastPage, String(pageName || "home")); } catch (e) {}
+}
+
+function getLastPage() {
+    try {
+        return localStorage.getItem(STORAGE_KEYS.lastPage) || "home";
+    } catch (e) { return "home"; }
+}
+
+function clearLastPage() {
+    try { localStorage.removeItem(STORAGE_KEYS.lastPage); } catch (e) {}
 }
 
 /* =========================================
@@ -299,9 +317,10 @@ async function loginRequest(username, password) {
 
 /* =========================================
    SHOW DASHBOARD
+   targetPage opsional: kalau diisi, langsung ke halaman itu
 ========================================= */
 
-function showDashboard(username) {
+function showDashboard(username, targetPage) {
     const initial = getInitial(username);
 
     const headerUser = document.getElementById("headerUsername");
@@ -326,7 +345,9 @@ function showDashboard(username) {
     setProfileStatus("Menyambung ke server...", "#65E7FF");
 
     window.scrollTo({ top: 0, behavior: "auto" });
-    navigateTo("home");
+
+    // Kalau targetPage diberikan, pakai itu. Kalau tidak, "home"
+    navigateTo(targetPage || "home");
 }
 
 /* =========================================
@@ -344,7 +365,8 @@ function showEditorView(viewName) {
         "topup-form":      "editorViewTopupForm",
         "shop-categories": "editorViewShopCategories",
         "shop-packages":   "editorViewShopPackages",
-        "shop-form":       "editorViewShopForm"
+        "shop-form":       "editorViewShopForm",
+        "appearance":      "editorViewAppearance"
     };
 
     Object.keys(views).forEach(function (key) {
@@ -406,6 +428,9 @@ function navigateTo(pageName) {
         safeCall(window.GroweraShop, "onNavigate");
     }
 
+    // Simpan halaman terakhir
+    saveLastPage(pageName);
+
     resetContentScroll();
 }
 
@@ -441,7 +466,9 @@ if (loginForm) {
             saveSession(result.token, result.username, result.expiresAt);
             passwordInput.value = "";
 
-            showDashboard(result.username);
+            // Login BARU → selalu mulai dari home, reset lastPage
+            clearLastPage();
+            showDashboard(result.username, "home");
 
             await waitForGlobal("GroweraProfile", 3000);
             await safeCall(window.GroweraProfile, "fetch");
@@ -508,6 +535,7 @@ async function performLogout() {
     }
 
     clearSession();
+    clearLastPage();
 
     currentUserIsAdmin = false;
     updateAdminUI();
@@ -533,7 +561,7 @@ const sidebarLogoutButton = document.getElementById("sidebarLogoutButton");
 if (sidebarLogoutButton) sidebarLogoutButton.addEventListener("click", performLogout);
 
 /* =========================================
-   BOOTSTRAP (v3)
+   BOOTSTRAP (v4)
 ========================================= */
 
 async function bootstrap() {
@@ -548,10 +576,14 @@ async function bootstrap() {
 
     if (dbg) dbg.textContent = "Sesi ditemukan untuk: " + session.username + " · memulihkan...";
 
-    showDashboard(session.username);
+    // Ambil halaman terakhir yang dibuka sebelum refresh
+    const lastPage = getLastPage();
+    if (dbg) dbg.textContent += " · halaman: " + lastPage;
 
-    // ---- FIX UTAMA: tunggu GroweraProfile ready dulu ----
-    if (dbg) dbg.textContent = "Menunggu modul profile siap...";
+    // Tampilkan dashboard di halaman terakhir (bukan home)
+    showDashboard(session.username, lastPage);
+
+    // Tunggu GroweraProfile ready
     const Profile = await waitForGlobal("GroweraProfile", 5000);
 
     if (!Profile || typeof Profile.fetch !== "function") {
@@ -561,9 +593,7 @@ async function bootstrap() {
         return;
     }
 
-    if (dbg) dbg.textContent = "Modul profile siap · memuat data...";
-
-    // Cek admin paralel (biar tombol admin cepat muncul)
+    // Cek admin paralel
     const adminPromise = checkAdminStatus();
 
     // Load profile
@@ -577,6 +607,7 @@ async function bootstrap() {
 
     if (profileResult === "unauthorized") {
         clearSession();
+        clearLastPage();
         showLoginScreen();
         showLoginMessage(
             "Sesi sebelumnya telah berakhir. Silakan login kembali.",
@@ -594,19 +625,19 @@ async function bootstrap() {
 
     if (dbg) dbg.textContent = "Sesi valid: " + session.username;
 
-    // Tunggu admin check kalau belum selesai
     await adminPromise.catch(function () {});
 
-    // Load modul publik lainnya
+    // Kalau lastPage = "editor" tapi sekarang admin, perlu re-render karena
+    // navigateTo dipanggil sebelum admin check selesai
+    if (lastPage === "editor" && currentUserIsAdmin) {
+        navigateTo("editor");
+    }
+
     await safeCall(window.GroweraNews,    "loadHome");
     await safeCall(window.GroweraShop,    "loadPublic");
     await safeCall(window.GroweraRewards, "loadPublic");
 }
 
-// ---- FIX: jalan setelah semua script dieksekusi ----
-// Kalau document sudah complete, jalankan langsung.
-// Kalau masih loading, tunggu event "load" (bukan DOMContentLoaded),
-// supaya semua <script> di bawah sudah selesai dieksekusi.
 if (document.readyState === "complete") {
     bootstrap();
 } else {
