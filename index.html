@@ -6,6 +6,69 @@
     <meta name="theme-color" content="#080D19">
     <title>GROWERA | Crystal Era</title>
 
+    <!-- ==========================================
+         ANTI-FLICKER + GUEST MODE
+         Cek sesi sebelum body render, supaya login screen
+         tidak kedip saat refresh, dan floating menu tahu
+         apakah user sudah login atau belum.
+    =========================================== -->
+    <script>
+    (function () {
+        try {
+            var has = !!localStorage.getItem("growera_token") &&
+                      !!localStorage.getItem("growera_username");
+            document.documentElement.setAttribute("data-auth", has ? "in" : "out");
+        } catch (e) {
+            document.documentElement.setAttribute("data-auth", "out");
+        }
+
+        function sync() {
+            var login = document.getElementById("loginScreen");
+            if (!login) return;
+            var isHidden = login.classList.contains("hidden");
+            document.documentElement.setAttribute("data-auth", isHidden ? "in" : "out");
+        }
+
+        function startWatch() {
+            sync();
+            var login = document.getElementById("loginScreen");
+            if (login && window.MutationObserver) {
+                new MutationObserver(sync).observe(login, {
+                    attributes: true,
+                    attributeFilter: ["class"]
+                });
+            }
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", startWatch);
+        } else {
+            startWatch();
+        }
+    })();
+    </script>
+
+    <style>
+        /* Anti-flicker */
+        html[data-auth="in"]  #loginScreen     { display: none !important; }
+        html[data-auth="out"] #dashboardScreen { display: none !important; }
+
+        html[data-auth="in"]  #dashboardScreen,
+        html[data-auth="out"] #loginScreen {
+            animation: groweraFade 0.15s ease-out;
+        }
+
+        @keyframes groweraFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* Guest mode: sembunyikan navigasi di floating menu */
+        html[data-auth="out"] .floating-menu-auth {
+            display: none !important;
+        }
+    </style>
+
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/news.css">
     <link rel="stylesheet" href="/css/shop.css">
@@ -125,7 +188,7 @@
 
         <main class="content">
 
-            <!-- ============ HOME ============ -->
+            <!-- HOME -->
             <section class="app-page" id="homePage">
                 <section class="news-card" id="newsHeroCard">
                     <div class="news-badge" id="newsBadge">GROWERA NEWS</div>
@@ -238,7 +301,7 @@
             </section>
 
 
-            <!-- ============ PROFILE ============ -->
+            <!-- PROFILE -->
             <section class="app-page hidden" id="profilePage">
                 <div class="welcome">
                     <div class="eyebrow">PLAYER ACCOUNT</div>
@@ -331,7 +394,7 @@
             </section>
 
 
-            <!-- ============ REWARDS ============ -->
+            <!-- REWARDS -->
             <section class="app-page hidden" id="rewardsPage">
                 <div class="rewards-header">
                     <div class="eyebrow">CRYSTAL REWARDS</div>
@@ -374,7 +437,7 @@
             </section>
 
 
-            <!-- ============ ROULETTE ============ -->
+            <!-- ROULETTE -->
             <section class="app-page hidden" id="roulettePage">
                 <div class="roulette-header">
                     <div class="eyebrow">GROWERA · LUCKY CRYSTALS</div>
@@ -433,7 +496,7 @@
             </section>
 
 
-            <!-- ============ TOP UP / SHOP ============ -->
+            <!-- TOP UP / SHOP -->
             <section class="app-page hidden" id="topupPage">
 
                 <div class="shop-header" id="shopHeader" data-variant="crystal">
@@ -464,7 +527,7 @@
             </section>
 
 
-            <!-- ============ MORE ============ -->
+            <!-- MORE -->
             <section class="app-page hidden" id="morePage">
                 <div class="welcome">
                     <div class="eyebrow">EXPLORE</div>
@@ -507,7 +570,7 @@
             </section>
 
 
-            <!-- ============ EDITOR ============ -->
+            <!-- EDITOR -->
             <section class="app-page hidden" id="editorPage">
                 <div class="welcome">
                     <div class="eyebrow">ADMIN PANEL</div>
@@ -779,7 +842,7 @@
                     </div>
                 </div>
 
-                <!-- ================= SHOP EDITOR: CATEGORY LIST ================= -->
+                <!-- SHOP EDITOR: CATEGORY LIST -->
                 <div class="editor-view hidden" id="editorViewShopCategories">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -804,7 +867,7 @@
                     </div>
                 </div>
 
-                <!-- ================= SHOP EDITOR: PACKAGE LIST ================= -->
+                <!-- SHOP EDITOR: PACKAGE LIST -->
                 <div class="editor-view hidden" id="editorViewShopPackages">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -819,7 +882,7 @@
                     </div>
                 </div>
 
-                <!-- ================= SHOP EDITOR: FORM ================= -->
+                <!-- SHOP EDITOR: FORM -->
                 <div class="editor-view hidden" id="editorViewShopForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -912,7 +975,7 @@
         </main>
 
 
-        <!-- ============ RIGHT PANEL ============ -->
+        <!-- RIGHT PANEL -->
         <aside class="right-panel">
             <section class="right-panel-card">
                 <h2 class="right-panel-title">Player Information</h2>
@@ -973,76 +1036,7 @@
         </aside>
 
 
-        <!-- ============ FLOATING QUICK MENU ============ -->
-        <button class="floating-quick-btn" id="floatingQuickBtn" type="button"
-                aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
-            <span class="floating-quick-icon" data-item-icon="1360" data-item-icon-size="26"></span>
-        </button>
-
-        <div class="floating-menu" id="floatingMenu" role="menu" aria-hidden="true">
-            <div class="floating-stats" id="floatingStats">
-                <div class="floating-stats-header">
-                    <span class="floating-stats-dot" id="floatingStatsDot"></span>
-                    <span class="floating-stats-title" id="floatingStatsTitle">SERVER STATS</span>
-                </div>
-
-                <div class="floating-stats-rows" id="floatingStatsRows">
-                    <div class="floating-stats-row">
-                        <span class="fs-label">Status</span>
-                        <span class="fs-value" id="fsStatus">—</span>
-                    </div>
-                    <div class="floating-stats-row">
-                        <span class="fs-label">👥 Players</span>
-                        <span class="fs-value" id="fsPlayers">—</span>
-                    </div>
-                    <div class="floating-stats-row">
-                        <span class="fs-label">⏱ Uptime</span>
-                        <span class="fs-value" id="fsUptime">—</span>
-                    </div>
-                    <div class="floating-stats-row">
-                        <span class="fs-label">💾 RAM</span>
-                        <span class="fs-value" id="fsRam">—</span>
-                    </div>
-                    <div class="floating-stats-row">
-                        <span class="fs-label">⚡ CPU</span>
-                        <span class="fs-value" id="fsCpu">—</span>
-                    </div>
-                    <div class="floating-stats-row">
-                        <span class="fs-label">🌍 Worlds</span>
-                        <span class="fs-value" id="fsWorlds">—</span>
-                    </div>
-                </div>
-
-                <div class="floating-stats-footer"><span id="fsUpdated">—</span></div>
-            </div>
-
-            <div class="floating-menu-divider"></div>
-
-            <button class="floating-menu-item" data-page="home" role="menuitem" type="button">
-                <span class="fm-icon" data-item-icon="224" data-item-icon-size="20"></span><span>Home</span>
-            </button>
-            <button class="floating-menu-item" data-page="profile" role="menuitem" type="button">
-                <span class="fm-icon" data-item-icon="980" data-item-icon-size="20"></span><span>Profile</span>
-            </button>
-            <button class="floating-menu-item" data-page="rewards" role="menuitem" type="button">
-                <span class="fm-icon" data-item-icon="1458" data-item-icon-size="20"></span><span>Rewards</span>
-            </button>
-            <button class="floating-menu-item" data-page="roulette" role="menuitem" type="button">
-                <span class="fm-icon" data-item-icon="758" data-item-icon-size="20"></span><span>Roulette</span>
-            </button>
-            <button class="floating-menu-item" data-page="topup" role="menuitem" type="button">
-                <span class="fm-icon" data-item-icon="112" data-item-icon-size="20"></span><span>Top Up</span>
-            </button>
-
-            <div class="floating-menu-divider"></div>
-
-            <button class="floating-menu-item logout" data-action="logout" role="menuitem" type="button">
-                <span class="fm-icon" data-item-icon="6" data-item-icon-size="20"></span><span>Logout</span>
-            </button>
-        </div>
-
-
-        <!-- ============ ROULETTE WIN OVERLAY ============ -->
+        <!-- ROULETTE WIN OVERLAY -->
         <div id="rouletteWinOverlay" role="dialog" aria-modal="true"
              aria-labelledby="rouletteWinTitle" hidden>
             <div class="roulette-win-card" id="rouletteWinCard">
@@ -1059,7 +1053,7 @@
         </div>
 
 
-        <!-- ============ INVENTORY MODAL ============ -->
+        <!-- INVENTORY MODAL -->
         <div class="inventory-modal" id="inventoryModal">
             <div class="inventory-modal-content">
                 <div class="inventory-modal-header">
@@ -1074,7 +1068,7 @@
         </div>
 
 
-        <!-- ============ NEWS DETAIL MODAL ============ -->
+        <!-- NEWS DETAIL MODAL -->
         <div class="news-modal" id="newsModal">
             <div class="news-modal-content">
                 <div class="news-modal-header">
@@ -1106,7 +1100,7 @@
         </div>
 
 
-        <!-- ============ REWARDS MODAL ============ -->
+        <!-- REWARDS MODAL -->
         <div class="rewards-modal" id="rewardsModal">
             <div class="rewards-modal-content" id="rewardsModalContent" data-variant="milestone">
                 <div class="rewards-modal-header" id="rewardsModalHeader">
@@ -1123,6 +1117,85 @@
             </div>
         </div>
     </section>
+
+
+    <!-- =========================================
+         FLOATING QUICK MENU
+         Di luar #dashboardScreen → selalu tampil.
+         Navigasi otomatis di-hide kalau belum login
+         (pakai class .floating-menu-auth + CSS di head).
+    ========================================= -->
+
+    <button class="floating-quick-btn" id="floatingQuickBtn" type="button"
+            aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
+        <span class="floating-quick-icon" data-item-icon="1360" data-item-icon-size="26"></span>
+    </button>
+
+    <div class="floating-menu" id="floatingMenu" role="menu" aria-hidden="true">
+
+        <!-- SERVER STATS (selalu tampil, baik login atau belum) -->
+        <div class="floating-stats" id="floatingStats">
+            <div class="floating-stats-header">
+                <span class="floating-stats-dot" id="floatingStatsDot"></span>
+                <span class="floating-stats-title" id="floatingStatsTitle">SERVER STATS</span>
+            </div>
+
+            <div class="floating-stats-rows" id="floatingStatsRows">
+                <div class="floating-stats-row">
+                    <span class="fs-label">Status</span>
+                    <span class="fs-value" id="fsStatus">—</span>
+                </div>
+                <div class="floating-stats-row">
+                    <span class="fs-label">👥 Players</span>
+                    <span class="fs-value" id="fsPlayers">—</span>
+                </div>
+                <div class="floating-stats-row">
+                    <span class="fs-label">⏱ Uptime</span>
+                    <span class="fs-value" id="fsUptime">—</span>
+                </div>
+                <div class="floating-stats-row">
+                    <span class="fs-label">💾 RAM</span>
+                    <span class="fs-value" id="fsRam">—</span>
+                </div>
+                <div class="floating-stats-row">
+                    <span class="fs-label">⚡ CPU</span>
+                    <span class="fs-value" id="fsCpu">—</span>
+                </div>
+                <div class="floating-stats-row">
+                    <span class="fs-label">🌍 Worlds</span>
+                    <span class="fs-value" id="fsWorlds">—</span>
+                </div>
+            </div>
+
+            <div class="floating-stats-footer"><span id="fsUpdated">—</span></div>
+        </div>
+
+        <!-- NAVIGASI (hanya tampil saat sudah login) -->
+        <div class="floating-menu-divider floating-menu-auth"></div>
+
+        <button class="floating-menu-item floating-menu-auth" data-page="home" role="menuitem" type="button">
+            <span class="fm-icon" data-item-icon="224" data-item-icon-size="20"></span><span>Home</span>
+        </button>
+        <button class="floating-menu-item floating-menu-auth" data-page="profile" role="menuitem" type="button">
+            <span class="fm-icon" data-item-icon="980" data-item-icon-size="20"></span><span>Profile</span>
+        </button>
+        <button class="floating-menu-item floating-menu-auth" data-page="rewards" role="menuitem" type="button">
+            <span class="fm-icon" data-item-icon="1458" data-item-icon-size="20"></span><span>Rewards</span>
+        </button>
+        <button class="floating-menu-item floating-menu-auth" data-page="roulette" role="menuitem" type="button">
+            <span class="fm-icon" data-item-icon="758" data-item-icon-size="20"></span><span>Roulette</span>
+        </button>
+        <button class="floating-menu-item floating-menu-auth" data-page="topup" role="menuitem" type="button">
+            <span class="fm-icon" data-item-icon="112" data-item-icon-size="20"></span><span>Top Up</span>
+        </button>
+
+        <div class="floating-menu-divider floating-menu-auth"></div>
+
+        <button class="floating-menu-item floating-menu-auth logout"
+                data-action="logout" role="menuitem" type="button">
+            <span class="fm-icon" data-item-icon="6" data-item-icon-size="20"></span><span>Logout</span>
+        </button>
+    </div>
 
 
     <!-- ============ ITEM PICKER MODAL ============ -->
