@@ -1,20 +1,5 @@
 /* =========================================
-   GROWERA — CORE
-   Login, session, navigasi, admin check,
-   editor view switcher, helper global,
-   scroll reset helper (anti bug).
-
-   Modul terpisah:
-   - news.js     : News home + editor
-   - shop.js     : Topup / Crystal Store + editor paket
-   - profile.js  : Profil + inventory
-   - rewards.js  : Rewards page + modal + editor
-
-   Helper global yang dipakai modul lain:
-   - loadSession(), readJSONResponse()
-   - formatNumber(), formatRupiah(), formatDateTime()
-   - getInitial(), showEditorView(), resetContentScroll()
-   - setStatusElement(), setPlayerStatus(), setProfileStatus()
+   GROWERA — CORE (v2, FIXED)
 ========================================= */
 
 /* =========================================
@@ -55,6 +40,30 @@ const passwordInput = document.getElementById("password");
 ========================================= */
 
 let currentUserIsAdmin = false;
+
+
+/* =========================================
+   SAFE CALL HELPER
+   Panggil method opsional tanpa bikin error kalau tidak ada.
+========================================= */
+
+function safeCall(obj, methodName, args) {
+    if (!obj) return Promise.resolve();
+    if (typeof obj[methodName] !== "function") return Promise.resolve();
+
+    try {
+        const result = obj[methodName].apply(obj, args || []);
+        if (result && typeof result.catch === "function") {
+            return result.catch(function (err) {
+                console.warn("[GROWERA] " + methodName + " error:", err);
+            });
+        }
+        return Promise.resolve(result);
+    } catch (err) {
+        console.warn("[GROWERA] " + methodName + " threw:", err);
+        return Promise.resolve();
+    }
+}
 
 
 /* =========================================
@@ -119,6 +128,7 @@ function clearSession() {
 ========================================= */
 
 function showLoginMessage(message, color) {
+    if (!loginMessage) return;
     loginMessage.textContent = message;
     loginMessage.style.color = color || "#9BAAC3";
 }
@@ -170,7 +180,7 @@ function setStatusElement(element, message, color) {
     }
     dot.style.background = color;
     element.style.color = color;
-    Array.from(element.childNodes).forEach(function(node) {
+    Array.from(element.childNodes).forEach(function (node) {
         if (node !== dot) node.remove();
     });
     element.appendChild(document.createTextNode(message));
@@ -186,21 +196,15 @@ function setProfileStatus(message, color) {
 
 
 /* =========================================
-   SCROLL RESET HELPER (ANTI BUG)
-   Double requestAnimationFrame: tunggu DOM + layout
-   selesai update dulu, baru reset scroll. Mencegah
-   konten "ketarik ke atas" saat page switch atau
-   saat render data besar selesai.
+   SCROLL RESET HELPER
 ========================================= */
 
 function resetContentScroll() {
     const content = document.querySelector(".content");
     if (!content) return;
 
-    // Pass 1: langsung, cegah flash
     content.scrollTop = 0;
 
-    // Pass 2: setelah 2 frame, saat layout sudah settle
     requestAnimationFrame(function () {
         requestAnimationFrame(function () {
             content.scrollTop = 0;
@@ -214,12 +218,12 @@ function resetContentScroll() {
 ========================================= */
 
 function showLoginScreen() {
-    loginScreen.classList.remove("hidden");
-    dashboardScreen.classList.add("hidden");
+    if (loginScreen) loginScreen.classList.remove("hidden");
+    if (dashboardScreen) dashboardScreen.classList.add("hidden");
 }
 
 function hideLoginScreen() {
-    loginScreen.classList.add("hidden");
+    if (loginScreen) loginScreen.classList.add("hidden");
 }
 
 
@@ -316,15 +320,27 @@ async function loginRequest(username, password) {
 function showDashboard(username) {
     const initial = getInitial(username);
 
-    document.getElementById("headerUsername").textContent = username;
-    document.getElementById("playerUsername").textContent = username;
-    document.getElementById("profileUsername").textContent = username;
+    const headerUser = document.getElementById("headerUsername");
+    if (headerUser) headerUser.textContent = username;
 
-    document.getElementById("headerAvatar").textContent = initial;
-    document.getElementById("playerAvatar").textContent = initial;
+    const playerUser = document.getElementById("playerUsername");
+    if (playerUser) playerUser.textContent = username;
+
+    const profileUser = document.getElementById("profileUsername");
+    if (profileUser) profileUser.textContent = username;
+
+    const headerAvatar = document.getElementById("headerAvatar");
+    if (headerAvatar) headerAvatar.textContent = initial;
+
+    const playerAvatar = document.getElementById("playerAvatar");
+    if (playerAvatar) playerAvatar.textContent = initial;
 
     hideLoginScreen();
-    dashboardScreen.classList.remove("hidden");
+    if (dashboardScreen) dashboardScreen.classList.remove("hidden");
+
+    // FIX: set status default, jangan biarkan "Memuat..." dari HTML
+    setPlayerStatus("Menyambung ke server...", "#65E7FF");
+    setProfileStatus("Menyambung ke server...", "#65E7FF");
 
     window.scrollTo({ top: 0, behavior: "auto" });
     navigateTo("home");
@@ -332,18 +348,21 @@ function showDashboard(username) {
 
 
 /* =========================================
-   EDITOR VIEW SWITCHER (dipakai modul)
+   EDITOR VIEW SWITCHER
 ========================================= */
 
 function showEditorView(viewName) {
     const views = {
-        roadmap:        "editorViewRoadmap",
-        list:           "editorViewNewsList",
-        form:           "editorViewNewsForm",
-        "rewards-list": "editorViewRewardsList",
-        "rewards-form": "editorViewRewardsForm",
-        "topup-list":   "editorViewTopupList",
-        "topup-form":   "editorViewTopupForm"
+        roadmap:          "editorViewRoadmap",
+        list:             "editorViewNewsList",
+        form:             "editorViewNewsForm",
+        "rewards-list":   "editorViewRewardsList",
+        "rewards-form":   "editorViewRewardsForm",
+        "topup-list":     "editorViewTopupList",
+        "topup-form":     "editorViewTopupForm",
+        "shop-categories": "editorViewShopCategories",
+        "shop-packages":  "editorViewShopPackages",
+        "shop-form":      "editorViewShopForm"
     };
 
     Object.keys(views).forEach(function (key) {
@@ -352,7 +371,6 @@ function showEditorView(viewName) {
         el.classList.toggle("hidden", key !== viewName);
     });
 
-    // ANTI BUG: pakai helper, bukan scrollTo langsung
     resetContentScroll();
 }
 
@@ -367,14 +385,14 @@ function navigateTo(pageName) {
         "events", "history", "more"
     ];
 
-    if (!validPages.includes(pageName)) pageName = "home";
+    if (validPages.indexOf(pageName) === -1) pageName = "home";
 
     if (pageName === "editor" && !currentUserIsAdmin) {
         console.warn("[GROWERA] Akses editor ditolak.");
         pageName = "more";
     }
 
-    document.querySelectorAll(".app-page").forEach(function(page) {
+    document.querySelectorAll(".app-page").forEach(function (page) {
         page.classList.add("hidden");
     });
 
@@ -391,7 +409,7 @@ function navigateTo(pageName) {
 
     document.querySelectorAll(
         ".sidebar-nav .nav-button, .sidebar-bottom .nav-button"
-    ).forEach(function(button) {
+    ).forEach(function (button) {
         button.classList.toggle("active", button.dataset.page === pageName);
     });
 
@@ -399,20 +417,20 @@ function navigateTo(pageName) {
         showEditorView("roadmap");
     }
 
-    if (pageName === "rewards" && window.GroweraRewards) {
-        window.GroweraRewards.onNavigate();
+    // FIX: pakai safeCall supaya tidak error kalau method tidak ada
+    if (pageName === "rewards") {
+        safeCall(window.GroweraRewards, "onNavigate");
     }
 
-    if (pageName === "topup" && window.GroweraShop) {
-        window.GroweraShop.onNavigate();
+    if (pageName === "topup") {
+        safeCall(window.GroweraShop, "onNavigate");
     }
 
-    // ANTI BUG: pakai helper, bukan scrollTo langsung
     resetContentScroll();
 }
 
-document.querySelectorAll("[data-page]").forEach(function(button) {
-    button.addEventListener("click", function() {
+document.querySelectorAll("[data-page]").forEach(function (button) {
+    button.addEventListener("click", function () {
         navigateTo(button.dataset.page);
     });
 });
@@ -422,60 +440,68 @@ document.querySelectorAll("[data-page]").forEach(function(button) {
    LOGIN HANDLER
 ========================================= */
 
-loginForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
+if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
 
-    if (!username || !password) {
-        showLoginMessage("Username dan password wajib diisi.", "#FF8585");
-        return;
-    }
+        if (!username || !password) {
+            showLoginMessage("Username dan password wajib diisi.", "#FF8585");
+            return;
+        }
 
-    loginButton.disabled = true;
-    loginButton.textContent = "SIGNING IN...";
-    showLoginMessage("Memeriksa kredensial akun...", "#65E7FF");
+        loginButton.disabled = true;
+        loginButton.textContent = "SIGNING IN...";
+        showLoginMessage("Memeriksa kredensial akun...", "#65E7FF");
 
-    try {
-        const result = await loginRequest(username, password);
+        try {
+            const result = await loginRequest(username, password);
 
-        saveSession(result.token, result.username, result.expiresAt);
-        passwordInput.value = "";
+            saveSession(result.token, result.username, result.expiresAt);
+            passwordInput.value = "";
 
-        showDashboard(result.username);
+            showDashboard(result.username);
 
-        if (window.GroweraProfile) await window.GroweraProfile.fetch();
-        await checkAdminStatus();
-        if (window.GroweraNews) await window.GroweraNews.loadHome();
-        if (window.GroweraShop) await window.GroweraShop.loadPublic();
-        if (window.GroweraRewards) await window.GroweraRewards.loadPublic();
-    } catch (error) {
-        console.error("[GROWERA LOGIN ERROR]", error);
-        showLoginMessage(
-            error.message || "Tidak dapat menghubungi API GROWERA.",
-            "#FF8585"
-        );
-    } finally {
-        loginButton.disabled = false;
-        loginButton.textContent = "SIGN IN";
-    }
-});
+            // FIX: pakai safeCall, admin check paralel
+            await safeCall(window.GroweraProfile, "fetch");
+
+            await checkAdminStatus();
+
+            await safeCall(window.GroweraNews, "loadHome");
+            await safeCall(window.GroweraShop, "loadPublic");
+            await safeCall(window.GroweraRewards, "loadPublic");
+        } catch (error) {
+            console.error("[GROWERA LOGIN ERROR]", error);
+            showLoginMessage(
+                error.message || "Tidak dapat menghubungi API GROWERA.",
+                "#FF8585"
+            );
+        } finally {
+            loginButton.disabled = false;
+            loginButton.textContent = "SIGN IN";
+        }
+    });
+}
 
 
 /* =========================================
    BUTTON EVENTS
 ========================================= */
 
-document.getElementById("accountButton").addEventListener("click", function() {
-    navigateTo("profile");
-});
+const accountButton = document.getElementById("accountButton");
+if (accountButton) {
+    accountButton.addEventListener("click", function () {
+        navigateTo("profile");
+    });
+}
 
 document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
-        if (window.GroweraProfile) window.GroweraProfile.closeInventory();
-        if (window.GroweraNews) window.GroweraNews.closeModal();
-        if (window.GroweraRewards) window.GroweraRewards.closeModal();
+        safeCall(window.GroweraProfile, "closeInventory");
+        safeCall(window.GroweraNews, "closeModal");
+        safeCall(window.GroweraRewards, "closeModal");
     }
 });
 
@@ -484,10 +510,10 @@ document.addEventListener("keydown", function (event) {
    LOGOUT
 ========================================= */
 
-document.getElementById("logoutButton").addEventListener("click", async function() {
+async function performLogout() {
     const session = loadSession();
 
-    if (window.GroweraProfile) window.GroweraProfile.reset();
+    safeCall(window.GroweraProfile, "reset");
 
     if (session.token) {
         try {
@@ -509,27 +535,33 @@ document.getElementById("logoutButton").addEventListener("click", async function
     currentUserIsAdmin = false;
     updateAdminUI();
 
-    if (window.GroweraProfile) window.GroweraProfile.closeInventory();
-    if (window.GroweraNews) window.GroweraNews.closeModal();
-    if (window.GroweraRewards) window.GroweraRewards.closeModal();
+    safeCall(window.GroweraProfile, "closeInventory");
+    safeCall(window.GroweraNews, "closeModal");
+    safeCall(window.GroweraRewards, "closeModal");
 
-    dashboardScreen.classList.add("hidden");
-    loginScreen.classList.remove("hidden");
+    if (dashboardScreen) dashboardScreen.classList.add("hidden");
+    if (loginScreen) loginScreen.classList.remove("hidden");
 
-    loginForm.reset();
+    if (loginForm) loginForm.reset();
 
     showLoginMessage("Kamu telah keluar dari dashboard.", "#65E7FF");
 
     window.scrollTo({ top: 0, behavior: "auto" });
-});
+}
 
-document.getElementById("sidebarLogoutButton").addEventListener("click", function() {
-    document.getElementById("logoutButton").click();
-});
+const logoutButton = document.getElementById("logoutButton");
+if (logoutButton) {
+    logoutButton.addEventListener("click", performLogout);
+}
+
+const sidebarLogoutButton = document.getElementById("sidebarLogoutButton");
+if (sidebarLogoutButton) {
+    sidebarLogoutButton.addEventListener("click", performLogout);
+}
 
 
 /* =========================================
-   BOOTSTRAP
+   BOOTSTRAP (FIXED)
 ========================================= */
 
 async function bootstrap() {
@@ -549,12 +581,17 @@ async function bootstrap() {
 
     showDashboard(session.username);
 
-    let result = "error";
-    if (window.GroweraProfile) {
-        result = await window.GroweraProfile.fetch();
+    // FIX #1: cek admin PARALEL dengan fetch profile.
+    // Jangan sampai admin button tidak muncul hanya karena profile gagal.
+    const adminPromise = checkAdminStatus();
+
+    let profileResult = "error";
+    if (window.GroweraProfile && typeof window.GroweraProfile.fetch === "function") {
+        profileResult = await window.GroweraProfile.fetch();
     }
 
-    if (result === "unauthorized") {
+    // FIX #2: kalau unauthorized, bersihkan sesi & balik ke login
+    if (profileResult === "unauthorized") {
         clearSession();
         showLoginScreen();
         showLoginMessage(
@@ -565,19 +602,23 @@ async function bootstrap() {
         return;
     }
 
-    if (result === "error") {
+    // FIX #3: kalau error, tetap tunggu admin check, jangan return diam-diam
+    if (profileResult === "error") {
         if (dbg) dbg.textContent =
-            "Sesi tersimpan, tapi server tidak merespons.";
+            "Sesi tersimpan, tapi server tidak merespons. Coba refresh.";
+        await adminPromise.catch(function () {});
         return;
     }
 
     if (dbg) dbg.textContent = "Sesi valid: " + session.username;
 
-    await checkAdminStatus();
+    // Tunggu admin check selesai (kalau belum)
+    await adminPromise.catch(function () {});
 
-    if (window.GroweraNews) await window.GroweraNews.loadHome();
-    if (window.GroweraShop) await window.GroweraShop.loadPublic();
-    if (window.GroweraRewards) await window.GroweraRewards.loadPublic();
+    // FIX #4: pakai safeCall — jangan error kalau method tidak ada
+    await safeCall(window.GroweraNews, "loadHome");
+    await safeCall(window.GroweraShop, "loadPublic");
+    await safeCall(window.GroweraRewards, "loadPublic");
 }
 
 if (document.readyState === "loading") {
