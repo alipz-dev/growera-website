@@ -8,9 +8,6 @@
 
     <!-- ==========================================
          ANTI-FLICKER + GUEST MODE
-         Cek sesi sebelum body render, supaya login screen
-         tidak kedip saat refresh, dan floating menu tahu
-         apakah user sudah login atau belum.
     =========================================== -->
     <script>
     (function () {
@@ -49,7 +46,6 @@
     </script>
 
     <style>
-        /* Anti-flicker */
         html[data-auth="in"]  #loginScreen     { display: none !important; }
         html[data-auth="out"] #dashboardScreen { display: none !important; }
 
@@ -63,7 +59,6 @@
             to   { opacity: 1; }
         }
 
-        /* Guest mode: sembunyikan navigasi di floating menu */
         html[data-auth="out"] .floating-menu-auth {
             display: none !important;
         }
@@ -76,6 +71,7 @@
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/roulette.css">
     <link rel="stylesheet" href="/css/item-picker.css">
+    <link rel="stylesheet" href="/css/appearance.css">
 </head>
 
 <body>
@@ -116,7 +112,7 @@
 
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <span data-item-icon="112" data-item-icon-size="22"></span>
+                <span data-theme-icon="brandLogo" data-item-icon-size="22"></span>
                 GROWERA
                 <small>CRYSTAL ERA</small>
             </div>
@@ -125,44 +121,44 @@
 
             <nav class="sidebar-nav">
                 <button class="nav-button active" data-page="home" type="button">
-                    <span class="nav-icon" data-item-icon="224" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarHome" data-item-icon-size="20"></span>
                     <span class="nav-text">Home</span>
                 </button>
 
                 <button class="nav-button" data-page="profile" type="button">
-                    <span class="nav-icon" data-item-icon="980" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarProfile" data-item-icon-size="20"></span>
                     <span class="nav-text">Profile</span>
                 </button>
 
                 <button class="nav-button" data-page="rewards" type="button">
-                    <span class="nav-icon" data-item-icon="1458" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarRewards" data-item-icon-size="20"></span>
                     <span class="nav-text">Rewards</span>
                 </button>
 
                 <button class="nav-button" data-page="roulette" type="button">
-                    <span class="nav-icon" data-item-icon="758" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarRoulette" data-item-icon-size="20"></span>
                     <span class="nav-text">Roulette</span>
                 </button>
 
                 <button class="nav-button" data-page="topup" type="button">
-                    <span class="nav-icon" data-item-icon="112" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarTopup" data-item-icon-size="20"></span>
                     <span class="nav-text">Top Up</span>
                 </button>
 
                 <button class="nav-button" data-page="more" type="button">
-                    <span class="nav-icon" data-item-icon="1430" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarMore" data-item-icon-size="20"></span>
                     <span class="nav-text">More</span>
                 </button>
             </nav>
 
             <div class="sidebar-bottom">
                 <button class="nav-button" data-page="more" type="button">
-                    <span class="nav-icon" data-item-icon="32" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarSettings" data-item-icon-size="20"></span>
                     <span class="nav-text">Settings</span>
                 </button>
 
                 <button class="nav-button" id="sidebarLogoutButton" type="button">
-                    <span class="nav-icon" data-item-icon="6" data-item-icon-size="20"></span>
+                    <span class="nav-icon" data-theme-icon="sidebarLogout" data-item-icon-size="20"></span>
                     <span class="nav-text">Logout</span>
                 </button>
             </div>
@@ -171,7 +167,7 @@
 
         <header class="topbar">
             <div class="brand">
-                <span data-item-icon="112" data-item-icon-size="22"></span>
+                <span data-theme-icon="brandLogo" data-item-icon-size="22"></span>
                 GROWERA
                 <small>CRYSTAL ERA</small>
             </div>
@@ -610,14 +606,14 @@
                                 </div>
                             </button>
 
-                            <div class="editor-roadmap-item locked">
-                                <div class="editor-roadmap-icon" data-item-icon="3494" data-item-icon-size="32"></div>
+                            <button class="editor-roadmap-item" data-editor-module="appearance" type="button">
+                                <div class="editor-roadmap-icon" data-theme-icon="appearanceIcon" data-item-icon-size="32"></div>
                                 <div class="editor-roadmap-content">
                                     <h3>Appearance</h3>
-                                    <p>Kustomisasi warna dan tema website.</p>
-                                    <span class="editor-roadmap-badge">Coming Soon</span>
+                                    <p>Kustomisasi warna, icon, dan tema website.</p>
+                                    <span class="editor-roadmap-badge active-badge">Aktif</span>
                                 </div>
-                            </div>
+                            </button>
                         </div>
 
                         <button class="profile-button" data-page="more" type="button" style="margin-top:20px">
@@ -969,6 +965,38 @@
                     </div>
                 </div>
 
+                <!-- APPEARANCE EDITOR -->
+                <div class="editor-view hidden" id="editorViewAppearance">
+                    <div class="page-panel">
+                        <div class="editor-view-header">
+                            <h2>🎨 Appearance Editor</h2>
+                            <div class="editor-view-actions">
+                                <button class="profile-button" id="appearanceBackToRoadmap" type="button">← Back</button>
+                                <button class="profile-button" id="appearanceExportBtn" type="button">📤 Export</button>
+                                <button class="profile-button" id="appearanceImportBtn" type="button">📥 Import</button>
+                                <button class="profile-button" id="appearanceResetBtn" type="button" style="color:#FF5C8A">🔄 Reset</button>
+                                <button class="primary-button" id="appearanceSaveBtn" type="button" style="width:auto">💾 Save</button>
+                            </div>
+                        </div>
+
+                        <p style="color:var(--muted);font-size:11px;margin:0 0 18px;line-height:1.6">
+                            Semua perubahan langsung terlihat di seluruh website.
+                            Setelah selesai, klik <strong>📤 Export</strong> → simpan ke
+                            <code>data/theme-config.json</code> di repo agar tersimpan permanen.
+                        </p>
+
+                        <div class="appearance-section">
+                            <h3 class="appearance-section-title">🎨 Warna Tema</h3>
+                            <div class="appearance-grid" id="appearanceColorGrid"></div>
+                        </div>
+
+                        <div class="appearance-section">
+                            <h3 class="appearance-section-title">✨ Icon Navigasi & Brand</h3>
+                            <div class="appearance-grid" id="appearanceIconGrid"></div>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
             <div class="app-footer">GROWERA • CRYSTAL ERA</div>
@@ -1120,20 +1148,16 @@
 
 
     <!-- =========================================
-         FLOATING QUICK MENU
-         Di luar #dashboardScreen → selalu tampil.
-         Navigasi otomatis di-hide kalau belum login
-         (pakai class .floating-menu-auth + CSS di head).
+         FLOATING QUICK MENU (tampil di semua halaman)
     ========================================= -->
 
     <button class="floating-quick-btn" id="floatingQuickBtn" type="button"
             aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
-        <span class="floating-quick-icon" data-item-icon="1360" data-item-icon-size="26"></span>
+        <span class="floating-quick-icon" data-theme-icon="floatingBtn" data-item-icon-size="26"></span>
     </button>
 
     <div class="floating-menu" id="floatingMenu" role="menu" aria-hidden="true">
 
-        <!-- SERVER STATS (selalu tampil, baik login atau belum) -->
         <div class="floating-stats" id="floatingStats">
             <div class="floating-stats-header">
                 <span class="floating-stats-dot" id="floatingStatsDot"></span>
@@ -1170,7 +1194,6 @@
             <div class="floating-stats-footer"><span id="fsUpdated">—</span></div>
         </div>
 
-        <!-- NAVIGASI (hanya tampil saat sudah login) -->
         <div class="floating-menu-divider floating-menu-auth"></div>
 
         <button class="floating-menu-item floating-menu-auth" data-page="home" role="menuitem" type="button">
@@ -1229,7 +1252,6 @@
             <div style="padding:14px 18px">
                 <p style="color:var(--muted);font-size:11px;margin:0 0 10px;line-height:1.6">
                     Copy JSON di bawah → simpan sebagai <code>data/shop-config.json</code> di repo → push.
-                    Server Lua akan membaca file ini.
                 </p>
                 <textarea class="shop-editor-json-area" id="shopExportTextarea" readonly></textarea>
             </div>
@@ -1267,6 +1289,54 @@
     </div>
 
 
+    <!-- ============ APPEARANCE EXPORT MODAL ============ -->
+    <div class="item-picker-modal" id="appearanceExportModal" hidden role="dialog" aria-modal="true">
+        <div class="item-picker-dialog" style="max-width:720px">
+            <div class="item-picker-header">
+                <h2>Export Theme JSON</h2>
+                <button class="item-picker-close" type="button"
+                        onclick="document.getElementById('appearanceExportModal').hidden=true">✕</button>
+            </div>
+            <div style="padding:14px 18px">
+                <p style="color:var(--muted);font-size:11px;margin:0 0 10px;line-height:1.6">
+                    Copy JSON di bawah → simpan sebagai <code>data/theme-config.json</code> di repo → push.
+                </p>
+                <textarea class="shop-editor-json-area" id="appearanceExportTextarea" readonly></textarea>
+            </div>
+            <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+                <button class="profile-button" type="button" id="appearanceExportCopyBtn">📋 Copy</button>
+                <button class="profile-button" type="button" id="appearanceExportDownloadBtn">💾 Download</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============ APPEARANCE IMPORT MODAL ============ -->
+    <div class="item-picker-modal" id="appearanceImportModal" hidden role="dialog" aria-modal="true">
+        <div class="item-picker-dialog" style="max-width:720px">
+            <div class="item-picker-header">
+                <h2>Import Theme JSON</h2>
+                <button class="item-picker-close" type="button"
+                        onclick="document.getElementById('appearanceImportModal').hidden=true">✕</button>
+            </div>
+            <div style="padding:14px 18px">
+                <p style="color:var(--muted);font-size:11px;margin:0 0 10px">
+                    Paste JSON dari file <code>data/theme-config.json</code>.
+                </p>
+                <textarea class="shop-editor-json-area" id="appearanceImportTextarea"
+                          placeholder="Paste JSON di sini..."></textarea>
+            </div>
+            <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end">
+                <button class="profile-button" type="button"
+                        onclick="document.getElementById('appearanceImportModal').hidden=true">Cancel</button>
+                <button class="primary-button" type="button" style="width:auto" id="appearanceImportApplyBtn">
+                    Import
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="/js/app.js"></script>
     <script src="/js/news.js"></script>
     <script src="/js/shop.js"></script>
@@ -1276,6 +1346,7 @@
     <script src="/js/roulette.js"></script>
     <script src="/js/item-picker.js"></script>
     <script src="/js/shop-editor.js"></script>
+    <script src="/js/appearance.js"></script>
 
 </body>
 </html>
