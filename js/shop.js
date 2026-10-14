@@ -1,6 +1,5 @@
 /* =========================================
-   GROWERA — SHOP MODULE (v3)
-   Render shop dari config (localStorage > default).
+   GROWERA — SHOP MODULE (v4, clean)
 ========================================= */
 
 (function () {
@@ -25,7 +24,18 @@
                 order: 1,
                 active: true,
                 packages: [
-                    { id: "starter", iconId: 112, price: 15000, tier: "starter", badge: null, order: 1, active: true, displayValue: 100, displayUnit: "GEMS", bonusText: null, rewards: [{ type: "gems", amount: 100 }] }
+                    {
+                        id: "starter",
+                        iconId: 112,
+                        price: 15000,
+                        tier: "starter",
+                        badge: null,
+                        order: 1,
+                        active: true,
+                        displayValue: 100,
+                        displayUnit: "GEMS",
+                        rewards: [{ type: "gems", amount: 100 }]
+                    }
                 ]
             }
         ]
@@ -46,7 +56,7 @@
             }
             return parsed;
         } catch (e) {
-            console.error("[Shop] Gagal load config:", e);
+            console.error("[Shop] Load error:", e);
             return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
         }
     }
@@ -57,7 +67,7 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
             return true;
         } catch (e) {
-            console.error("[Shop] Gagal simpan config:", e);
+            console.error("[Shop] Save error:", e);
             return false;
         }
     }
@@ -77,14 +87,12 @@
     }
 
     function createIcon(id, size) {
-        if (window.GroweraItemPicker && window.GroweraItemPicker.createIcon) {
-            return window.GroweraItemPicker.createIcon(id, size);
-        }
         var img = document.createElement("img");
         img.src = "/assets/itemimage/" + id + ".png";
         img.width = size;
         img.height = size;
-        img.style.cssText = "width:" + size + "px;height:" + size + "px;object-fit:contain;image-rendering:pixelated;display:block";
+        img.style.cssText = "width:" + size + "px;height:" + size +
+            "px;object-fit:contain;image-rendering:pixelated;display:block";
         img.alt = "";
         return img;
     }
@@ -97,30 +105,32 @@
 
     function getActiveCategory() {
         var list = getCategories();
-        return list.filter(function (c) { return c.key === activeCategoryKey; })[0] || list[0];
+        if (!list.length) return null;
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].key === activeCategoryKey) return list[i];
+        }
+        return list[0];
     }
 
     /* ===== RENDER TABS ===== */
 
     function renderTabs() {
-        var wrap = $("topupTabs");
+        var wrap = $("shopTabs");
         if (!wrap) return;
-
         wrap.replaceChildren();
 
         var categories = getCategories();
-        if (categories.length === 0) return;
+        if (!categories.length) return;
 
-        // Kalau activeCategoryKey tidak valid, pakai yang pertama
-        if (!activeCategoryKey || !categories.some(function (c) { return c.key === activeCategoryKey; })) {
+        if (!activeCategoryKey ||
+            !categories.some(function (c) { return c.key === activeCategoryKey; })) {
             activeCategoryKey = categories[0].key;
         }
 
         categories.forEach(function (cat) {
             var btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "topup-tab" + (cat.key === activeCategoryKey ? " active" : "");
-            btn.dataset.topupTab = cat.key;
+            btn.className = "shop-tab" + (cat.key === activeCategoryKey ? " active" : "");
 
             if (cat.currencyIcon) {
                 btn.appendChild(createIcon(cat.currencyIcon, 16));
@@ -144,13 +154,13 @@
         var cat = getActiveCategory();
         if (!cat) return;
 
-        var header = $("storeHeader");
-        var eyebrow = $("storeEyebrow");
-        var title = $("storeTitle");
-        var subtitle = $("storeSubtitle");
-        var currencyName = $("storeCurrencyName");
-        var currencyIcon = $("storeCurrencyIcon");
-        var balanceWrap = $("topupBalanceWrap");
+        var header = $("shopHeader");
+        var eyebrow = $("shopEyebrow");
+        var title = $("shopTitle");
+        var subtitle = $("shopSubtitle");
+        var currencyName = $("shopCurrencyName");
+        var currencyIcon = $("shopCurrencyIcon");
+        var balanceWrap = $("shopBalanceWrap");
 
         if (header) header.dataset.variant = cat.variant || "crystal";
         if (eyebrow) eyebrow.textContent = cat.eyebrow || "";
@@ -173,55 +183,56 @@
     /* ===== RENDER PANELS ===== */
 
     function renderPanels() {
-        var wrap = $("topupPanels");
+        var wrap = $("shopPanels");
         if (!wrap) return;
-
         wrap.replaceChildren();
 
         var cat = getActiveCategory();
         if (!cat) return;
 
         var panel = document.createElement("div");
-        panel.className = "topup-tab-panel";
+        panel.className = "shop-panel";
 
         var packages = (cat.packages || [])
             .filter(function (p) { return p.active !== false; })
             .sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
 
-        if (packages.length === 0) {
+        if (!packages.length) {
             var empty = document.createElement("div");
-            empty.className = "topup-placeholder";
+            empty.className = "shop-empty";
+
             var ic = document.createElement("div");
-            ic.className = "topup-placeholder-icon";
+            ic.className = "shop-empty-icon";
             ic.appendChild(createIcon(cat.currencyIcon || 112, 56));
             empty.appendChild(ic);
+
             var h = document.createElement("h3");
             h.textContent = "Belum ada paket";
             empty.appendChild(h);
+
             var p = document.createElement("p");
             p.textContent = "Paket untuk kategori ini belum ditambahkan oleh admin.";
             empty.appendChild(p);
+
             panel.appendChild(empty);
         } else {
             var grid = document.createElement("div");
-            grid.className = "topup-grid";
+            grid.className = "shop-grid";
             packages.forEach(function (pkg) {
                 grid.appendChild(buildCard(pkg, cat));
             });
             panel.appendChild(grid);
         }
 
-        // Info tambahan: cara top up
-        if (cat.key === "topup" || true) {
-            panel.appendChild(buildHowToSection(cat));
-        }
-
+        panel.appendChild(buildHowToSection(cat));
         wrap.appendChild(panel);
     }
 
+    /* ===== BUILD CARD ===== */
+
     function buildCard(pkg, cat) {
         var card = document.createElement("div");
-        card.className = "topup-card";
+        card.className = "shop-card";
 
         if (pkg.tier === "popular" || pkg.tier === "best") card.classList.add("featured");
         if (pkg.tier === "mega") card.classList.add("tier-mega");
@@ -229,67 +240,59 @@
 
         if (pkg.badge) {
             var badge = document.createElement("div");
-            badge.className = "topup-card-badge";
+            badge.className = "shop-card-badge";
             if (pkg.tier === "mega") badge.classList.add("mega");
             if (pkg.tier === "divine") badge.classList.add("divine");
             badge.textContent = pkg.badge;
             card.appendChild(badge);
         }
 
-        var gemsRow = document.createElement("div");
-        gemsRow.className = "topup-card-gems";
+        var main = document.createElement("div");
+        main.className = "shop-card-main";
 
-        var gemsIcon = document.createElement("div");
-        gemsIcon.className = "topup-card-gems-icon";
-        gemsIcon.appendChild(createIcon(pkg.iconId || 112, 32));
+        var iconWrap = document.createElement("div");
+        iconWrap.className = "shop-card-icon";
+        iconWrap.appendChild(createIcon(pkg.iconId || 112, 40));
 
         var textBlock = document.createElement("div");
         var valueEl = document.createElement("div");
-        valueEl.className = "topup-card-gems-value";
+        valueEl.className = "shop-card-value";
         valueEl.textContent = fmtNum(pkg.displayValue || 0);
         var unitEl = document.createElement("div");
-        unitEl.className = "topup-card-gems-unit";
+        unitEl.className = "shop-card-unit";
         unitEl.textContent = pkg.displayUnit || "GEMS";
         textBlock.appendChild(valueEl);
         textBlock.appendChild(unitEl);
 
-        gemsRow.appendChild(gemsIcon);
-        gemsRow.appendChild(textBlock);
-        card.appendChild(gemsRow);
-
-        if (pkg.bonusText) {
-            var bonus = document.createElement("div");
-            bonus.className = "topup-card-bonus";
-            bonus.textContent = pkg.bonusText;
-            card.appendChild(bonus);
-        }
+        main.appendChild(iconWrap);
+        main.appendChild(textBlock);
+        card.appendChild(main);
 
         var divider = document.createElement("div");
-        divider.className = "topup-card-divider";
+        divider.className = "shop-card-divider";
         card.appendChild(divider);
 
         var price = document.createElement("div");
-        price.className = "topup-card-price";
+        price.className = "shop-card-price";
         price.textContent = fmtRp(pkg.price || 0);
         card.appendChild(price);
 
-        var total = document.createElement("div");
-        total.className = "topup-card-total";
-        total.appendChild(document.createTextNode("Berisi: "));
-        var rewards = pkg.rewards || [];
-        if (rewards.length === 0) {
-            total.appendChild(document.createTextNode("-"));
+        var rewards = document.createElement("div");
+        rewards.className = "shop-card-rewards";
+        rewards.appendChild(document.createTextNode("Berisi: "));
+        if (!pkg.rewards || !pkg.rewards.length) {
+            rewards.appendChild(document.createTextNode("-"));
         } else {
-            rewards.forEach(function (r, i) {
-                if (i > 0) total.appendChild(document.createTextNode(", "));
-                total.appendChild(formatRewardShort(r));
+            pkg.rewards.forEach(function (r, i) {
+                if (i > 0) rewards.appendChild(document.createTextNode(", "));
+                rewards.appendChild(buildRewardLabel(r));
             });
         }
-        card.appendChild(total);
+        card.appendChild(rewards);
 
         var buyBtn = document.createElement("button");
         buyBtn.type = "button";
-        buyBtn.className = "topup-buy-btn";
+        buyBtn.className = "shop-buy-btn";
         buyBtn.textContent = "Beli";
         buyBtn.addEventListener("click", function () { handleBuy(pkg, cat); });
         card.appendChild(buyBtn);
@@ -297,7 +300,7 @@
         return card;
     }
 
-    function formatRewardShort(r) {
+    function buildRewardLabel(r) {
         var span = document.createElement("span");
         if (r.type === "gems") {
             span.textContent = fmtNum(r.amount) + " Gems";
@@ -305,7 +308,8 @@
             span.appendChild(createIcon(r.itemId, 14));
             span.appendChild(document.createTextNode(" x" + (r.amount || 1)));
         } else if (r.type === "role") {
-            span.textContent = "Role #" + r.roleId + (r.durationDays > 0 ? " (" + r.durationDays + "d)" : " (Perm)");
+            span.textContent = "Role #" + r.roleId +
+                (r.durationDays > 0 ? " (" + r.durationDays + "d)" : " (Perm)");
         } else if (r.type === "currency") {
             span.textContent = fmtNum(r.amount) + " " + (r.currencyKey || "?");
         } else {
@@ -314,38 +318,39 @@
         return span;
     }
 
-    function buildHowToSection(cat) {
+    function buildHowToSection() {
         var section = document.createElement("section");
-        section.className = "topup-section";
+        section.className = "shop-section";
 
         var h = document.createElement("h2");
-        h.className = "topup-section-heading";
+        h.className = "shop-section-heading";
         h.appendChild(createIcon(1128, 22));
         h.appendChild(document.createTextNode("Cara Membeli"));
         section.appendChild(h);
 
         var steps = document.createElement("div");
-        steps.className = "topup-steps";
+        steps.className = "shop-steps";
 
-        var stepData = [
+        [
             { num: "1", title: "Pilih paket", desc: "Klik tombol Beli pada paket yang kamu inginkan." },
-            { num: "2", title: "Lakukan pembayaran", desc: "Ikuti instruksi dari metode pembayaran yang kamu pilih." },
+            { num: "2", title: "Lakukan pembayaran", desc: "Ikuti instruksi dari metode pembayaran." },
             { num: "3", title: "Hadiah otomatis masuk", desc: "Setelah diverifikasi, hadiah langsung masuk ke akunmu." }
-        ];
-
-        stepData.forEach(function (s) {
+        ].forEach(function (s) {
             var step = document.createElement("div");
-            step.className = "topup-step";
+            step.className = "shop-step";
+
             var num = document.createElement("div");
-            num.className = "topup-step-num";
+            num.className = "shop-step-num";
             num.textContent = s.num;
+
             var txt = document.createElement("div");
-            txt.className = "topup-step-text";
+            txt.className = "shop-step-text";
             var strong = document.createElement("strong");
             strong.textContent = s.title;
             txt.appendChild(strong);
             txt.appendChild(document.createElement("br"));
             txt.appendChild(document.createTextNode(s.desc));
+
             step.appendChild(num);
             step.appendChild(txt);
             steps.appendChild(step);
@@ -358,11 +363,11 @@
     /* ===== BALANCE ===== */
 
     function updateBalance() {
-        var el = $("topupBalance");
+        var el = $("shopBalance");
         if (!el) return;
 
         var cat = getActiveCategory();
-        if (!cat) return;
+        if (!cat) { el.textContent = "—"; return; }
 
         var profile = window.GroweraProfile && window.GroweraProfile.getProfile
             ? window.GroweraProfile.getProfile() : null;
@@ -370,17 +375,13 @@
         var val = "—";
         if (profile && cat.currencyKey && typeof profile[cat.currencyKey] !== "undefined") {
             val = fmtNum(profile[cat.currencyKey]);
-        } else if (profile && cat.currencyKey === "gems" && typeof profile.gems !== "undefined") {
-            val = fmtNum(profile.gems);
         }
-
         el.textContent = val;
     }
 
     /* ===== BUY ===== */
 
     function handleBuy(pkg, cat) {
-        // Kirim event ke backend / server Lua
         var payload = {
             categoryKey: cat.key,
             packageId: pkg.id,
@@ -391,9 +392,7 @@
 
         console.log("[Shop] Purchase request:", payload);
 
-        // TODO: ganti dengan fetch ke API server Lua kamu
-        // fetch("/api/shop/purchase", { method: "POST", body: JSON.stringify(payload) })
-
+        // TODO: kirim ke server Lua lewat API
         alert(
             "Paket: " + (pkg.displayValue || "?") + " " + (pkg.displayUnit || "") +
             "\nHarga: " + fmtRp(pkg.price) +
@@ -405,7 +404,6 @@
 
     function init() {
         config = loadConfig();
-
         var cat = getActiveCategory();
         activeCategoryKey = cat ? cat.key : null;
 
@@ -413,7 +411,7 @@
         renderHeader();
         renderPanels();
 
-        console.log("[Shop] Ready. " + config.categories.length + " kategori.");
+        console.log("[Shop] Ready. " + (config.categories || []).length + " kategori.");
     }
 
     /* ===== PUBLIC API ===== */
@@ -431,15 +429,18 @@
         setConfig: function (cfg) {
             config = cfg;
             persistConfig(config);
-            renderTabs(); renderHeader(); renderPanels();
+            renderTabs();
+            renderHeader();
+            renderPanels();
         },
         resetConfig: function () {
             config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
             persistConfig(config);
-            renderTabs(); renderHeader(); renderPanels();
+            renderTabs();
+            renderHeader();
+            renderPanels();
         },
         exportConfig: function () { return JSON.stringify(config, null, 2); },
-
         getDefaultConfig: function () { return JSON.parse(JSON.stringify(DEFAULT_CONFIG)); }
     };
 
