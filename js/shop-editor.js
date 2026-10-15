@@ -1,5 +1,7 @@
 /* =========================================
-   GROWERA — SHOP EDITOR (v3, clean rewrite)
+   GROWERA — SHOP EDITOR (v4)
+   Fix: displayValue & displayUnit support string
+   Fix: empty-aware save (kosong tetap kosong)
 ========================================= */
 
 (function () {
@@ -15,16 +17,17 @@
         "editorViewRewardsForm",
         "editorViewShopCategories",
         "editorViewShopPackages",
-        "editorViewShopForm"
+        "editorViewShopForm",
+        "editorViewAppearance"
     ];
 
     /* ===== STATE ===== */
 
     var state = {
         mode: null,              // "category" | "package"
-        categoryKey: null,       // kategori yang sedang dibuka
-        packageId: null,         // paket yang sedang di-edit (null = baru)
-        rewards: []              // rewards sementara saat edit paket
+        categoryKey: null,
+        packageId: null,
+        rewards: []
     };
 
     /* ===== HELPERS ===== */
@@ -39,6 +42,10 @@
         });
     }
 
+    function isEmpty(v) {
+        return v === undefined || v === null || String(v).trim() === "";
+    }
+
     function fmtNum(n) {
         if (typeof window.formatNumber === "function") return window.formatNumber(n);
         return (n || 0).toLocaleString("id-ID");
@@ -47,6 +54,18 @@
     function fmtRp(n) {
         if (typeof window.formatRupiah === "function") return window.formatRupiah(n);
         return "Rp " + (n || 0).toLocaleString("id-ID");
+    }
+
+    function formatDisplayValue(v) {
+        if (isEmpty(v)) return "";
+        var s = String(v).trim();
+        if (/^-?\d+$/.test(s)) {
+            var n = parseInt(s, 10);
+            return (typeof window.formatNumber === "function")
+                ? window.formatNumber(n)
+                : n.toLocaleString("id-ID");
+        }
+        return s;
     }
 
     function createIcon(id, size) {
@@ -90,7 +109,6 @@
         if (window.GroweraItemPicker && window.GroweraItemPicker.renderIcons) {
             window.GroweraItemPicker.renderIcons(document);
         }
-        // Trigger MutationObserver
         setTimeout(function () {
             var d = document.createElement("span");
             d.style.display = "none";
@@ -106,7 +124,6 @@
     function renderCategoryList() {
         var container = $("shopCategoryList");
         if (!container) return;
-
         container.replaceChildren();
 
         var cfg = getConfig();
@@ -128,7 +145,9 @@
 
             var iconWrap = document.createElement("div");
             iconWrap.className = "shop-editor-item-icon";
-            iconWrap.appendChild(createIcon(cat.currencyIcon || 112, 32));
+            if (!isEmpty(cat.currencyIcon)) {
+                iconWrap.appendChild(createIcon(cat.currencyIcon, 32));
+            }
             row.appendChild(iconWrap);
 
             var info = document.createElement("div");
@@ -136,7 +155,7 @@
 
             var title = document.createElement("div");
             title.className = "shop-editor-item-title";
-            title.textContent = cat.title || cat.key;
+            title.textContent = !isEmpty(cat.title) ? cat.title : (cat.key || "-");
             if (cat.active === false) {
                 var off = document.createElement("span");
                 off.style.cssText = "margin-left:6px;padding:1px 6px;border-radius:4px;background:rgba(255,92,138,.1);color:#FF5C8A;font-size:10px";
@@ -244,16 +263,18 @@
         var cfg = getConfig();
         var existing = state.categoryKey ? findCategory(cfg, state.categoryKey) : null;
 
+        var currencyName = getField("shopFormValue").trim();
+
         var newCat = {
             key: key,
             variant: getField("shopFormTier") || "crystal",
             currencyIcon: parseInt(getField("shopFormIcon"), 10) || 112,
-            currencyName: (getField("shopFormValue") || "GEMS").trim(),
-            currencyKey: (getField("shopFormValue") || "gems").trim().toLowerCase() || "gems",
-            subtitle: (getField("shopFormUnit") || "").trim(),
-            eyebrow: (getField("shopFormPrice") || "").trim(),
+            currencyName: currencyName,                   // biarkan kosong kalau admin kosongkan
+            currencyKey: currencyName.toLowerCase() || key,
+            subtitle: getField("shopFormUnit").trim(),
+            eyebrow: getField("shopFormPrice").trim(),
             order: parseInt(getField("shopFormOrder"), 10) || 0,
-            title: (getField("shopFormBadge") || "").trim() || key.toUpperCase(),
+            title: getField("shopFormBadge").trim(),
             showBalance: true,
             active: getField("shopFormActive") === "1",
             packages: existing ? (existing.packages || []) : []
@@ -323,7 +344,9 @@
 
             var iconWrap = document.createElement("div");
             iconWrap.className = "shop-editor-item-icon";
-            iconWrap.appendChild(createIcon(pkg.iconId || 112, 32));
+            if (!isEmpty(pkg.iconId)) {
+                iconWrap.appendChild(createIcon(pkg.iconId, 32));
+            }
             row.appendChild(iconWrap);
 
             var info = document.createElement("div");
@@ -331,7 +354,9 @@
 
             var title = document.createElement("div");
             title.className = "shop-editor-item-title";
-            title.textContent = fmtNum(pkg.displayValue || 0) + " " + (pkg.displayUnit || "");
+            var valueStr = formatDisplayValue(pkg.displayValue);
+            var unitStr = !isEmpty(pkg.displayUnit) ? pkg.displayUnit : "";
+            title.textContent = (valueStr + " " + unitStr).trim() || (pkg.id || "-");
             if (pkg.active === false) {
                 var off = document.createElement("span");
                 off.style.cssText = "margin-left:6px;padding:1px 6px;border-radius:4px;background:rgba(255,92,138,.1);color:#FF5C8A;font-size:10px";
@@ -342,11 +367,12 @@
 
             var meta = document.createElement("div");
             meta.className = "shop-editor-item-meta";
-            meta.innerHTML =
-                '<span class="badge">' + (pkg.id || "-") + '</span>' +
-                '<span>' + fmtRp(pkg.price) + '</span>' +
-                '<span>·</span>' +
-                '<span>' + (pkg.rewards ? pkg.rewards.length : 0) + ' rewards</span>';
+            var metaHtml = '<span class="badge">' + (pkg.id || "-") + '</span>';
+            if (pkg.price && Number(pkg.price) > 0) {
+                metaHtml += '<span>' + fmtRp(pkg.price) + '</span><span>·</span>';
+            }
+            metaHtml += '<span>' + (pkg.rewards ? pkg.rewards.length : 0) + ' rewards</span>';
+            meta.innerHTML = metaHtml;
             info.appendChild(meta);
 
             row.appendChild(info);
@@ -402,9 +428,9 @@
         setField("shopFormKey",    pkg ? (pkg.id || "") : "");
         setField("shopFormTier",   pkg ? (pkg.tier || "starter") : "starter");
         setField("shopFormIcon",   pkg ? (pkg.iconId || 112) : 112);
-        setField("shopFormValue",  pkg ? (pkg.displayValue || 0) : "");
+        setField("shopFormValue",  pkg ? (pkg.displayValue || "") : "");
         setField("shopFormUnit",   pkg ? (pkg.displayUnit || "GEMS") : "GEMS");
-        setField("shopFormPrice",  pkg ? (pkg.price || 0) : "");
+        setField("shopFormPrice",  pkg && pkg.price ? pkg.price : "");
         setField("shopFormOrder",  pkg ? (pkg.order || 0) : 0);
         setField("shopFormBadge",  pkg ? (pkg.badge || "") : "");
         setField("shopFormActive", pkg && pkg.active === false ? "0" : "1");
@@ -416,9 +442,9 @@
             key:   "Package ID (unik, huruf kecil)",
             tier:  "Tier (starter/basic/popular/best/mega/divine)",
             icon:  "Icon Item ID",
-            value: "Display Value",
+            value: "Display Value (angka / teks)",
             unit:  "Display Unit (GEMS, HARI, dll)",
-            price: "Harga (Rp)",
+            price: "Harga (Rp) — kosongkan untuk sembunyikan",
             order: "Order",
             badge: "Badge (opsional, mis. ⭐ POPULER)",
             active: "Status"
@@ -441,16 +467,26 @@
         var cat = findCategory(cfg, state.categoryKey);
         if (!cat) return;
 
+        // === FIX: displayValue & displayUnit simpan apa adanya (support huruf) ===
+        var displayValueRaw = getField("shopFormValue").trim();
+        var displayUnitRaw  = getField("shopFormUnit").trim();
+
+        var priceRaw = getField("shopFormPrice").trim();
+        var priceNum = parseInt(priceRaw, 10);
+        var priceValue = isNaN(priceNum) ? 0 : priceNum;
+
+        var badgeRaw = getField("shopFormBadge").trim();
+
         var newPkg = {
             id: id,
             iconId: parseInt(getField("shopFormIcon"), 10) || 112,
-            price: parseInt(getField("shopFormPrice"), 10) || 0,
+            price: priceValue,
             tier: getField("shopFormTier") || "starter",
-            badge: (getField("shopFormBadge") || "").trim() || null,
+            badge: badgeRaw || null,
             order: parseInt(getField("shopFormOrder"), 10) || 0,
             active: getField("shopFormActive") === "1",
-            displayValue: parseInt(getField("shopFormValue"), 10) || 0,
-            displayUnit: (getField("shopFormUnit") || "GEMS").trim(),
+            displayValue: displayValueRaw,   // string, boleh kosong
+            displayUnit: displayUnitRaw,     // string, boleh kosong
             rewards: state.rewards.slice()
         };
 
@@ -623,7 +659,6 @@
        ============================================================ */
 
     function wire() {
-        // Modul shop di roadmap
         document.querySelectorAll('[data-editor-module="topup"]').forEach(function (btn) {
             btn.addEventListener("click", function () {
                 showView("editorViewShopCategories");
@@ -631,7 +666,6 @@
             });
         });
 
-        // Category list
         var back = $("shopEditorBackToRoadmap");
         if (back) back.addEventListener("click", function () { showView("editorViewRoadmap"); });
 
@@ -654,7 +688,6 @@
             }
         });
 
-        // Package list
         var backCats = $("shopEditorBackToCategoriesBtn");
         if (backCats) backCats.addEventListener("click", function () {
             showView("editorViewShopCategories");
@@ -664,7 +697,6 @@
         var createPkg = $("shopEditorCreatePackageBtn");
         if (createPkg) createPkg.addEventListener("click", function () { openPackageForm(null); });
 
-        // Form
         var formBack = $("shopFormBackBtn");
         if (formBack) formBack.addEventListener("click", goBackFromForm);
 
@@ -680,7 +712,6 @@
         var addRewardBtn = $("shopFormAddRewardBtn");
         if (addRewardBtn) addRewardBtn.addEventListener("click", addReward);
 
-        // Export modal
         var copyBtn = $("shopExportCopyBtn");
         if (copyBtn) copyBtn.addEventListener("click", function () {
             var ta = $("shopExportTextarea");
@@ -701,7 +732,6 @@
             a.click();
         });
 
-        // Import modal
         var applyBtn = $("shopImportApplyBtn");
         if (applyBtn) applyBtn.addEventListener("click", function () {
             var ta = $("shopImportTextarea");
