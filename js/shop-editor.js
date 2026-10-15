@@ -345,3 +345,106 @@
                 return reloadShop();
             })
             .then(function () {
+                showView("editorViewShopPackages");
+                renderPackageList();
+                alert("Paket disimpan!");
+            })
+            .catch(function (err) {
+                console.error("[ShopEditor] Save error:", err);
+                alert("Gagal simpan: " + err.message);
+            });
+    }
+
+    function deletePackage(backendId) {
+        if (!backendId) { alert("Package ID tidak valid."); return; }
+        apiFetch("/api/growera/admin/topup/" + backendId, { method: "DELETE" })
+            .then(function (r) {
+                if (!r.ok || !r.data || r.data.success !== true) {
+                    throw new Error((r.data && r.data.message) || ("HTTP " + r.status));
+                }
+                return reloadShop();
+            })
+            .then(function () { renderPackageList(); })
+            .catch(function (err) {
+                console.error("[ShopEditor] Delete error:", err);
+                alert("Gagal hapus: " + err.message);
+            });
+    }
+
+    /* ===== FIELD HELPERS ===== */
+
+    function setField(id, value) {
+        var el = $(id);
+        if (el) el.value = value;
+    }
+    function getField(id) {
+        var el = $(id);
+        return el ? el.value : "";
+    }
+    function applyLabels(map) {
+        var ids = {
+            key: "shopFormKey", tier: "shopFormTier", icon: "shopFormIcon",
+            value: "shopFormValue", unit: "shopFormUnit", price: "shopFormPrice",
+            order: "shopFormOrder", badge: "shopFormBadge", active: "shopFormActive",
+            bonus: "shopFormBonus"
+        };
+        Object.keys(map).forEach(function (k) {
+            var input = $(ids[k]);
+            if (!input) return;
+            var group = input.closest(".editor-form-group");
+            if (!group) return;
+            var label = group.querySelector("label");
+            if (label) label.textContent = map[k];
+        });
+    }
+
+    /* ===== WIRE ===== */
+
+    function wire() {
+        document.querySelectorAll('[data-editor-module="topup"]').forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                showView("editorViewShopCategories");
+                renderCategoryList();
+            });
+        });
+
+        var back = $("shopEditorBackToRoadmap");
+        if (back) back.addEventListener("click", function () { showView("editorViewRoadmap"); });
+
+        var backCats = $("shopEditorBackToCategoriesBtn");
+        if (backCats) backCats.addEventListener("click", function () {
+            showView("editorViewShopCategories");
+            renderCategoryList();
+        });
+
+        var createPkg = $("shopEditorCreatePackageBtn");
+        if (createPkg) createPkg.addEventListener("click", function () { openPackageForm(null); });
+
+        var formBack = $("shopFormBackBtn");
+        if (formBack) formBack.addEventListener("click", goBack);
+
+        var formCancel = $("shopFormCancelBtn");
+        if (formCancel) formCancel.addEventListener("click", goBack);
+
+        var formSave = $("shopFormSaveBtn");
+        if (formSave) formSave.addEventListener("click", savePackage);
+
+        console.log("[ShopEditor] Ready.");
+    }
+
+    function goBack() {
+        showView("editorViewShopPackages");
+        renderPackageList();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", wire);
+    } else {
+        wire();
+    }
+
+    window.GroweraShopEditor = {
+        renderCategoryList: renderCategoryList,
+        renderPackageList: renderPackageList
+    };
+})();
