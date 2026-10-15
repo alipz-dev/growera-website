@@ -25,7 +25,10 @@
             sync();
             var login = document.getElementById("loginScreen");
             if (login && window.MutationObserver) {
-                new MutationObserver(sync).observe(login, { attributes: true, attributeFilter: ["class"] });
+                new MutationObserver(sync).observe(login, {
+                    attributes: true,
+                    attributeFilter: ["class"]
+                });
             }
         }
         if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startWatch);
@@ -49,12 +52,14 @@
     <link rel="stylesheet" href="/css/rewards.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/roulette.css">
+    <link rel="stylesheet" href="/css/roulette-popup.css">
     <link rel="stylesheet" href="/css/item-picker.css">
     <link rel="stylesheet" href="/css/appearance.css">
 </head>
 
 <body>
 
+    <!-- ============ LOGIN ============ -->
     <section id="loginScreen">
         <main class="login-box">
             <h1 class="logo">GROWERA</h1>
@@ -74,6 +79,7 @@
         </main>
     </section>
 
+    <!-- ============ DASHBOARD ============ -->
     <section id="dashboardScreen" class="hidden">
 
         <aside class="sidebar">
@@ -137,6 +143,7 @@
 
         <main class="content">
 
+            <!-- HOME -->
             <section class="app-page" id="homePage">
                 <section class="news-card" id="newsHeroCard">
                     <div class="news-badge" id="newsBadge">GROWERA NEWS</div>
@@ -239,6 +246,7 @@
                 </section>
             </section>
 
+            <!-- PROFILE -->
             <section class="app-page hidden" id="profilePage">
                 <div class="welcome">
                     <div class="eyebrow">PLAYER ACCOUNT</div>
@@ -318,6 +326,7 @@
                 </div>
             </section>
 
+            <!-- REWARDS -->
             <section class="app-page hidden" id="rewardsPage">
                 <div class="rewards-header">
                     <div class="eyebrow">CRYSTAL REWARDS</div>
@@ -360,6 +369,7 @@
                 </section>
             </section>
 
+            <!-- ROULETTE PAGE -->
             <section class="app-page hidden" id="roulettePage">
                 <div class="roulette-header">
                     <div class="eyebrow">GROWERA · LUCKY CRYSTALS</div>
@@ -401,6 +411,7 @@
                 <p class="roulette-disclaimer">UI DEMO · Poin dan hadiah belum divalidasi atau disimpan di server.</p>
             </section>
 
+            <!-- TOP UP / SHOP -->
             <section class="app-page hidden" id="topupPage">
                 <div class="shop-header" id="shopHeader" data-variant="crystal">
                     <div class="shop-eyebrow" id="shopEyebrow">CRYSTAL STORE</div>
@@ -422,6 +433,7 @@
                 <div class="shop-panels" id="shopPanels"></div>
             </section>
 
+            <!-- MORE -->
             <section class="app-page hidden" id="morePage">
                 <div class="welcome">
                     <div class="eyebrow">EXPLORE</div>
@@ -452,6 +464,7 @@
                 </div>
             </section>
 
+            <!-- EDITOR -->
             <section class="app-page hidden" id="editorPage">
                 <div class="welcome">
                     <div class="eyebrow">ADMIN PANEL</div>
@@ -459,6 +472,7 @@
                     <p id="editorPageSubtitle">Kelola konten website GROWERA dari sini.</p>
                 </div>
 
+                <!-- ROADMAP -->
                 <div class="editor-view" id="editorViewRoadmap">
                     <div class="page-panel">
                         <h2>Modul Editor</h2>
@@ -500,6 +514,7 @@
                     </div>
                 </div>
 
+                <!-- NEWS LIST -->
                 <div class="editor-view hidden" id="editorViewNewsList">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -515,6 +530,7 @@
                     </div>
                 </div>
 
+                <!-- NEWS FORM -->
                 <div class="editor-view hidden" id="editorViewNewsForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -545,6 +561,7 @@
                     </div>
                 </div>
 
+                <!-- REWARDS LIST -->
                 <div class="editor-view hidden" id="editorViewRewardsList">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -568,6 +585,7 @@
                     </div>
                 </div>
 
+                <!-- REWARDS FORM -->
                 <div class="editor-view hidden" id="editorViewRewardsForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -663,12 +681,14 @@
                     </div>
                 </div>
 
+                <!-- SHOP EDITOR: CATEGORY LIST -->
                 <div class="editor-view hidden" id="editorViewShopCategories">
                     <div class="page-panel">
                         <div class="editor-view-header">
                             <h2><span data-item-icon="1430" data-item-icon-size="20"></span> Shop Editor</h2>
                             <div class="editor-view-actions">
                                 <button class="profile-button" id="shopEditorBackToRoadmap" type="button">← Back</button>
+                                <button class="primary-button" id="shopEditorCreateCategoryBtn" type="button" style="width:auto">+ Kategori</button>
                             </div>
                         </div>
                         <p style="color:var(--muted);font-size:11px;margin:0 0 14px;line-height:1.6">
@@ -678,6 +698,7 @@
                     </div>
                 </div>
 
+                <!-- SHOP EDITOR: PACKAGE LIST -->
                 <div class="editor-view hidden" id="editorViewShopPackages">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -691,6 +712,7 @@
                     </div>
                 </div>
 
+                <!-- SHOP EDITOR: FORM -->
                 <div class="editor-view hidden" id="editorViewShopForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -706,6 +728,8 @@
                                 <label for="shopFormTier">Tier / Variant</label>
                                 <select class="editor-input" id="shopFormTier">
                                     <option value="crystal">Crystal</option>
+                                    <option value="assets">Assets</option>
+                                    <option value="items">Items</option>
                                     <option value="starter">Starter</option>
                                     <option value="basic">Basic</option>
                                     <option value="popular">Popular</option>
@@ -740,7 +764,7 @@
                             </div>
                         </div>
                         <div class="editor-form-group">
-                            <label for="shopFormBadge">Badge</label>
+                            <label for="shopFormBadge">Badge / Title</label>
                             <input class="editor-input" id="shopFormBadge" type="text" maxlength="60" />
                         </div>
                         <div class="editor-form-group">
@@ -761,6 +785,7 @@
                     </div>
                 </div>
 
+                <!-- APPEARANCE EDITOR -->
                 <div class="editor-view hidden" id="editorViewAppearance">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -789,6 +814,7 @@
             <div class="app-footer">GROWERA • CRYSTAL ERA</div>
         </main>
 
+        <!-- RIGHT PANEL -->
         <aside class="right-panel">
             <section class="right-panel-card">
                 <h2 class="right-panel-title">Player Information</h2>
@@ -812,6 +838,7 @@
                     <span class="right-stat-value" id="rightPlayerUserID">—</span>
                 </div>
             </section>
+
             <section class="right-panel-card">
                 <h2 class="right-panel-title">Statistics</h2>
                 <div class="right-stat">
@@ -833,6 +860,7 @@
                     <span class="right-stat-value">—</span>
                 </div>
             </section>
+
             <section class="right-panel-card">
                 <h2 class="right-panel-title">GROWERA</h2>
                 <p style="margin:0;color:var(--muted);font-size:11px;line-height:1.8;">
@@ -841,6 +869,7 @@
             </section>
         </aside>
 
+        <!-- ROULETTE WIN OVERLAY -->
         <div id="rouletteWinOverlay" role="dialog" aria-modal="true" aria-labelledby="rouletteWinTitle" hidden>
             <div class="roulette-win-card" id="rouletteWinCard">
                 <div class="roulette-win-kicker">CRYSTAL REWARD UNLOCKED</div>
@@ -855,6 +884,7 @@
             </div>
         </div>
 
+        <!-- INVENTORY MODAL -->
         <div class="inventory-modal" id="inventoryModal">
             <div class="inventory-modal-content">
                 <div class="inventory-modal-header">
@@ -868,6 +898,7 @@
             </div>
         </div>
 
+        <!-- NEWS DETAIL MODAL -->
         <div class="news-modal" id="newsModal">
             <div class="news-modal-content">
                 <div class="news-modal-header">
@@ -894,6 +925,7 @@
             </div>
         </div>
 
+        <!-- REWARDS MODAL -->
         <div class="rewards-modal" id="rewardsModal">
             <div class="rewards-modal-content" id="rewardsModalContent" data-variant="milestone">
                 <div class="rewards-modal-header" id="rewardsModalHeader">
@@ -908,6 +940,11 @@
             </div>
         </div>
     </section>
+
+
+    <!-- =========================================
+         FLOATING QUICK MENU
+    ========================================= -->
 
     <button class="floating-quick-btn" id="floatingQuickBtn" type="button" aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
         <span class="floating-quick-icon" data-theme-icon="floatingBtn" data-item-icon-size="26"></span>
@@ -973,6 +1010,43 @@
         </button>
     </div>
 
+
+    <!-- ============ ROULETTE POPUP ============ -->
+    <div class="roulette-popup" id="roulettePopup" hidden role="dialog" aria-modal="false" aria-labelledby="roulettePopupTitle">
+        <div class="roulette-popup-card">
+            <div class="roulette-popup-result" id="roulettePopupResult"></div>
+            <button class="roulette-popup-close" id="roulettePopupClose" type="button" aria-label="Tutup">✕</button>
+            <div class="roulette-popup-header">
+                <div class="roulette-popup-title" id="roulettePopupTitle">CRYSTAL ROULETTE</div>
+                <div class="roulette-popup-subtitle">Pilih keberuntunganmu</div>
+            </div>
+            <div class="roulette-popup-wheel-wrap">
+                <div class="roulette-popup-pointer" aria-hidden="true"></div>
+                <div class="roulette-popup-wheel-rim">
+                    <div class="roulette-popup-wheel" id="roulettePopupWheel">
+                        <div class="roulette-popup-center" data-item-icon="112" data-item-icon-size="28"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="roulette-popup-buttons">
+                <button class="roulette-roll-btn" id="rouletteRoll1" type="button">
+                    <span>ROLL 1x</span>
+                    <small>1 POINT</small>
+                </button>
+                <button class="roulette-roll-btn primary" id="rouletteRoll10" type="button">
+                    <span>ROLL 10x</span>
+                    <small>10 POINTS</small>
+                </button>
+            </div>
+            <div class="roulette-popup-footer">
+                <span class="roulette-popup-balance-label">SALDO</span>
+                <span class="roulette-popup-balance-value" id="roulettePopupBalance">0 PTS</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============ ITEM PICKER MODAL ============ -->
     <div class="item-picker-modal" id="itemPickerModal" hidden role="dialog" aria-modal="true" aria-labelledby="itemPickerTitle">
         <div class="item-picker-dialog">
             <div class="item-picker-header">
@@ -988,6 +1062,8 @@
         </div>
     </div>
 
+
+    <!-- ============ SCRIPTS ============ -->
     <script src="/js/icons.js"></script>
     <script src="/js/config-loader.js"></script>
     <script src="/js/app.js"></script>
@@ -997,6 +1073,7 @@
     <script src="/js/rewards.js"></script>
     <script src="/js/floating-button.js"></script>
     <script src="/js/roulette.js"></script>
+    <script src="/js/roulette-popup.js"></script>
     <script src="/js/item-picker.js"></script>
     <script src="/js/shop-editor.js"></script>
     <script src="/js/appearance.js"></script>
