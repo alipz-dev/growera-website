@@ -1,14 +1,11 @@
 /* =========================================
-   GROWERA — APPEARANCE EDITOR
-   Admin bisa ganti warna & icon website.
-   Config disimpan di localStorage + bisa
-   di-export ke data/theme-config.json.
+   GROWERA — APPEARANCE EDITOR (v2, server-config)
 ========================================= */
 
 (function () {
     "use strict";
 
-    var STORAGE_KEY = "growera_theme_config";
+    var ADMIN_DRAFT_KEY = "growera_theme_config_draft";
 
     var DEFAULTS = {
         version: 1,
@@ -25,17 +22,17 @@
             muted:   "#7186A4"
         },
         icons: {
-            brandLogo:      112,
-            sidebarHome:    224,
-            sidebarProfile: 980,
-            sidebarRewards: 1458,
+            brandLogo:       112,
+            sidebarHome:     224,
+            sidebarProfile:  980,
+            sidebarRewards:  1458,
             sidebarRoulette: 758,
-            sidebarTopup:   112,
-            sidebarMore:    1430,
+            sidebarTopup:    112,
+            sidebarMore:     1430,
             sidebarSettings: 32,
-            sidebarLogout:  6,
-            floatingBtn:    1360,
-            appearanceIcon: 3494
+            sidebarLogout:   6,
+            floatingBtn:     1360,
+            appearanceIcon:  3494
         }
     };
 
@@ -67,11 +64,11 @@
 
     var config = null;
     var styleEl = null;
+    var currentUserIsAdmin = false;
 
     /* ===== HELPERS ===== */
 
     function $(id) { return document.getElementById(id); }
-
     function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
 
     function mergeDeep(target, source) {
@@ -101,29 +98,45 @@
         return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(String(v || "").trim());
     }
 
-    /* ===== STORAGE ===== */
+    /* ===== ADMIN DRAFT ===== */
 
-    function loadConfig() {
-        try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return deepClone(DEFAULTS);
-            var parsed = JSON.parse(raw);
-            return mergeDeep(deepClone(DEFAULTS), parsed);
-        } catch (e) {
-            console.error("[Appearance] Load error:", e);
-            return deepClone(DEFAULTS);
-        }
-    }
-
-    function persistConfig(cfg) {
+    function saveAdminDraft(cfg) {
+        if (!currentUserIsAdmin) return false;
         try {
             cfg.updatedAt = Date.now();
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+            localStorage.setItem(ADMIN_DRAFT_KEY, JSON.stringify(cfg));
             return true;
-        } catch (e) {
-            console.error("[Appearance] Save error:", e);
-            return false;
+        } catch (e) { return false; }
+    }
+
+    function loadAdminDraft() {
+        if (!currentUserIsAdmin) return null;
+        try {
+            var raw = localStorage.getItem(ADMIN_DRAFT_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) { return null; }
+    }
+
+    function clearAdminDraft() {
+        try { localStorage.removeItem(ADMIN_DRAFT_KEY); } catch (e) {}
+    }
+
+    /* ===== LOAD FROM SERVER ===== */
+
+    function loadConfigFromServer() {
+        if (window.GroweraConfig && window.GroweraConfig.get) {
+            return window.GroweraConfig.get("theme")
+                .then(function (data) {
+                    if (data && data.colors && data.icons) {
+                        return mergeDeep(deepClone(DEFAULTS), data);
+                    }
+                    return deepClone(DEFAULTS);
+                })
+                .catch(function () {
+                    return deepClone(DEFAULTS);
+                });
         }
+        return Promise.resolve(deepClone(DEFAULTS));
     }
 
     /* ===== APPLY ===== */
@@ -228,6 +241,7 @@
                 config.colors[key] = picker.value;
                 hexInput.value = picker.value;
                 applyColors();
+                saveAdminDraft(config);
             });
 
             hexInput.addEventListener("input", function () {
@@ -236,6 +250,7 @@
                     config.colors[key] = v;
                     picker.value = normalizeHex(v);
                     applyColors();
+                    saveAdminDraft(config);
                 }
             });
 
@@ -284,6 +299,7 @@
                     config.icons[key] = v;
                     preview.replaceChildren(createIconImg(v, 28));
                     applyIcons();
+                    saveAdminDraft(config);
                 }
             });
 
@@ -294,7 +310,6 @@
             grid.appendChild(row);
         });
 
-        // Re-trigger item-picker auto-attach untuk input baru
         if (window.GroweraItemPicker && window.GroweraItemPicker.renderIcons) {
             window.GroweraItemPicker.renderIcons(document);
         }
@@ -305,20 +320,24 @@
         renderIconGrid();
     }
 
-    /* ===== PUBLIC ACTIONS ===== */
-
-    function save() {
-        persistConfig(config);
-        apply();
-    }
+    /* ===== ACTIONS ===== */
 
     function reset() {
-        if (!confirm("Reset tema ke default? Semua perubahan akan hilang.")) return;
+        if (!confirm("Reset tema ke default? Draft akan dihapus.")) return;
+        clearAdminDraft();
         config = deepClone(DEFAULTS);
-        persistConfig(config);
         apply();
         renderEditor();
         alert("Tema direset ke default.");
+    }
+
+    function reloadFromServer() {
+        clearAdminDraft();
+        return loadConfigFromServer().then(function (serverConfig) {
+            config = serverConfig;
+            apply();
+            renderEditor();
+        });
     }
 
     function openExportModal() {
@@ -327,8 +346,6 @@
         if (modal && ta) {
             ta.value = JSON.stringify(config, null, 2);
             modal.hidden = false;
-        } else {
-            prompt("Copy JSON ini:", JSON.stringify(config, null, 2));
         }
     }
 
@@ -339,9 +356,6 @@
             ta.value = "";
             modal.hidden = false;
             ta.focus();
-        } else {
-            var json = prompt("Paste JSON config tema:");
-            if (json) applyImport(json);
         }
     }
 
@@ -354,7 +368,7 @@
                 return;
             }
             config = mergeDeep(deepClone(DEFAULTS), parsed);
-            persistConfig(config);
+            saveAdminDraft(config);
             apply();
             renderEditor();
             alert("Tema berhasil di-import!");
@@ -366,7 +380,6 @@
     /* ===== WIRE ===== */
 
     function wire() {
-        // Klik modul Appearance di roadmap
         var mods = document.querySelectorAll('[data-editor-module="appearance"]');
         for (var i = 0; i < mods.length; i++) {
             mods[i].addEventListener("click", function () {
@@ -386,8 +399,8 @@
 
         var saveBtn = $("appearanceSaveBtn");
         if (saveBtn) saveBtn.addEventListener("click", function () {
-            save();
-            alert("Tema disimpan!");
+            saveAdminDraft(config);
+            alert("Draft tersimpan. Klik Export untuk dapat JSON, lalu push ke data/theme-config.json di repo.");
         });
 
         var resetBtn = $("appearanceResetBtn");
@@ -404,7 +417,7 @@
             var ta = $("appearanceExportTextarea");
             if (!ta) return;
             ta.select();
-            try { document.execCommand("copy"); alert("Tersalin ke clipboard!"); }
+            try { document.execCommand("copy"); alert("Tersalin!"); }
             catch (e) { alert("Gagal copy, pilih manual."); }
         });
 
@@ -434,21 +447,30 @@
     /* ===== INIT ===== */
 
     function init() {
-        config = loadConfig();
-        applyColors();  // aman kapan saja
+        loadConfigFromServer().then(function (serverConfig) {
+            config = serverConfig;
 
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", function () {
-                applyIcons();
-                wire();
-            });
-        } else {
+            if (currentUserIsAdmin) {
+                var draft = loadAdminDraft();
+                if (draft) {
+                    config = mergeDeep(deepClone(DEFAULTS), draft);
+                }
+            }
+
+            applyColors();
             applyIcons();
-            wire();
-        }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", wire);
+            } else {
+                wire();
+            }
+
+            console.log("[Appearance] Ready.");
+        });
     }
 
-    /* ===== EXPORT ===== */
+    /* ===== PUBLIC API ===== */
 
     window.GroweraAppearance = {
         init: init,
@@ -460,14 +482,33 @@
         getConfig: function () { return deepClone(config); },
         setConfig: function (cfg) {
             config = mergeDeep(deepClone(DEFAULTS), cfg || {});
-            persistConfig(config);
+            saveAdminDraft(config);
             apply();
         },
         resetConfig: reset,
+        reloadFromServer: reloadFromServer,
 
         openExportModal: openExportModal,
         openImportModal: openImportModal,
-        applyImport: applyImport
+        applyImport: applyImport,
+
+        setAdmin: function (val) {
+            var wasAdmin = currentUserIsAdmin;
+            currentUserIsAdmin = !!val;
+
+            if (currentUserIsAdmin && !wasAdmin) {
+                var draft = loadAdminDraft();
+                if (draft) {
+                    config = mergeDeep(deepClone(DEFAULTS), draft);
+                    apply();
+                }
+            }
+            if (!currentUserIsAdmin && wasAdmin) {
+                return reloadFromServer();
+            }
+        },
+
+        isAdmin: function () { return currentUserIsAdmin; }
     };
 
     init();
