@@ -6,9 +6,6 @@
     <meta name="theme-color" content="#080D19">
     <title>GROWERA | Crystal Era</title>
 
-    <!-- ==========================================
-         ANTI-FLICKER + GUEST MODE
-    =========================================== -->
     <script>
     (function () {
         try {
@@ -18,50 +15,32 @@
         } catch (e) {
             document.documentElement.setAttribute("data-auth", "out");
         }
-
         function sync() {
             var login = document.getElementById("loginScreen");
             if (!login) return;
             var isHidden = login.classList.contains("hidden");
             document.documentElement.setAttribute("data-auth", isHidden ? "in" : "out");
         }
-
         function startWatch() {
             sync();
             var login = document.getElementById("loginScreen");
             if (login && window.MutationObserver) {
-                new MutationObserver(sync).observe(login, {
-                    attributes: true,
-                    attributeFilter: ["class"]
-                });
+                new MutationObserver(sync).observe(login, { attributes: true, attributeFilter: ["class"] });
             }
         }
-
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", startWatch);
-        } else {
-            startWatch();
-        }
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startWatch);
+        else startWatch();
     })();
     </script>
 
     <style>
         html[data-auth="in"]  #loginScreen     { display: none !important; }
         html[data-auth="out"] #dashboardScreen { display: none !important; }
-
         html[data-auth="in"]  #dashboardScreen,
-        html[data-auth="out"] #loginScreen {
-            animation: groweraFade 0.15s ease-out;
-        }
-
-        @keyframes groweraFade {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-
-        html[data-auth="out"] .floating-menu-auth {
-            display: none !important;
-        }
+        html[data-auth="out"] #loginScreen { animation: groweraFade 0.15s ease-out; }
+        @keyframes groweraFade { from { opacity: 0; } to { opacity: 1; } }
+        html[data-auth="out"] .floating-menu-auth { display: none !important; }
+        .item-icon, .item-icon img { image-rendering: pixelated; }
     </style>
 
     <link rel="stylesheet" href="/css/style.css">
@@ -76,87 +55,64 @@
 
 <body>
 
-    <!-- ============ LOGIN ============ -->
     <section id="loginScreen">
         <main class="login-box">
             <h1 class="logo">GROWERA</h1>
             <p class="subtitle">Crystal Era • Player Portal</p>
-
             <form id="loginForm">
                 <label for="username">Username</label>
-                <input id="username" name="username" type="text"
-                       placeholder="Masukkan username" autocomplete="username"
-                       maxlength="64" required>
-
+                <input id="username" name="username" type="text" placeholder="Masukkan username" autocomplete="username" maxlength="64" required>
                 <label for="password">Password</label>
-                <input id="password" name="password" type="password"
-                       placeholder="Masukkan password" autocomplete="current-password"
-                       maxlength="256" required>
-
+                <input id="password" name="password" type="password" placeholder="Masukkan password" autocomplete="current-password" maxlength="256" required>
                 <button id="loginButton" class="primary-button" type="submit">SIGN IN</button>
             </form>
-
             <div id="loginMessage" class="message" role="status" aria-live="polite"></div>
-
             <div class="login-footer">
                 GROWERA © Crystal Era
-                <div id="sessionDebug"
-                     style="margin-top:8px;color:#4d5a72;font-size:10px;line-height:1.5;"></div>
+                <div id="sessionDebug" style="margin-top:8px;color:#4d5a72;font-size:10px;line-height:1.5;"></div>
             </div>
         </main>
     </section>
 
-
-    <!-- ============ DASHBOARD ============ -->
     <section id="dashboardScreen" class="hidden">
 
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <span data-theme-icon="brandLogo" data-item-icon-size="22"></span>
-                GROWERA
-                <small>CRYSTAL ERA</small>
+                GROWERA <small>CRYSTAL ERA</small>
             </div>
-
             <div class="sidebar-label">MAIN MENU</div>
-
             <nav class="sidebar-nav">
                 <button class="nav-button active" data-page="home" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarHome" data-item-icon-size="20"></span>
                     <span class="nav-text">Home</span>
                 </button>
-
                 <button class="nav-button" data-page="profile" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarProfile" data-item-icon-size="20"></span>
                     <span class="nav-text">Profile</span>
                 </button>
-
                 <button class="nav-button" data-page="rewards" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarRewards" data-item-icon-size="20"></span>
                     <span class="nav-text">Rewards</span>
                 </button>
-
                 <button class="nav-button" data-page="roulette" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarRoulette" data-item-icon-size="20"></span>
                     <span class="nav-text">Roulette</span>
                 </button>
-
                 <button class="nav-button" data-page="topup" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarTopup" data-item-icon-size="20"></span>
                     <span class="nav-text">Top Up</span>
                 </button>
-
                 <button class="nav-button" data-page="more" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarMore" data-item-icon-size="20"></span>
                     <span class="nav-text">More</span>
                 </button>
             </nav>
-
             <div class="sidebar-bottom">
                 <button class="nav-button" data-page="more" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarSettings" data-item-icon-size="20"></span>
                     <span class="nav-text">Settings</span>
                 </button>
-
                 <button class="nav-button" id="sidebarLogoutButton" type="button">
                     <span class="nav-icon" data-theme-icon="sidebarLogout" data-item-icon-size="20"></span>
                     <span class="nav-text">Logout</span>
@@ -164,14 +120,11 @@
             </div>
         </aside>
 
-
         <header class="topbar">
             <div class="brand">
                 <span data-theme-icon="brandLogo" data-item-icon-size="22"></span>
-                GROWERA
-                <small>CRYSTAL ERA</small>
+                GROWERA <small>CRYSTAL ERA</small>
             </div>
-
             <button class="account-button" id="accountButton" type="button">
                 <span class="avatar" id="headerAvatar">P</span>
                 <span class="account-name" id="headerUsername">Player</span>
@@ -184,15 +137,12 @@
 
         <main class="content">
 
-            <!-- HOME -->
             <section class="app-page" id="homePage">
                 <section class="news-card" id="newsHeroCard">
                     <div class="news-badge" id="newsBadge">GROWERA NEWS</div>
                     <h2 class="news-title" id="newsTitle">Selamat datang di Crystal Era</h2>
                     <p class="news-excerpt" id="newsExcerpt">
-                        Server GROWERA resmi dibuka. Jelajahi dunia,
-                        kumpulkan reward eksklusif, dan bangun world
-                        impianmu bersama komunitas Crystal Era.
+                        Server GROWERA resmi dibuka. Jelajahi dunia, kumpulkan reward eksklusif, dan bangun world impianmu bersama komunitas Crystal Era.
                     </p>
                     <div class="news-footer">
                         <span class="news-date" id="newsDate">Update terbaru · Crystal Era</span>
@@ -201,7 +151,10 @@
                 </section>
 
                 <section class="news-list-section hidden" id="newsListSection">
-                    <div class="news-list-heading"><span>📰 Berita Lainnya</span></div>
+                    <div class="news-list-heading">
+                        <span data-item-icon="5016" data-item-icon-size="18"></span>
+                        <span>Berita Lainnya</span>
+                    </div>
                     <div class="news-list" id="newsListContainer"></div>
                 </section>
 
@@ -219,7 +172,6 @@
                         </div>
                         <button class="profile-button" data-page="profile" type="button">View Profile →</button>
                     </div>
-
                     <div class="player-inline-stats">
                         <div class="player-inline-stat">
                             <div class="player-inline-label">LEVEL</div>
@@ -230,23 +182,18 @@
                             <div class="player-inline-value gems" id="playerGems">—</div>
                         </div>
                     </div>
-
                     <div class="player-xp-block">
                         <div class="player-xp-header">
                             <span class="player-xp-text" id="levelProgressXP">— / — XP</span>
                             <span class="player-xp-percent" id="levelProgressPercent">0%</span>
                         </div>
-                        <div class="level-progress-bar">
-                            <div class="level-progress-fill" id="levelProgressFill"></div>
-                        </div>
+                        <div class="level-progress-bar"><div class="level-progress-fill" id="levelProgressFill"></div></div>
                         <div class="player-xp-note" id="levelProgressRemaining">Memuat...</div>
                     </div>
                 </section>
 
                 <section class="section">
-                    <div class="section-heading">
-                        <h2>Player Statistics</h2><span>Account overview</span>
-                    </div>
+                    <div class="section-heading"><h2>Player Statistics</h2><span>Account overview</span></div>
                     <div class="stats-grid">
                         <article class="stat-card">
                             <div class="stat-icon" data-item-icon="242" data-item-icon-size="40"></div>
@@ -274,30 +221,24 @@
                     <div class="quick-grid">
                         <button class="quick-card" data-page="profile" type="button">
                             <span class="quick-icon" data-item-icon="980" data-item-icon-size="28"></span>
-                            <span><span class="quick-title">My Profile</span>
-                            <div class="quick-description">Informasi akun</div></span>
+                            <span><span class="quick-title">My Profile</span><div class="quick-description">Informasi akun</div></span>
                         </button>
                         <button class="quick-card" data-page="rewards" type="button">
                             <span class="quick-icon" data-item-icon="1458" data-item-icon-size="28"></span>
-                            <span><span class="quick-title">Rewards</span>
-                            <div class="quick-description">Hadiah dan reward</div></span>
+                            <span><span class="quick-title">Rewards</span><div class="quick-description">Hadiah dan reward</div></span>
                         </button>
                         <button class="quick-card" data-page="roulette" type="button">
                             <span class="quick-icon" data-item-icon="758" data-item-icon-size="28"></span>
-                            <span><span class="quick-title">Roulette</span>
-                            <div class="quick-description">Putar roda hadiah</div></span>
+                            <span><span class="quick-title">Roulette</span><div class="quick-description">Putar roda hadiah</div></span>
                         </button>
                         <button class="quick-card" data-page="topup" type="button">
                             <span class="quick-icon" data-item-icon="112" data-item-icon-size="28"></span>
-                            <span><span class="quick-title">Top Up</span>
-                            <div class="quick-description">Isi ulang gems</div></span>
+                            <span><span class="quick-title">Top Up</span><div class="quick-description">Isi ulang gems</div></span>
                         </button>
                     </div>
                 </section>
             </section>
 
-
-            <!-- PROFILE -->
             <section class="app-page hidden" id="profilePage">
                 <div class="welcome">
                     <div class="eyebrow">PLAYER ACCOUNT</div>
@@ -332,22 +273,10 @@
                 </div>
 
                 <div class="profile-stats-grid">
-                    <div class="profile-stat">
-                        <div class="profile-stat-label">LEVEL</div>
-                        <div class="profile-stat-value" id="profileStatLevel">—</div>
-                    </div>
-                    <div class="profile-stat">
-                        <div class="profile-stat-label">GEMS</div>
-                        <div class="profile-stat-value gold" id="profileStatGems">—</div>
-                    </div>
-                    <div class="profile-stat">
-                        <div class="profile-stat-label">USER ID</div>
-                        <div class="profile-stat-value" id="profileStatUserID">—</div>
-                    </div>
-                    <div class="profile-stat">
-                        <div class="profile-stat-label">PLAYTIME</div>
-                        <div class="profile-stat-value" id="profileStatPlaytime">—</div>
-                    </div>
+                    <div class="profile-stat"><div class="profile-stat-label">LEVEL</div><div class="profile-stat-value" id="profileStatLevel">—</div></div>
+                    <div class="profile-stat"><div class="profile-stat-label">GEMS</div><div class="profile-stat-value gold" id="profileStatGems">—</div></div>
+                    <div class="profile-stat"><div class="profile-stat-label">USER ID</div><div class="profile-stat-value" id="profileStatUserID">—</div></div>
+                    <div class="profile-stat"><div class="profile-stat-label">PLAYTIME</div><div class="profile-stat-value" id="profileStatPlaytime">—</div></div>
                 </div>
 
                 <div class="profile-section">
@@ -372,7 +301,7 @@
 
                 <div class="profile-section" id="profileSecuritySection">
                     <div class="profile-section-heading">
-                        <span class="profile-section-icon" data-item-icon="1796" data-item-icon-size="24"></span>
+                        <span class="profile-section-icon" data-item-icon="202" data-item-icon-size="24"></span>
                         <h3>Security & History</h3>
                     </div>
                     <div id="profileSecurityContent">
@@ -389,15 +318,11 @@
                 </div>
             </section>
 
-
-            <!-- REWARDS -->
             <section class="app-page hidden" id="rewardsPage">
                 <div class="rewards-header">
                     <div class="eyebrow">CRYSTAL REWARDS</div>
                     <h1 class="rewards-title">Claim Your Glory</h1>
-                    <p class="rewards-subtitle">
-                        Every journey holds a reward. Explore the five paths of the Crystal Era.
-                    </p>
+                    <p class="rewards-subtitle">Every journey holds a reward. Explore the five paths of the Crystal Era.</p>
                 </div>
 
                 <section class="rewards-overview">
@@ -406,21 +331,24 @@
                     <div class="rewards-overview-content">
                         <div class="rewards-overview-label">YOUR REWARD JOURNEY</div>
                         <h2 class="rewards-overview-title">Progress & Achievements</h2>
-                        <p class="rewards-overview-desc">
-                            Ringkasan progres reward, milestone, dan achievement kamu
-                            akan muncul di sini ketika sistem siap.
-                        </p>
-                        <div class="rewards-overview-status">🔒 COMING SOON</div>
+                        <p class="rewards-overview-desc">Ringkasan progres reward, milestone, dan achievement kamu akan muncul di sini ketika sistem siap.</p>
+                        <div class="rewards-overview-status">COMING SOON</div>
                     </div>
                 </section>
 
-                <div class="section-heading"><h2>✦ Explore Rewards</h2><span>5 kategori hadiah</span></div>
+                <div class="section-heading">
+                    <h2><span data-item-icon="1458" data-item-icon-size="18"></span> Explore Rewards</h2>
+                    <span>5 kategori hadiah</span>
+                </div>
                 <div class="rewards-grid" id="rewardsGrid"></div>
 
                 <section class="rewards-featured" id="rewardsFeatured">
                     <div class="rewards-featured-glow"></div>
                     <div class="rewards-featured-content">
-                        <div class="rewards-featured-badge">👑 FEATURED REWARD</div>
+                        <div class="rewards-featured-badge">
+                            <span data-item-icon="4820" data-item-icon-size="14"></span>
+                            FEATURED REWARD
+                        </div>
                         <h2 class="rewards-featured-title">Crystal Sovereign</h2>
                         <p class="rewards-featured-desc">
                             Reward eksklusif untuk para penakluk Crystal Era.
@@ -428,46 +356,36 @@
                         </p>
                         <div class="rewards-featured-status">COMING SOON</div>
                     </div>
-                    <div class="rewards-featured-emblem" data-item-icon="3916" data-item-icon-size="56"></div>
+                    <div class="rewards-featured-emblem" data-item-icon="4820" data-item-icon-size="56"></div>
                 </section>
             </section>
 
-
-            <!-- ROULETTE -->
             <section class="app-page hidden" id="roulettePage">
                 <div class="roulette-header">
                     <div class="eyebrow">GROWERA · LUCKY CRYSTALS</div>
                     <h1 class="roulette-page-title">Crystal Roulette</h1>
-                    <p class="roulette-page-subtitle">
-                        Choose your wheel. Every spin uses one matching point.
-                    </p>
+                    <p class="roulette-page-subtitle">Choose your wheel. Every spin uses one matching point.</p>
                 </div>
 
                 <div class="roulette-total-card">
                     <span class="roulette-total-label">TOTAL AVAILABLE</span>
-                    <span class="roulette-total-value">
-                        <span id="roulettePanelTotal">5</span> PTS
-                    </span>
+                    <span class="roulette-total-value"><span id="roulettePanelTotal">5</span> PTS</span>
                 </div>
 
                 <div class="roulette-types">
-                    <button class="roulette-type is-selected" data-roulette-type="daily"
-                            type="button" aria-pressed="true">
+                    <button class="roulette-type is-selected" data-roulette-type="daily" type="button" aria-pressed="true">
                         <span class="roulette-type-icon" data-item-icon="932" data-item-icon-size="22"></span>
                         <span class="roulette-type-name">DAILY ROULETTE</span>
                         <span class="roulette-type-balance" id="rouletteDailyBalance">2 points</span>
                     </button>
-                    <button class="roulette-type" data-roulette-type="online"
-                            type="button" aria-pressed="false">
+                    <button class="roulette-type" data-roulette-type="online" type="button" aria-pressed="false">
                         <span class="roulette-type-icon" data-item-icon="934" data-item-icon-size="22"></span>
                         <span class="roulette-type-name">ONLINE ROULETTE</span>
                         <span class="roulette-type-balance" id="rouletteOnlineBalance">3 points</span>
                     </button>
                 </div>
 
-                <div class="roulette-eyebrow roulette-wheel-heading" id="rouletteWheelHeading">
-                    DAILY ROULETTE
-                </div>
+                <div class="roulette-eyebrow roulette-wheel-heading" id="rouletteWheelHeading">DAILY ROULETTE</div>
 
                 <div class="roulette-wheel-wrap">
                     <div class="roulette-pointer" aria-hidden="true"></div>
@@ -478,30 +396,16 @@
                     </div>
                 </div>
 
-                <p class="roulette-wheel-status" id="rouletteWheelStatus" aria-live="polite">
-                    Gunakan poin Daily untuk memutar roda.
-                </p>
-
-                <button class="roulette-spin-btn" id="rouletteSpinBtn" type="button">
-                    ✦ SPIN ROULETTE · 1 POINT
-                </button>
-
-                <p class="roulette-disclaimer">
-                    UI DEMO · Poin dan hadiah belum divalidasi atau disimpan di server.
-                </p>
+                <p class="roulette-wheel-status" id="rouletteWheelStatus" aria-live="polite">Gunakan poin Daily untuk memutar roda.</p>
+                <button class="roulette-spin-btn" id="rouletteSpinBtn" type="button">✦ SPIN ROULETTE · 1 POINT</button>
+                <p class="roulette-disclaimer">UI DEMO · Poin dan hadiah belum divalidasi atau disimpan di server.</p>
             </section>
 
-
-            <!-- TOP UP / SHOP -->
             <section class="app-page hidden" id="topupPage">
-
                 <div class="shop-header" id="shopHeader" data-variant="crystal">
                     <div class="shop-eyebrow" id="shopEyebrow">CRYSTAL STORE</div>
                     <h1 class="shop-title" id="shopTitle">CRYSTAL STORE</h1>
-                    <p class="shop-subtitle" id="shopSubtitle">
-                        Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.
-                    </p>
-
+                    <p class="shop-subtitle" id="shopSubtitle">Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.</p>
                     <div class="shop-currency">
                         <span class="shop-currency-label">CURRENCY</span>
                         <span class="shop-currency-chip">
@@ -510,63 +414,44 @@
                         </span>
                     </div>
                 </div>
-
                 <div class="shop-balance" id="shopBalanceWrap">
                     <span class="shop-balance-label">SALDO</span>
                     <span class="shop-balance-value" id="shopBalance">—</span>
                 </div>
-
                 <div class="shop-tabs" id="shopTabs"></div>
-
                 <div class="shop-panels" id="shopPanels"></div>
-
             </section>
 
-
-            <!-- MORE -->
             <section class="app-page hidden" id="morePage">
                 <div class="welcome">
                     <div class="eyebrow">EXPLORE</div>
                     <h1>More</h1>
                     <p>Pengaturan dan fitur tambahan.</p>
                 </div>
-
                 <div class="page-panel">
                     <h2>Account Settings</h2>
                     <p>Pengaturan akun akan dikembangkan pada tahap berikutnya.</p>
-
-                    <button class="admin-editor-button hidden" id="adminEditorBtn"
-                            data-page="editor" type="button">
+                    <button class="admin-editor-button hidden" id="adminEditorBtn" data-page="editor" type="button">
                         <div class="admin-editor-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 20h9"/>
                                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                             </svg>
                         </div>
                         <div class="admin-editor-content">
-                            <div class="admin-editor-title">
-                                Website Editor
-                                <span class="admin-editor-badge">ADMIN</span>
-                            </div>
+                            <div class="admin-editor-title">Website Editor <span class="admin-editor-badge">ADMIN</span></div>
                             <div class="admin-editor-desc">Kelola konten GROWERA</div>
                         </div>
                         <div class="admin-editor-arrow">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"/>
                             </svg>
                         </div>
                     </button>
-
                     <button class="logout-button" id="logoutButton" type="button">Sign Out</button>
                 </div>
             </section>
 
-
-            <!-- EDITOR -->
             <section class="app-page hidden" id="editorPage">
                 <div class="welcome">
                     <div class="eyebrow">ADMIN PANEL</div>
@@ -574,20 +459,18 @@
                     <p id="editorPageSubtitle">Kelola konten website GROWERA dari sini.</p>
                 </div>
 
-                <!-- ROADMAP -->
                 <div class="editor-view" id="editorViewRoadmap">
                     <div class="page-panel">
                         <h2>Modul Editor</h2>
                         <div class="editor-roadmap">
                             <button class="editor-roadmap-item" data-editor-module="news" type="button">
-                                <div class="editor-roadmap-icon" data-item-icon="660" data-item-icon-size="32"></div>
+                                <div class="editor-roadmap-icon" data-item-icon="5016" data-item-icon-size="32"></div>
                                 <div class="editor-roadmap-content">
                                     <h3>News Editor</h3>
                                     <p>Tambah, edit, dan hapus berita website.</p>
                                     <span class="editor-roadmap-badge active-badge">Aktif</span>
                                 </div>
                             </button>
-
                             <button class="editor-roadmap-item" data-editor-module="rewards" type="button">
                                 <div class="editor-roadmap-icon" data-item-icon="1458" data-item-icon-size="32"></div>
                                 <div class="editor-roadmap-content">
@@ -596,16 +479,14 @@
                                     <span class="editor-roadmap-badge active-badge">Aktif</span>
                                 </div>
                             </button>
-
                             <button class="editor-roadmap-item" data-editor-module="topup" type="button">
-                                <div class="editor-roadmap-icon" data-item-icon="112" data-item-icon-size="32"></div>
+                                <div class="editor-roadmap-icon" data-item-icon="1430" data-item-icon-size="32"></div>
                                 <div class="editor-roadmap-content">
                                     <h3>Shop Editor</h3>
                                     <p>Kelola kategori, paket, dan hadiah shop.</p>
                                     <span class="editor-roadmap-badge active-badge">Aktif</span>
                                 </div>
                             </button>
-
                             <button class="editor-roadmap-item" data-editor-module="appearance" type="button">
                                 <div class="editor-roadmap-icon" data-theme-icon="appearanceIcon" data-item-icon-size="32"></div>
                                 <div class="editor-roadmap-content">
@@ -615,65 +496,47 @@
                                 </div>
                             </button>
                         </div>
-
-                        <button class="profile-button" data-page="more" type="button" style="margin-top:20px">
-                            ← Back to Settings
-                        </button>
+                        <button class="profile-button" data-page="more" type="button" style="margin-top:20px">← Back to Settings</button>
                     </div>
                 </div>
 
-                <!-- NEWS LIST -->
                 <div class="editor-view hidden" id="editorViewNewsList">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2><span data-item-icon="660" data-item-icon-size="20"></span> News Editor</h2>
+                            <h2><span data-item-icon="5016" data-item-icon-size="20"></span> News Editor</h2>
                             <div class="editor-view-actions">
                                 <button class="profile-button" id="newsBackToRoadmap" type="button">← Back</button>
                                 <button class="primary-button" id="newsCreateBtn" type="button" style="width:auto">+ Baru</button>
                             </div>
                         </div>
                         <div id="newsAdminListContainer">
-                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
-                                Memuat artikel...
-                            </p>
+                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Memuat artikel...</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- NEWS FORM -->
                 <div class="editor-view hidden" id="editorViewNewsForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
                             <h2 id="newsFormTitle">Buat Artikel Baru</h2>
                             <button class="profile-button" id="newsFormBack" type="button">← Back</button>
                         </div>
-
                         <div class="editor-form-group">
                             <label for="newsFormTitleInput">Title</label>
-                            <input class="editor-input" id="newsFormTitleInput" type="text"
-                                   maxlength="200" placeholder="Judul artikel..." />
+                            <input class="editor-input" id="newsFormTitleInput" type="text" maxlength="200" placeholder="Judul artikel..." />
                         </div>
-
                         <div class="editor-form-group">
                             <label for="newsFormBadge">Badge</label>
-                            <input class="editor-input" id="newsFormBadge" type="text"
-                                   maxlength="40" placeholder="GROWERA NEWS" />
+                            <input class="editor-input" id="newsFormBadge" type="text" maxlength="40" placeholder="GROWERA NEWS" />
                         </div>
-
                         <div class="editor-form-group">
                             <label for="newsFormExcerpt">Excerpt</label>
-                            <textarea class="editor-input editor-textarea" id="newsFormExcerpt"
-                                      rows="3" maxlength="500"
-                                      placeholder="Ringkasan singkat untuk news card di Home..."></textarea>
+                            <textarea class="editor-input editor-textarea" id="newsFormExcerpt" rows="3" maxlength="500" placeholder="Ringkasan singkat untuk news card di Home..."></textarea>
                         </div>
-
                         <div class="editor-form-group">
                             <label for="newsFormBody">Body</label>
-                            <textarea class="editor-input editor-textarea" id="newsFormBody"
-                                      rows="14"
-                                      placeholder="Isi lengkap artikel. Pisahkan paragraf dengan baris kosong."></textarea>
+                            <textarea class="editor-input editor-textarea" id="newsFormBody" rows="14" placeholder="Isi lengkap artikel. Pisahkan paragraf dengan baris kosong."></textarea>
                         </div>
-
                         <div class="editor-form-actions">
                             <button class="profile-button" id="newsFormCancel" type="button">Cancel</button>
                             <button class="profile-button" id="newsFormSaveDraft" type="button">Save Draft</button>
@@ -682,7 +545,6 @@
                     </div>
                 </div>
 
-                <!-- REWARDS LIST -->
                 <div class="editor-view hidden" id="editorViewRewardsList">
                     <div class="page-panel">
                         <div class="editor-view-header">
@@ -692,64 +554,48 @@
                                 <button class="primary-button" id="rewardsCreateBtn" type="button" style="width:auto">+ Baru</button>
                             </div>
                         </div>
-
                         <div class="rewards-filter" id="rewardsFilter">
                             <button class="rewards-filter-btn active" data-filter="all" type="button">All</button>
-                            <button class="rewards-filter-btn" data-filter="milestone" type="button">💠 Milestone</button>
-                            <button class="rewards-filter-btn" data-filter="daily-login" type="button">🎁 Daily Login</button>
-                            <button class="rewards-filter-btn" data-filter="daily-quest" type="button">⚔️ Daily</button>
-                            <button class="rewards-filter-btn" data-filter="weekly-quest" type="button">📅 Weekly</button>
-                            <button class="rewards-filter-btn" data-filter="monthly-quest" type="button">👑 Monthly</button>
+                            <button class="rewards-filter-btn" data-filter="milestone" type="button">Milestone</button>
+                            <button class="rewards-filter-btn" data-filter="daily-login" type="button">Daily Login</button>
+                            <button class="rewards-filter-btn" data-filter="daily-quest" type="button">Daily</button>
+                            <button class="rewards-filter-btn" data-filter="weekly-quest" type="button">Weekly</button>
+                            <button class="rewards-filter-btn" data-filter="monthly-quest" type="button">Monthly</button>
                         </div>
-
                         <div id="rewardsAdminList">
-                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">
-                                Memuat reward...
-                            </p>
+                            <p style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Memuat reward...</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- REWARDS FORM -->
                 <div class="editor-view hidden" id="editorViewRewardsForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
                             <h2 id="rewardsFormTitle">Buat Reward Baru</h2>
                             <button class="profile-button" id="rewardsFormBack" type="button">← Back</button>
                         </div>
-
                         <div class="editor-form-group">
                             <label for="rewardsFormCategory">Category</label>
                             <select class="editor-input" id="rewardsFormCategory">
-                                <option value="milestone">💠 Milestone</option>
-                                <option value="daily-login">🎁 Daily Login</option>
-                                <option value="daily-quest">⚔️ Daily Quest</option>
-                                <option value="weekly-quest">📅 Weekly Quest</option>
-                                <option value="monthly-quest">👑 Monthly Quest</option>
+                                <option value="milestone">Milestone</option>
+                                <option value="daily-login">Daily Login</option>
+                                <option value="daily-quest">Daily Quest</option>
+                                <option value="weekly-quest">Weekly Quest</option>
+                                <option value="monthly-quest">Monthly Quest</option>
                             </select>
                         </div>
-
                         <div class="editor-form-group">
                             <label for="rewardsFormName">Name / Title</label>
-                            <input class="editor-input" id="rewardsFormName" type="text"
-                                   maxlength="120" placeholder="Contoh: First Steps" />
+                            <input class="editor-input" id="rewardsFormName" type="text" maxlength="120" placeholder="Contoh: First Steps" />
                         </div>
-
                         <div class="editor-form-group">
                             <label for="rewardsFormDescription">Description</label>
-                            <textarea class="editor-input editor-textarea" id="rewardsFormDescription"
-                                      rows="3" maxlength="500"
-                                      placeholder="Deskripsi singkat reward / quest..."></textarea>
+                            <textarea class="editor-input editor-textarea" id="rewardsFormDescription" rows="3" maxlength="500" placeholder="Deskripsi singkat reward / quest..."></textarea>
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="rewardsFormIcon">Icon (ID item)</label>
-                                <input class="editor-input" id="rewardsFormIcon" type="text"
-                                       maxlength="8" placeholder="Contoh: 242"
-                                       data-item-picker="icon"
-                                       data-item-picker-format="id"
-                                       data-item-picker-title="Pilih Icon Reward" />
+                                <input class="editor-input" id="rewardsFormIcon" type="text" maxlength="8" placeholder="Contoh: 242" data-item-picker="icon" data-item-picker-format="id" data-item-picker-title="Pilih Icon Reward" />
                             </div>
                             <div class="editor-form-group">
                                 <label for="rewardsFormRarity">Rarity</label>
@@ -762,64 +608,44 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="rewardsFormQuestType">Quest Type</label>
-                                <select class="editor-input" id="rewardsFormQuestType">
-                                    <option value="custom">Custom Trigger</option>
-                                </select>
+                                <select class="editor-input" id="rewardsFormQuestType"><option value="custom">Custom Trigger</option></select>
                             </div>
                             <div class="editor-form-group">
                                 <label for="rewardsFormDay">Day (khusus Daily Login)</label>
-                                <input class="editor-input" id="rewardsFormDay" type="number"
-                                       min="1" max="31" placeholder="1" />
+                                <input class="editor-input" id="rewardsFormDay" type="number" min="1" max="31" placeholder="1" />
                             </div>
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="rewardsFormTarget">Target (nama item/block, kosong = semua)</label>
-                                <input class="editor-input" id="rewardsFormTarget" type="text"
-                                       maxlength="80" placeholder="Dirt atau *"
-                                       data-item-picker="target"
-                                       data-item-picker-format="name"
-                                       data-item-picker-title="Pilih Target Item/Block" />
+                                <input class="editor-input" id="rewardsFormTarget" type="text" maxlength="80" placeholder="Dirt atau *" data-item-picker="target" data-item-picker-format="name" data-item-picker-title="Pilih Target Item/Block" />
                             </div>
                             <div class="editor-form-group">
                                 <label for="rewardsFormTargetValue">Jumlah Target</label>
-                                <input class="editor-input" id="rewardsFormTargetValue" type="number"
-                                       min="1" placeholder="100" />
+                                <input class="editor-input" id="rewardsFormTargetValue" type="number" min="1" placeholder="100" />
                             </div>
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="rewardsFormRewardItem">Reward Item</label>
-                                <input class="editor-input" id="rewardsFormRewardItem" type="text"
-                                       maxlength="80" placeholder="World Lock"
-                                       data-item-picker="reward"
-                                       data-item-picker-format="name-id"
-                                       data-item-picker-title="Pilih Reward Item" />
+                                <input class="editor-input" id="rewardsFormRewardItem" type="text" maxlength="80" placeholder="World Lock" data-item-picker="reward" data-item-picker-format="name-id" data-item-picker-title="Pilih Reward Item" />
                             </div>
                             <div class="editor-form-group">
                                 <label for="rewardsFormRewardCount">Jumlah Item</label>
-                                <input class="editor-input" id="rewardsFormRewardCount" type="number"
-                                       min="0" placeholder="1" />
+                                <input class="editor-input" id="rewardsFormRewardCount" type="number" min="0" placeholder="1" />
                             </div>
                         </div>
-
                         <div class="editor-form-group">
                             <label for="rewardsFormRewardGems">Reward Gems</label>
-                            <input class="editor-input" id="rewardsFormRewardGems" type="number"
-                                   min="0" placeholder="0" />
+                            <input class="editor-input" id="rewardsFormRewardGems" type="number" min="0" placeholder="0" />
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="rewardsFormOrder">Order</label>
-                                <input class="editor-input" id="rewardsFormOrder" type="number"
-                                       min="0" placeholder="0" />
+                                <input class="editor-input" id="rewardsFormOrder" type="number" min="0" placeholder="0" />
                             </div>
                             <div class="editor-form-group">
                                 <label for="rewardsFormStatus">Status</label>
@@ -829,7 +655,6 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="editor-form-actions">
                             <button class="profile-button" id="rewardsFormCancel" type="button">Cancel</button>
                             <button class="profile-button" id="rewardsFormSaveDraft" type="button">Save Draft</button>
@@ -838,54 +663,40 @@
                     </div>
                 </div>
 
-                <!-- SHOP EDITOR: CATEGORY LIST -->
                 <div class="editor-view hidden" id="editorViewShopCategories">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2>🛒 Shop Editor</h2>
+                            <h2><span data-item-icon="1430" data-item-icon-size="20"></span> Shop Editor</h2>
                             <div class="editor-view-actions">
                                 <button class="profile-button" id="shopEditorBackToRoadmap" type="button">← Back</button>
-                                <button class="profile-button" id="shopEditorExportBtn" type="button">📤 Export</button>
-                                <button class="profile-button" id="shopEditorImportBtn" type="button">📥 Import</button>
-                                <button class="profile-button" id="shopEditorResetBtn" type="button" style="color:#FF5C8A">🔄 Reset</button>
-                                <button class="primary-button" id="shopEditorCreateCategoryBtn" type="button" style="width:auto">+ Kategori</button>
                             </div>
                         </div>
-
                         <p style="color:var(--muted);font-size:11px;margin:0 0 14px;line-height:1.6">
-                            Klik <strong>📦 Paket</strong> untuk kelola paket di kategori tersebut.
-                            Klik <strong>✏️</strong> untuk ubah detail kategori.
-                            Setelah selesai, klik <strong>📤 Export</strong> lalu simpan ke
-                            <code>data/shop-config.json</code> di repo.
+                            Klik <strong>Paket</strong> untuk kelola paket di kategori tersebut. Semua perubahan langsung tersimpan di server.
                         </p>
-
                         <div id="shopCategoryList"></div>
                     </div>
                 </div>
 
-                <!-- SHOP EDITOR: PACKAGE LIST -->
                 <div class="editor-view hidden" id="editorViewShopPackages">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2 id="shopPackagesTitle">📦 Paket</h2>
+                            <h2 id="shopPackagesTitle">Paket</h2>
                             <div class="editor-view-actions">
                                 <button class="profile-button" id="shopEditorBackToCategoriesBtn" type="button">← Back</button>
                                 <button class="primary-button" id="shopEditorCreatePackageBtn" type="button" style="width:auto">+ Paket</button>
                             </div>
                         </div>
-
                         <div id="shopPackageList"></div>
                     </div>
                 </div>
 
-                <!-- SHOP EDITOR: FORM -->
                 <div class="editor-view hidden" id="editorViewShopForm">
                     <div class="page-panel">
                         <div class="editor-view-header">
                             <h2 id="shopFormTitle">Buat Baru</h2>
                             <button class="profile-button" id="shopFormBackBtn" type="button">← Back</button>
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="shopFormKey">Key</label>
@@ -895,26 +706,19 @@
                                 <label for="shopFormTier">Tier / Variant</label>
                                 <select class="editor-input" id="shopFormTier">
                                     <option value="crystal">Crystal</option>
-                                    <option value="assets">Assets</option>
-                                    <option value="items">Items</option>
                                     <option value="starter">Starter</option>
                                     <option value="basic">Basic</option>
-                                    <option value="popular">Popular ⭐</option>
-                                    <option value="best">Best Value 🔥</option>
-                                    <option value="mega">Mega 🟠</option>
-                                    <option value="divine">Divine 🌈</option>
+                                    <option value="popular">Popular</option>
+                                    <option value="best">Best Value</option>
+                                    <option value="mega">Mega</option>
+                                    <option value="divine">Divine</option>
                                 </select>
                             </div>
                         </div>
-
                         <div class="editor-form-group">
                             <label for="shopFormIcon">Icon Item ID</label>
-                            <input class="editor-input" id="shopFormIcon" type="text" maxlength="8"
-                                   data-item-picker="shop-icon"
-                                   data-item-picker-format="id"
-                                   data-item-picker-title="Pilih Icon" />
+                            <input class="editor-input" id="shopFormIcon" type="text" maxlength="8" data-item-picker="shop-icon" data-item-picker-format="id" data-item-picker-title="Pilih Icon" />
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="shopFormValue">Display Value</label>
@@ -925,7 +729,6 @@
                                 <input class="editor-input" id="shopFormUnit" type="text" />
                             </div>
                         </div>
-
                         <div class="editor-form-row">
                             <div class="editor-form-group">
                                 <label for="shopFormPrice">Harga (Rp)</label>
@@ -936,12 +739,14 @@
                                 <input class="editor-input" id="shopFormOrder" type="number" min="0" />
                             </div>
                         </div>
-
                         <div class="editor-form-group">
-                            <label for="shopFormBadge">Badge / Title</label>
+                            <label for="shopFormBadge">Badge</label>
                             <input class="editor-input" id="shopFormBadge" type="text" maxlength="60" />
                         </div>
-
+                        <div class="editor-form-group">
+                            <label for="shopFormBonus">Bonus Text (opsional, mis. +15% BONUS)</label>
+                            <input class="editor-input" id="shopFormBonus" type="text" maxlength="40" />
+                        </div>
                         <div class="editor-form-group">
                             <label for="shopFormActive">Status</label>
                             <select class="editor-input" id="shopFormActive">
@@ -949,15 +754,6 @@
                                 <option value="0">Nonaktif</option>
                             </select>
                         </div>
-
-                        <div id="shopFormRewardsSection" style="display:none">
-                            <div class="shop-editor-subhead">Hadiah (Rewards)</div>
-                            <div id="shopFormRewardsList"></div>
-                            <button class="profile-button" id="shopFormAddRewardBtn" type="button" style="margin-top:6px">
-                                + Tambah Hadiah
-                            </button>
-                        </div>
-
                         <div class="editor-form-actions">
                             <button class="profile-button" id="shopFormCancelBtn" type="button">Cancel</button>
                             <button class="primary-button" id="shopFormSaveBtn" type="button" style="width:auto">Save</button>
@@ -965,45 +761,34 @@
                     </div>
                 </div>
 
-                <!-- APPEARANCE EDITOR -->
                 <div class="editor-view hidden" id="editorViewAppearance">
                     <div class="page-panel">
                         <div class="editor-view-header">
-                            <h2>🎨 Appearance Editor</h2>
+                            <h2><span data-item-icon="3494" data-item-icon-size="20"></span> Appearance Editor</h2>
                             <div class="editor-view-actions">
                                 <button class="profile-button" id="appearanceBackToRoadmap" type="button">← Back</button>
-                                <button class="profile-button" id="appearanceExportBtn" type="button">📤 Export</button>
-                                <button class="profile-button" id="appearanceImportBtn" type="button">📥 Import</button>
-                                <button class="profile-button" id="appearanceResetBtn" type="button" style="color:#FF5C8A">🔄 Reset</button>
-                                <button class="primary-button" id="appearanceSaveBtn" type="button" style="width:auto">💾 Save</button>
+                                <button class="profile-button" id="appearanceResetBtn" type="button" style="color:#FF5C8A">Reset</button>
+                                <button class="primary-button" id="appearanceSaveBtn" type="button" style="width:auto">Save</button>
                             </div>
                         </div>
-
                         <p style="color:var(--muted);font-size:11px;margin:0 0 18px;line-height:1.6">
-                            Semua perubahan langsung terlihat di seluruh website.
-                            Setelah selesai, klik <strong>📤 Export</strong> → simpan ke
-                            <code>data/theme-config.json</code> di repo agar tersimpan permanen.
+                            Semua perubahan langsung tersimpan di server saat klik <strong>Save</strong>.
                         </p>
-
                         <div class="appearance-section">
-                            <h3 class="appearance-section-title">🎨 Warna Tema</h3>
+                            <h3 class="appearance-section-title">Warna Tema</h3>
                             <div class="appearance-grid" id="appearanceColorGrid"></div>
                         </div>
-
                         <div class="appearance-section">
-                            <h3 class="appearance-section-title">✨ Icon Navigasi & Brand</h3>
+                            <h3 class="appearance-section-title">Icon Navigasi & Brand</h3>
                             <div class="appearance-grid" id="appearanceIconGrid"></div>
                         </div>
                     </div>
                 </div>
-
             </section>
 
             <div class="app-footer">GROWERA • CRYSTAL ERA</div>
         </main>
 
-
-        <!-- RIGHT PANEL -->
         <aside class="right-panel">
             <section class="right-panel-card">
                 <h2 class="right-panel-title">Player Information</h2>
@@ -1014,14 +799,12 @@
                         <div class="right-player-role" id="rightPlayerRole">Memuat role...</div>
                     </div>
                 </div>
-
                 <div class="right-stat">
                     <span class="right-stat-label">
                         <span data-item-icon="3142" data-item-icon-size="16"></span> Level
                     </span>
                     <span class="right-stat-value" id="rightPlayerLevel">—</span>
                 </div>
-
                 <div class="right-stat">
                     <span class="right-stat-label">
                         <span data-item-icon="980" data-item-icon-size="16"></span> User ID
@@ -1029,24 +812,20 @@
                     <span class="right-stat-value" id="rightPlayerUserID">—</span>
                 </div>
             </section>
-
             <section class="right-panel-card">
                 <h2 class="right-panel-title">Statistics</h2>
-
                 <div class="right-stat">
                     <span class="right-stat-label">
                         <span data-item-icon="112" data-item-icon-size="16"></span> Gems
                     </span>
                     <span class="right-stat-value" id="rightPlayerGems">—</span>
                 </div>
-
                 <div class="right-stat">
                     <span class="right-stat-label">
                         <span data-item-icon="7162" data-item-icon-size="16"></span> Playtime
                     </span>
                     <span class="right-stat-value" id="rightPlayerPlaytime">—</span>
                 </div>
-
                 <div class="right-stat">
                     <span class="right-stat-label">
                         <span data-item-icon="982" data-item-icon-size="16"></span> Achievements
@@ -1054,7 +833,6 @@
                     <span class="right-stat-value">—</span>
                 </div>
             </section>
-
             <section class="right-panel-card">
                 <h2 class="right-panel-title">GROWERA</h2>
                 <p style="margin:0;color:var(--muted);font-size:11px;line-height:1.8;">
@@ -1063,10 +841,7 @@
             </section>
         </aside>
 
-
-        <!-- ROULETTE WIN OVERLAY -->
-        <div id="rouletteWinOverlay" role="dialog" aria-modal="true"
-             aria-labelledby="rouletteWinTitle" hidden>
+        <div id="rouletteWinOverlay" role="dialog" aria-modal="true" aria-labelledby="rouletteWinTitle" hidden>
             <div class="roulette-win-card" id="rouletteWinCard">
                 <div class="roulette-win-kicker">CRYSTAL REWARD UNLOCKED</div>
                 <div class="roulette-win-icon" id="rouletteWinIcon"></div>
@@ -1080,8 +855,6 @@
             </div>
         </div>
 
-
-        <!-- INVENTORY MODAL -->
         <div class="inventory-modal" id="inventoryModal">
             <div class="inventory-modal-content">
                 <div class="inventory-modal-header">
@@ -1095,24 +868,18 @@
             </div>
         </div>
 
-
-        <!-- NEWS DETAIL MODAL -->
         <div class="news-modal" id="newsModal">
             <div class="news-modal-content">
                 <div class="news-modal-header">
                     <h2 id="newsModalHeaderTitle">
-                        <span data-item-icon="660" data-item-icon-size="22"></span> GROWERA News
+                        <span data-item-icon="5016" data-item-icon-size="22"></span> GROWERA News
                     </h2>
                     <button class="news-modal-close-btn" id="newsModalCloseBtn" type="button" aria-label="Close">✕</button>
                 </div>
                 <div class="news-modal-body">
                     <div class="news-detail-badge" id="newsModalBadge">CRYSTAL ERA</div>
-                    <h1 class="news-detail-title" id="newsModalTitle">
-                        Selamat Datang di GROWERA Crystal Era
-                    </h1>
-                    <p class="news-detail-meta" id="newsModalMeta">
-                        Dipublikasikan oleh Tim GROWERA · Update terbaru
-                    </p>
+                    <h1 class="news-detail-title" id="newsModalTitle">Selamat Datang di GROWERA Crystal Era</h1>
+                    <p class="news-detail-meta" id="newsModalMeta">Dipublikasikan oleh Tim GROWERA · Update terbaru</p>
                     <div class="news-detail-body" id="newsModalBody">
                         <p>
                             <strong>GROWERA Crystal Era</strong> secara resmi
@@ -1127,17 +894,13 @@
             </div>
         </div>
 
-
-        <!-- REWARDS MODAL -->
         <div class="rewards-modal" id="rewardsModal">
             <div class="rewards-modal-content" id="rewardsModalContent" data-variant="milestone">
                 <div class="rewards-modal-header" id="rewardsModalHeader">
                     <div class="rewards-modal-icon" id="rewardsModalIcon"></div>
                     <div class="rewards-modal-header-info">
                         <h2 class="rewards-modal-title" id="rewardsModalTitle">MILESTONE REWARDS</h2>
-                        <p class="rewards-modal-subtitle" id="rewardsModalSubtitle">
-                            Every achievement tells a story.
-                        </p>
+                        <p class="rewards-modal-subtitle" id="rewardsModalSubtitle">Every achievement tells a story.</p>
                     </div>
                     <button class="rewards-modal-close-btn" id="rewardsModalCloseBtn" type="button" aria-label="Close">✕</button>
                 </div>
@@ -1146,51 +909,42 @@
         </div>
     </section>
 
-
-    <!-- =========================================
-         FLOATING QUICK MENU (tampil di semua halaman)
-    ========================================= -->
-
-    <button class="floating-quick-btn" id="floatingQuickBtn" type="button"
-            aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
+    <button class="floating-quick-btn" id="floatingQuickBtn" type="button" aria-label="Quick access menu" aria-haspopup="menu" aria-expanded="false">
         <span class="floating-quick-icon" data-theme-icon="floatingBtn" data-item-icon-size="26"></span>
     </button>
 
     <div class="floating-menu" id="floatingMenu" role="menu" aria-hidden="true">
-
         <div class="floating-stats" id="floatingStats">
             <div class="floating-stats-header">
                 <span class="floating-stats-dot" id="floatingStatsDot"></span>
                 <span class="floating-stats-title" id="floatingStatsTitle">SERVER STATS</span>
             </div>
-
             <div class="floating-stats-rows" id="floatingStatsRows">
                 <div class="floating-stats-row">
                     <span class="fs-label">Status</span>
                     <span class="fs-value" id="fsStatus">—</span>
                 </div>
                 <div class="floating-stats-row">
-                    <span class="fs-label">👥 Players</span>
+                    <span class="fs-label"><span data-item-icon="980" data-item-icon-size="14"></span> Players</span>
                     <span class="fs-value" id="fsPlayers">—</span>
                 </div>
                 <div class="floating-stats-row">
-                    <span class="fs-label">⏱ Uptime</span>
+                    <span class="fs-label"><span data-item-icon="7162" data-item-icon-size="14"></span> Uptime</span>
                     <span class="fs-value" id="fsUptime">—</span>
                 </div>
                 <div class="floating-stats-row">
-                    <span class="fs-label">💾 RAM</span>
+                    <span class="fs-label"><span data-item-icon="164" data-item-icon-size="14"></span> RAM</span>
                     <span class="fs-value" id="fsRam">—</span>
                 </div>
                 <div class="floating-stats-row">
-                    <span class="fs-label">⚡ CPU</span>
+                    <span class="fs-label"><span data-item-icon="902" data-item-icon-size="14"></span> CPU</span>
                     <span class="fs-value" id="fsCpu">—</span>
                 </div>
                 <div class="floating-stats-row">
-                    <span class="fs-label">🌍 Worlds</span>
+                    <span class="fs-label"><span data-item-icon="242" data-item-icon-size="14"></span> Worlds</span>
                     <span class="fs-value" id="fsWorlds">—</span>
                 </div>
             </div>
-
             <div class="floating-stats-footer"><span id="fsUpdated">—</span></div>
         </div>
 
@@ -1214,25 +968,19 @@
 
         <div class="floating-menu-divider floating-menu-auth"></div>
 
-        <button class="floating-menu-item floating-menu-auth logout"
-                data-action="logout" role="menuitem" type="button">
+        <button class="floating-menu-item floating-menu-auth logout" data-action="logout" role="menuitem" type="button">
             <span class="fm-icon" data-item-icon="6" data-item-icon-size="20"></span><span>Logout</span>
         </button>
     </div>
 
-
-    <!-- ============ ITEM PICKER MODAL ============ -->
-    <div class="item-picker-modal" id="itemPickerModal" hidden role="dialog"
-         aria-modal="true" aria-labelledby="itemPickerTitle">
+    <div class="item-picker-modal" id="itemPickerModal" hidden role="dialog" aria-modal="true" aria-labelledby="itemPickerTitle">
         <div class="item-picker-dialog">
             <div class="item-picker-header">
                 <h2 id="itemPickerTitle">Pilih Item</h2>
                 <button class="item-picker-close" id="itemPickerClose" type="button" aria-label="Tutup">✕</button>
             </div>
             <div class="item-picker-search">
-                <input type="text" id="itemPickerSearch"
-                       placeholder="Cari nama atau ID item (mis. World Lock, 242)..."
-                       autocomplete="off" />
+                <input type="text" id="itemPickerSearch" placeholder="Cari nama atau ID item..." autocomplete="off" />
             </div>
             <div class="item-picker-meta" id="itemPickerMeta">Memuat...</div>
             <div class="item-picker-grid" id="itemPickerGrid"></div>
@@ -1240,105 +988,9 @@
         </div>
     </div>
 
-
-    <!-- ============ SHOP EXPORT MODAL ============ -->
-    <div class="item-picker-modal" id="shopExportModal" hidden role="dialog" aria-modal="true">
-        <div class="item-picker-dialog" style="max-width:720px">
-            <div class="item-picker-header">
-                <h2>Export Config JSON</h2>
-                <button class="item-picker-close" type="button"
-                        onclick="document.getElementById('shopExportModal').hidden=true">✕</button>
-            </div>
-            <div style="padding:14px 18px">
-                <p style="color:var(--muted);font-size:11px;margin:0 0 10px;line-height:1.6">
-                    Copy JSON di bawah → simpan sebagai <code>data/shop-config.json</code> di repo → push.
-                </p>
-                <textarea class="shop-editor-json-area" id="shopExportTextarea" readonly></textarea>
-            </div>
-            <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-                <button class="profile-button" type="button" id="shopExportCopyBtn">📋 Copy</button>
-                <button class="profile-button" type="button" id="shopExportDownloadBtn">💾 Download</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ============ SHOP IMPORT MODAL ============ -->
-    <div class="item-picker-modal" id="shopImportModal" hidden role="dialog" aria-modal="true">
-        <div class="item-picker-dialog" style="max-width:720px">
-            <div class="item-picker-header">
-                <h2>Import Config JSON</h2>
-                <button class="item-picker-close" type="button"
-                        onclick="document.getElementById('shopImportModal').hidden=true">✕</button>
-            </div>
-            <div style="padding:14px 18px">
-                <p style="color:var(--muted);font-size:11px;margin:0 0 10px">
-                    Paste JSON config dari file <code>data/shop-config.json</code>.
-                </p>
-                <textarea class="shop-editor-json-area" id="shopImportTextarea"
-                          placeholder="Paste JSON di sini..."></textarea>
-            </div>
-            <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end">
-                <button class="profile-button" type="button"
-                        onclick="document.getElementById('shopImportModal').hidden=true">Cancel</button>
-                <button class="primary-button" type="button" style="width:auto" id="shopImportApplyBtn">
-                    Import
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ============ APPEARANCE EXPORT MODAL ============ -->
-    <div class="item-picker-modal" id="appearanceExportModal" hidden role="dialog" aria-modal="true">
-        <div class="item-picker-dialog" style="max-width:720px">
-            <div class="item-picker-header">
-                <h2>Export Theme JSON</h2>
-                <button class="item-picker-close" type="button"
-                        onclick="document.getElementById('appearanceExportModal').hidden=true">✕</button>
-            </div>
-            <div style="padding:14px 18px">
-                <p style="color:var(--muted);font-size:11px;margin:0 0 10px;line-height:1.6">
-                    Copy JSON di bawah → simpan sebagai <code>data/theme-config.json</code> di repo → push.
-                </p>
-                <textarea class="shop-editor-json-area" id="appearanceExportTextarea" readonly></textarea>
-            </div>
-            <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-                <button class="profile-button" type="button" id="appearanceExportCopyBtn">📋 Copy</button>
-                <button class="profile-button" type="button" id="appearanceExportDownloadBtn">💾 Download</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ============ APPEARANCE IMPORT MODAL ============ -->
-    <div class="item-picker-modal" id="appearanceImportModal" hidden role="dialog" aria-modal="true">
-        <div class="item-picker-dialog" style="max-width:720px">
-            <div class="item-picker-header">
-                <h2>Import Theme JSON</h2>
-                <button class="item-picker-close" type="button"
-                        onclick="document.getElementById('appearanceImportModal').hidden=true">✕</button>
-            </div>
-            <div style="padding:14px 18px">
-                <p style="color:var(--muted);font-size:11px;margin:0 0 10px">
-                    Paste JSON dari file <code>data/theme-config.json</code>.
-                </p>
-                <textarea class="shop-editor-json-area" id="appearanceImportTextarea"
-                          placeholder="Paste JSON di sini..."></textarea>
-            </div>
-            <div style="padding:0 18px 14px;display:flex;gap:8px;justify-content:flex-end">
-                <button class="profile-button" type="button"
-                        onclick="document.getElementById('appearanceImportModal').hidden=true">Cancel</button>
-                <button class="primary-button" type="button" style="width:auto" id="appearanceImportApplyBtn">
-                    Import
-                </button>
-            </div>
-        </div>
-    </div>
-
-
+    <script src="/js/icons.js"></script>
     <script src="/js/config-loader.js"></script>
-<script src="/js/app.js"></script>
+    <script src="/js/app.js"></script>
     <script src="/js/news.js"></script>
     <script src="/js/shop.js"></script>
     <script src="/js/profile.js"></script>
