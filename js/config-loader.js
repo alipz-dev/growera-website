@@ -1,6 +1,6 @@
 /* =========================================
-   GROWERA — CONFIG LOADER (v2, GTPS)
-   Adapter: fetch dari GTPS → transform → cache.
+   GROWERA — CONFIG LOADER (v3, GTPS)
+   Shop & Theme fetch dari server GTPS.
 ========================================= */
 
 (function () {
@@ -44,77 +44,53 @@
         return (Date.now() - entry.fetchedAt) > CACHE_TTL;
     }
 
-    /* ===== TRANSFORM: GTPS topup → website shop format ===== */
-
-    function transformTopupToShop(data) {
-        var packages = (data.packages || []).map(function (p) {
-            var total = p.gems;
-            if (p.bonus_percent > 0) {
-                total = p.gems + Math.floor(p.gems * p.bonus_percent / 100);
-            }
-            return {
-                id: p.package_key || ("pkg_" + p.id),
-                backendId: p.id,
-                iconId: 112,
-                price: p.price,
-                tier: p.tier,
-                badge: p.badge || null,
-                order: p.order,
-                active: p.active !== false,
-                displayValue: String(p.gems),
-                displayUnit: "GEMS",
-                bonusText: p.bonus_percent > 0 ? ("+" + p.bonus_percent + "% BONUS") : null,
-                rewards: [{ type: "gems", amount: total }]
-            };
-        });
-
-        return {
-            version: data.total || 1,
-            updatedAt: Date.now(),
-            categories: [{
-                key: "topup",
-                eyebrow: "CRYSTAL STORE",
-                title: "CRYSTAL STORE",
-                subtitle: "Isi ulang Gems untuk membuka berbagai kesempatan eksklusif di Crystal Era.",
-                currencyIcon: 112,
-                currencyName: "GEMS",
-                currencyKey: "gems",
-                variant: "crystal",
-                showBalance: true,
-                order: 1,
-                active: true,
-                packages: packages
-            }]
-        };
-    }
+    /* ===== SHOP ===== */
 
     function loadShopFromServer() {
-        return apiFetch("/api/growera/topup")
-            .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+        return apiFetch("/api/growera/shop/config")
+            .then(function (res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
             .then(function (data) {
                 if (!data || data.success !== true) throw new Error("Invalid response");
-                return transformTopupToShop(data);
+                var cfg = data.config || { version: 1, categories: [] };
+                if (!Array.isArray(cfg.categories)) cfg.categories = [];
+                return cfg;
             });
     }
 
+    function loadShopFallback() {
+        return fetch("/data/shop-config.json?_t=" + Date.now(), { cache: "no-store" })
+            .then(function (res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            });
+    }
+
+    /* ===== THEME ===== */
+
     function loadThemeFromServer() {
         return apiFetch("/api/growera/theme")
-            .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+            .then(function (res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
             .then(function (data) {
                 if (!data || data.success !== true) throw new Error("Invalid response");
                 return data.theme || null;
             });
     }
 
-    function loadShopFallback() {
-        return fetch("/data/shop-config.json?_t=" + Date.now(), { cache: "no-store" })
-            .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); });
-    }
-
     function loadThemeFallback() {
         return fetch("/data/theme-config.json?_t=" + Date.now(), { cache: "no-store" })
-            .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); });
+            .then(function (res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            });
     }
+
+    /* ===== LOADER REGISTRY ===== */
 
     var LOADERS = {
         shop:  { primary: loadShopFromServer,  fallback: loadShopFallback },
@@ -139,7 +115,11 @@
         var promise = loader.primary()
             .then(function (data) {
                 if (!data) throw new Error("Empty response");
-                var entry = { version: (data && data.version) || 1, data: data, fetchedAt: Date.now() };
+                var entry = {
+                    version: (data && data.version) || 1,
+                    data: data,
+                    fetchedAt: Date.now()
+                };
                 memoryCache[name] = entry;
                 setCacheToStorage(name, entry);
                 return data;
@@ -192,8 +172,7 @@
             return fetchConfig(name);
         },
         api: apiFetch,
-        getToken: getToken,
-        transformTopupToShop: transformTopupToShop
+        getToken: getToken
     };
 
     console.log("[ConfigLoader] Ready (GTPS server-driven).");
