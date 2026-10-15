@@ -1,19 +1,17 @@
 /* =========================================
    GROWERA — CONFIG LOADER
    Fetch semua config dari server (data/*.json),
-   cache dengan versi untuk hindari re-fetch.
+   cache dengan version check untuk hindari re-fetch.
 ========================================= */
 
 (function () {
     "use strict";
 
     var CACHE_KEY_PREFIX = "growera_config_cache_";
-    var VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 menit
+    var CACHE_TTL = 5 * 60 * 1000; // 5 menit
 
-    var memoryCache = {};   // { "shop": { version, data, fetchedAt } }
-    var pendingRequests = {}; // untuk dedup parallel request
-
-    /* ===== DAFTAR CONFIG ===== */
+    var memoryCache = {};
+    var pendingRequests = {};
 
     var CONFIG_FILES = {
         shop:     "/data/shop-config.json",
@@ -35,37 +33,33 @@
     function setCacheToStorage(key, entry) {
         try {
             localStorage.setItem(CACHE_KEY_PREFIX + key, JSON.stringify(entry));
-        } catch (e) { /* ignore quota errors */ }
+        } catch (e) { /* quota */ }
     }
 
     function isCacheStale(entry) {
         if (!entry || !entry.fetchedAt) return true;
-        return (Date.now() - entry.fetchedAt) > VERSION_CHECK_INTERVAL;
+        return (Date.now() - entry.fetchedAt) > CACHE_TTL;
     }
 
     /* ===== FETCH SATU CONFIG ===== */
 
     function fetchConfig(name) {
-        // Dedup: kalau ada request yang jalan, pakai yang itu
         if (pendingRequests[name]) return pendingRequests[name];
 
         var url = CONFIG_FILES[name];
         if (!url) return Promise.reject(new Error("Config tidak dikenal: " + name));
 
-        // Cek cache memory
         var cached = memoryCache[name];
         if (cached && !isCacheStale(cached)) {
             return Promise.resolve(cached.data);
         }
 
-        // Cek cache storage
         var stored = getCacheFromStorage(name);
         if (stored && stored.data && !isCacheStale(stored)) {
             memoryCache[name] = stored;
             return Promise.resolve(stored.data);
         }
 
-        // Fetch dari server
         var promise = fetch(url + "?_t=" + Date.now(), {
             method: "GET",
             headers: { "Accept": "application/json" },
@@ -88,8 +82,6 @@
             })
             .catch(function (err) {
                 console.error("[ConfigLoader] Gagal fetch " + name + ":", err);
-
-                // Fallback ke cache lama (walau stale)
                 if (stored && stored.data) {
                     console.warn("[ConfigLoader] Pakai cache lama untuk " + name);
                     memoryCache[name] = stored;
@@ -105,8 +97,6 @@
         return promise;
     }
 
-    /* ===== FETCH SEMUA PARALEL ===== */
-
     function fetchAll() {
         var names = Object.keys(CONFIG_FILES);
         return Promise.all(names.map(function (n) {
@@ -121,30 +111,22 @@
     /* ===== PUBLIC API ===== */
 
     window.GroweraConfig = {
-        // Ambil config tunggal (Promise)
         get: function (name) { return fetchConfig(name); },
-
-        // Ambil semua paralel
         getAll: fetchAll,
 
-        // Bersihkan cache (mis. saat admin logout)
         clearCache: function () {
             Object.keys(CONFIG_FILES).forEach(function (n) {
-                try {
-                    localStorage.removeItem(CACHE_KEY_PREFIX + n);
-                } catch (e) {}
+                try { localStorage.removeItem(CACHE_KEY_PREFIX + n); } catch (e) {}
             });
             memoryCache = {};
         },
 
-        // Paksa fetch ulang (bypass cache)
         refresh: function (name) {
             delete memoryCache[name];
             try { localStorage.removeItem(CACHE_KEY_PREFIX + name); } catch (e) {}
             return fetchConfig(name);
         },
 
-        // Path untuk admin export
         paths: CONFIG_FILES
     };
 
