@@ -1,5 +1,6 @@
 /* =========================================
-   GROWERA — SHOP MODULE (v4, clean)
+   GROWERA — SHOP MODULE (v5, empty-aware)
+   Support display value string + hide empty fields.
 ========================================= */
 
 (function () {
@@ -76,6 +77,16 @@
 
     function $(id) { return document.getElementById(id); }
 
+    function isEmpty(v) {
+        return v === undefined || v === null || String(v).trim() === "";
+    }
+
+    function hasNumber(v) {
+        if (isEmpty(v)) return false;
+        var n = Number(v);
+        return Number.isFinite(n) && n > 0;
+    }
+
     function fmtNum(n) {
         if (typeof window.formatNumber === "function") return window.formatNumber(n);
         return (n || 0).toLocaleString("id-ID");
@@ -86,6 +97,20 @@
         return "Rp " + (n || 0).toLocaleString("id-ID");
     }
 
+    // Format display value: angka murni → thousand separator,
+    // string campuran → tampil apa adanya
+    function formatDisplayValue(v) {
+        if (isEmpty(v)) return "";
+        var s = String(v).trim();
+        if (/^-?\d+$/.test(s)) {
+            var n = parseInt(s, 10);
+            return (typeof window.formatNumber === "function")
+                ? window.formatNumber(n)
+                : n.toLocaleString("id-ID");
+        }
+        return s;
+    }
+
     function createIcon(id, size) {
         var img = document.createElement("img");
         img.src = "/assets/itemimage/" + id + ".png";
@@ -94,6 +119,19 @@
         img.style.cssText = "width:" + size + "px;height:" + size +
             "px;object-fit:contain;image-rendering:pixelated;display:block";
         img.alt = "";
+        img.draggable = false;
+
+        var triedFallback = false;
+        img.addEventListener("error", function onErr() {
+            if (!triedFallback) {
+                triedFallback = true;
+                img.src = "https://api.gtps.cloud/api/item/texture/" + id + "/";
+                return;
+            }
+            img.removeEventListener("error", onErr);
+            img.style.display = "none";
+        });
+
         return img;
     }
 
@@ -132,10 +170,12 @@
             btn.type = "button";
             btn.className = "shop-tab" + (cat.key === activeCategoryKey ? " active" : "");
 
-            if (cat.currencyIcon) {
+            if (!isEmpty(cat.currencyIcon)) {
                 btn.appendChild(createIcon(cat.currencyIcon, 16));
             }
-            btn.appendChild(document.createTextNode(cat.title || cat.key.toUpperCase()));
+            btn.appendChild(document.createTextNode(
+                !isEmpty(cat.title) ? cat.title : (cat.key || "").toUpperCase()
+            ));
 
             btn.addEventListener("click", function () {
                 activeCategoryKey = cat.key;
@@ -148,7 +188,7 @@
         });
     }
 
-    /* ===== RENDER HEADER ===== */
+    /* ===== RENDER HEADER (empty-aware) ===== */
 
     function renderHeader() {
         var cat = getActiveCategory();
@@ -161,18 +201,59 @@
         var currencyName = $("shopCurrencyName");
         var currencyIcon = $("shopCurrencyIcon");
         var balanceWrap = $("shopBalanceWrap");
+        var currencyBlock = $("shopCurrency");
 
         if (header) header.dataset.variant = cat.variant || "crystal";
-        if (eyebrow) eyebrow.textContent = cat.eyebrow || "";
-        if (title) title.textContent = cat.title || "";
-        if (subtitle) subtitle.textContent = cat.subtitle || "";
-        if (currencyName) currencyName.textContent = cat.currencyName || "CURRENCY";
 
-        if (currencyIcon) {
-            currencyIcon.replaceChildren();
-            if (cat.currencyIcon) currencyIcon.appendChild(createIcon(cat.currencyIcon, 18));
+        // Eyebrow
+        if (eyebrow) {
+            if (isEmpty(cat.eyebrow)) {
+                eyebrow.textContent = "";
+                eyebrow.style.display = "none";
+            } else {
+                eyebrow.textContent = cat.eyebrow;
+                eyebrow.style.display = "";
+            }
         }
 
+        // Title — fallback ke key uppercase kalau kosong
+        if (title) {
+            title.textContent = !isEmpty(cat.title)
+                ? cat.title
+                : (cat.key || "").toUpperCase();
+        }
+
+        // Subtitle
+        if (subtitle) {
+            if (isEmpty(cat.subtitle)) {
+                subtitle.textContent = "";
+                subtitle.style.display = "none";
+            } else {
+                subtitle.textContent = cat.subtitle;
+                subtitle.style.display = "";
+            }
+        }
+
+        // Currency name
+        if (currencyName) {
+            currencyName.textContent = isEmpty(cat.currencyName) ? "" : cat.currencyName;
+        }
+
+        // Currency icon
+        if (currencyIcon) {
+            currencyIcon.replaceChildren();
+            if (!isEmpty(cat.currencyIcon)) {
+                currencyIcon.appendChild(createIcon(cat.currencyIcon, 18));
+            }
+        }
+
+        // Hide seluruh block currency kalau dua-duanya kosong
+        if (currencyBlock) {
+            currencyBlock.style.display = (isEmpty(cat.currencyName) && isEmpty(cat.currencyIcon))
+                ? "none" : "";
+        }
+
+        // Balance
         if (balanceWrap) {
             balanceWrap.classList.toggle("hidden", cat.showBalance === false);
         }
@@ -201,10 +282,12 @@
             var empty = document.createElement("div");
             empty.className = "shop-empty";
 
-            var ic = document.createElement("div");
-            ic.className = "shop-empty-icon";
-            ic.appendChild(createIcon(cat.currencyIcon || 112, 56));
-            empty.appendChild(ic);
+            if (!isEmpty(cat.currencyIcon)) {
+                var ic = document.createElement("div");
+                ic.className = "shop-empty-icon";
+                ic.appendChild(createIcon(cat.currencyIcon, 56));
+                empty.appendChild(ic);
+            }
 
             var h = document.createElement("h3");
             h.textContent = "Belum ada paket";
@@ -228,7 +311,7 @@
         wrap.appendChild(panel);
     }
 
-    /* ===== BUILD CARD ===== */
+    /* ===== BUILD CARD (empty-aware) ===== */
 
     function buildCard(pkg, cat) {
         var card = document.createElement("div");
@@ -238,7 +321,8 @@
         if (pkg.tier === "mega") card.classList.add("tier-mega");
         if (pkg.tier === "divine") card.classList.add("tier-divine");
 
-        if (pkg.badge) {
+        // ---- BADGE ----
+        if (!isEmpty(pkg.badge)) {
             var badge = document.createElement("div");
             badge.className = "shop-card-badge";
             if (pkg.tier === "mega") badge.classList.add("mega");
@@ -247,49 +331,71 @@
             card.appendChild(badge);
         }
 
-        var main = document.createElement("div");
-        main.className = "shop-card-main";
+        // ---- MAIN BLOCK (icon + value + unit) ----
+        var hasIcon  = !isEmpty(pkg.iconId);
+        var hasValue = !isEmpty(pkg.displayValue);
+        var hasUnit  = !isEmpty(pkg.displayUnit);
 
-        var iconWrap = document.createElement("div");
-        iconWrap.className = "shop-card-icon";
-        iconWrap.appendChild(createIcon(pkg.iconId || 112, 40));
+        if (hasIcon || hasValue || hasUnit) {
+            var main = document.createElement("div");
+            main.className = "shop-card-main";
 
-        var textBlock = document.createElement("div");
-        var valueEl = document.createElement("div");
-        valueEl.className = "shop-card-value";
-        valueEl.textContent = fmtNum(pkg.displayValue || 0);
-        var unitEl = document.createElement("div");
-        unitEl.className = "shop-card-unit";
-        unitEl.textContent = pkg.displayUnit || "GEMS";
-        textBlock.appendChild(valueEl);
-        textBlock.appendChild(unitEl);
+            if (hasIcon) {
+                var iconWrap = document.createElement("div");
+                iconWrap.className = "shop-card-icon";
+                iconWrap.appendChild(createIcon(pkg.iconId, 40));
+                main.appendChild(iconWrap);
+            }
 
-        main.appendChild(iconWrap);
-        main.appendChild(textBlock);
-        card.appendChild(main);
+            if (hasValue || hasUnit) {
+                var textBlock = document.createElement("div");
 
-        var divider = document.createElement("div");
-        divider.className = "shop-card-divider";
-        card.appendChild(divider);
+                if (hasValue) {
+                    var valueEl = document.createElement("div");
+                    valueEl.className = "shop-card-value";
+                    valueEl.textContent = formatDisplayValue(pkg.displayValue);
+                    textBlock.appendChild(valueEl);
+                }
 
-        var price = document.createElement("div");
-        price.className = "shop-card-price";
-        price.textContent = fmtRp(pkg.price || 0);
-        card.appendChild(price);
+                if (hasUnit) {
+                    var unitEl = document.createElement("div");
+                    unitEl.className = "shop-card-unit";
+                    unitEl.textContent = pkg.displayUnit;
+                    textBlock.appendChild(unitEl);
+                }
 
-        var rewards = document.createElement("div");
-        rewards.className = "shop-card-rewards";
-        rewards.appendChild(document.createTextNode("Berisi: "));
-        if (!pkg.rewards || !pkg.rewards.length) {
-            rewards.appendChild(document.createTextNode("-"));
-        } else {
+                main.appendChild(textBlock);
+            }
+
+            card.appendChild(main);
+
+            // Divider setelah main block
+            var divider = document.createElement("div");
+            divider.className = "shop-card-divider";
+            card.appendChild(divider);
+        }
+
+        // ---- PRICE (hanya kalau > 0) ----
+        if (hasNumber(pkg.price)) {
+            var price = document.createElement("div");
+            price.className = "shop-card-price";
+            price.textContent = fmtRp(Number(pkg.price));
+            card.appendChild(price);
+        }
+
+        // ---- REWARDS (hanya kalau ada) ----
+        if (pkg.rewards && pkg.rewards.length > 0) {
+            var rewards = document.createElement("div");
+            rewards.className = "shop-card-rewards";
+            rewards.appendChild(document.createTextNode("Berisi: "));
             pkg.rewards.forEach(function (r, i) {
                 if (i > 0) rewards.appendChild(document.createTextNode(", "));
                 rewards.appendChild(buildRewardLabel(r));
             });
+            card.appendChild(rewards);
         }
-        card.appendChild(rewards);
 
+        // ---- BUY BUTTON ----
         var buyBtn = document.createElement("button");
         buyBtn.type = "button";
         buyBtn.className = "shop-buy-btn";
@@ -305,8 +411,12 @@
         if (r.type === "gems") {
             span.textContent = fmtNum(r.amount) + " Gems";
         } else if (r.type === "item") {
-            span.appendChild(createIcon(r.itemId, 14));
-            span.appendChild(document.createTextNode(" x" + (r.amount || 1)));
+            if (!isEmpty(r.itemId)) {
+                span.appendChild(createIcon(r.itemId, 14));
+                span.appendChild(document.createTextNode(" x" + (r.amount || 1)));
+            } else {
+                span.textContent = "-";
+            }
         } else if (r.type === "role") {
             span.textContent = "Role #" + r.roleId +
                 (r.durationDays > 0 ? " (" + r.durationDays + "d)" : " (Perm)");
@@ -392,10 +502,9 @@
 
         console.log("[Shop] Purchase request:", payload);
 
-        // TODO: kirim ke server Lua lewat API
         alert(
             "Paket: " + (pkg.displayValue || "?") + " " + (pkg.displayUnit || "") +
-            "\nHarga: " + fmtRp(pkg.price) +
+            (hasNumber(pkg.price) ? "\nHarga: " + fmtRp(pkg.price) : "") +
             "\n\nPembayaran otomatis akan segera tersedia."
         );
     }
