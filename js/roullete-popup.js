@@ -1,5 +1,5 @@
 /* =========================================
-   GROWERA — ROULETTE POPUP
+   GROWERA — ROULETTE POPUP (v2, fix)
    Muncul otomatis setelah player login.
 ========================================= */
 
@@ -9,14 +9,14 @@
     var STORAGE_KEY = "growera_roulette_popup_v1";
 
     var PRIZES = [
-        { iconId: 112,  name: "25 Gems",      reward: { type: "gems", amount: 25 } },
-        { iconId: 1360, name: "Mystery",      reward: { type: "mystery", amount: 1 } },
-        { iconId: 242,  name: "100 Coins",    reward: { type: "coins", amount: 100 } },
-        { iconId: 1458, name: "10 Gems",      reward: { type: "gems", amount: 10 } },
-        { iconId: 1344, name: "Ice Crystal",  reward: { type: "item", itemId: 1344, amount: 1 } },
-        { iconId: 4820, name: "Royal Chest",  reward: { type: "chest", amount: 1 } },
-        { iconId: 6746, name: "50 Gems",      reward: { type: "gems", amount: 50 } },
-        { iconId: 1458, name: "Shard",        reward: { type: "shard", amount: 1 } }
+        { iconId: 112,  name: "25 Gems",     reward: { type: "gems", amount: 25 } },
+        { iconId: 1360, name: "Mystery",     reward: { type: "mystery", amount: 1 } },
+        { iconId: 242,  name: "100 Coins",   reward: { type: "coins", amount: 100 } },
+        { iconId: 1458, name: "10 Gems",     reward: { type: "gems", amount: 10 } },
+        { iconId: 1344, name: "Ice Crystal", reward: { type: "item", itemId: 1344, amount: 1 } },
+        { iconId: 4820, name: "Royal Chest", reward: { type: "chest", amount: 1 } },
+        { iconId: 6746, name: "50 Gems",     reward: { type: "gems", amount: 50 } },
+        { iconId: 1458, name: "Shard",       reward: { type: "shard", amount: 1 } }
     ];
 
     var SLICE_COUNT = PRIZES.length;
@@ -63,7 +63,6 @@
         var wheel = dom.wheel;
         if (!wheel) return;
 
-        // Clear slices
         wheel.querySelectorAll(".roulette-popup-slice").forEach(function (s) { s.remove(); });
 
         var radius = 78;
@@ -112,14 +111,12 @@
         saveState();
         renderBalance();
 
-        // Pilih pemenang (untuk 10x, pilih 10 pemenang)
         var winners = [];
         for (var k = 0; k < times; k++) {
             winners.push(Math.floor(Math.random() * SLICE_COUNT));
         }
         var lastWinner = winners[winners.length - 1];
 
-        // Rotate
         var targetAngle = (360 - lastWinner * SLICE_ANGLE) - (SLICE_ANGLE / 2);
         var currentAngle = ((state.rotation % 360) + 360) % 360;
         var delta = ((targetAngle - currentAngle) + 360) % 360;
@@ -136,7 +133,6 @@
             if (times === 1) {
                 showResult("+" + PRIZES[lastWinner].name);
             } else {
-                // Ringkas reward 10x
                 var summary = {};
                 winners.forEach(function (w) {
                     var name = PRIZES[w].name;
@@ -157,6 +153,7 @@
         if (!dom.popup) return;
         dom.popup.hidden = false;
         requestAnimationFrame(function () { dom.popup.classList.add("is-open"); });
+        console.log("[RoulettePopup] Opened.");
     }
 
     function closePopup() {
@@ -190,20 +187,41 @@
             if (e.key === "Escape" && isOpen()) closePopup();
         });
 
-        // Auto-show saat login (dashboard muncul)
         var dashboard = $("dashboardScreen");
-        if (dashboard && window.MutationObserver) {
-            new MutationObserver(function () {
-                var visible = !dashboard.classList.contains("hidden");
-                if (visible && !state.shownThisSession) {
-                    state.shownThisSession = true;
-                    setTimeout(openPopup, 600);
-                } else if (!visible) {
-                    state.shownThisSession = false;
-                    closePopup();
-                }
-            }).observe(dashboard, { attributes: true, attributeFilter: ["class"] });
+        if (!dashboard) {
+            console.warn("[RoulettePopup] #dashboardScreen tidak ditemukan.");
+            return;
         }
+
+        function checkDashboard() {
+            var visible = !dashboard.classList.contains("hidden");
+            if (visible && !state.shownThisSession) {
+                state.shownThisSession = true;
+                console.log("[RoulettePopup] Dashboard visible, showing popup...");
+                setTimeout(openPopup, 800);
+            } else if (!visible) {
+                state.shownThisSession = false;
+                closePopup();
+            }
+        }
+
+        if (window.MutationObserver) {
+            new MutationObserver(checkDashboard).observe(dashboard, {
+                attributes: true,
+                attributeFilter: ["class"]
+            });
+        }
+
+        // Initial check (kalau dashboard sudah visible saat script load)
+        checkDashboard();
+
+        // Backup: cek tiap 1 detik selama 5 detik pertama
+        var checks = 0;
+        var backupTimer = setInterval(function () {
+            checks++;
+            checkDashboard();
+            if (checks >= 5 || state.shownThisSession) clearInterval(backupTimer);
+        }, 1000);
     }
 
     function init() {
@@ -216,7 +234,7 @@
         renderWheel();
         renderBalance();
         wire();
-        console.log("[RoulettePopup] Ready.");
+        console.log("[RoulettePopup] Ready. Points:", state.points);
     }
 
     window.GroweraRoulettePopup = {
