@@ -1,5 +1,6 @@
 /* =========================================
-   GROWERA — SHOP EDITOR (v5, GTPS CRUD)
+   GROWERA — SHOP EDITOR (v6, full server-driven)
+   Full CRUD: categories + packages.
 ========================================= */
 
 (function () {
@@ -17,19 +18,15 @@
         "editorViewAppearance"
     ];
 
-    var UI = {
-        package: 1430,
-        edit: 3494,
-        trash: 856,
-        save: 102,
-        add: 1426,
-        shop: 1430
-    };
+    var UI = { package: 1430, edit: 3494, trash: 856, save: 102, add: 1426 };
 
     var state = {
-        categoryKey: "topup",
+        mode: null,          // "category" | "package"
+        categoryKey: null,
         packageId: null
     };
+
+    var shopConfig = { version: 1, categories: [] };
 
     function $(id) { return document.getElementById(id); }
 
@@ -54,20 +51,13 @@
     }
 
     function iconEl(id, size) {
+        if (window.GroweraIcon) return window.GroweraIcon.img(id, size);
         var img = document.createElement("img");
         img.src = "/assets/itemimage/" + id + ".png";
-        img.width = size;
-        img.height = size;
-        img.style.cssText = "width:" + size + "px;height:" + size +
-            "px;object-fit:contain;image-rendering:pixelated;display:block;pointer-events:none";
+        img.width = size; img.height = size;
+        img.style.cssText = "width:" + size + "px;height:" + size + "px;object-fit:contain;image-rendering:pixelated;display:block;pointer-events:none";
         img.alt = "";
         img.draggable = false;
-        var fb = false;
-        img.addEventListener("error", function onErr() {
-            if (!fb) { fb = true; img.src = "https://api.gtps.cloud/api/item/texture/" + id + "/"; return; }
-            img.removeEventListener("error", onErr);
-            img.style.display = "none";
-        });
         return img;
     }
 
@@ -90,7 +80,38 @@
         });
     }
 
+    function loadConfigFromServer() {
+        return apiFetch("/api/growera/admin/shop/config").then(function (r) {
+            if (!r.ok || !r.data || r.data.success !== true) {
+                throw new Error((r.data && r.data.message) || ("HTTP " + r.status));
+            }
+            shopConfig = r.data.config || { version: 1, categories: [] };
+            if (!Array.isArray(shopConfig.categories)) shopConfig.categories = [];
+            return shopConfig;
+        });
+    }
+
+    function saveConfigToServer() {
+        return apiFetch("/api/growera/admin/shop/config", {
+            method: "PUT",
+            body: JSON.stringify(shopConfig)
+        }).then(function (r) {
+            if (!r.ok || !r.data || r.data.success !== true) {
+                throw new Error((r.data && r.data.message) || ("HTTP " + r.status));
+            }
+            return r.data;
+        });
+    }
+
+    function findCategory(key) {
+        for (var i = 0; i < shopConfig.categories.length; i++) {
+            if (shopConfig.categories[i].key === key) return shopConfig.categories[i];
+        }
+        return null;
+    }
+
     function reloadShop() {
+        if (window.GroweraConfig) window.GroweraConfig.clearCache();
         if (window.GroweraShop && window.GroweraShop.reload) return window.GroweraShop.reload();
         return Promise.resolve();
     }
@@ -102,13 +123,14 @@
         if (!container) return;
         container.replaceChildren();
 
-        var cfg = window.GroweraShop ? window.GroweraShop.getConfig() : { categories: [] };
-        var cats = (cfg.categories || []).slice();
+        var cats = shopConfig.categories.slice().sort(function (a, b) {
+            return (a.order || 0) - (b.order || 0);
+        });
 
         if (!cats.length) {
             var empty = document.createElement("p");
             empty.style.cssText = "color:var(--muted);font-size:12px;text-align:center;padding:20px";
-            empty.textContent = "Belum ada kategori.";
+            empty.textContent = "Belum ada kategori. Klik '+ Kategori' untuk menambah.";
             container.appendChild(empty);
             return;
         }
@@ -128,6 +150,12 @@
             var t = document.createElement("div");
             t.className = "shop-editor-item-title";
             t.textContent = !isEmpty(cat.title) ? cat.title : cat.key;
+            if (cat.active === false) {
+                var off = document.createElement("span");
+                off.style.cssText = "margin-left:6px;padding:1px 6px;border-radius:4px;background:rgba(255,92,138,.1);color:#FF5C8A;font-size:10px";
+                off.textContent = "OFF";
+                t.appendChild(off);
+            }
             info.appendChild(t);
 
             var meta = document.createElement("div");
@@ -148,9 +176,110 @@
             pkgBtn.addEventListener("click", function () { openPackageList(cat.key); });
             actions.appendChild(pkgBtn);
 
+            var editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.className = "shop-editor-btn";
+            editBtn.appendChild(iconEl(UI.edit, 16));
+            editBtn.addEventListener("click", function () { openCategoryForm(cat.key); });
+            actions.appendChild(editBtn);
+
+            var delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "shop-editor-btn danger";
+            delBtn.appendChild(iconEl(UI.trash, 16));
+            delBtn.addEventListener("click", function () {
+                if (!confirm("Hapus kategori '" + (cat.title || cat.key) + "' dan semua paketnya?")) return;
+                shopConfig.categories = shopConfig.categories.filter(function (c) { return c.key !== cat.key; });
+                saveConfigToServer().then(function () {
+                    renderCategoryList();
+                    reloadShop();
+                }).catch(function (err) { alert("Gagal: " + err.message); });
+            });
+            actions.appendChild(delBtn);
+
             row.appendChild(actions);
             container.appendChild(row);
         });
+    }
+
+    /* ===== CATEGORY FORM ===== */
+
+    function openCategoryForm(key) {
+        state.mode = "category";
+        state.categoryKey = key || null;
+        state.packageId = null;
+
+        var cat = key ? findCategory(key) : null;
+        var titleEl = $("shopFormTitle");
+        if (titleEl) titleEl.textContent = cat ? "Edit Kategori" : "Buat Kategori Baru";
+
+        setField("shopFormKey",    cat ? (cat.key || "") : "");
+        setField("shopFormTier",   cat ? (cat.variant || "crystal") : "crystal");
+        setField("shopFormIcon",   cat ? (cat.currencyIcon || 112) : 112);
+        setField("shopFormValue",  cat ? (cat.currencyName || "GEMS") : "GEMS");
+        setField("shopFormUnit",   cat ? (cat.subtitle || "") : "");
+        setField("shopFormPrice",  cat ? (cat.eyebrow || "") : "");
+        setField("shopFormOrder",  cat ? (cat.order || 0) : 0);
+        setField("shopFormBadge",  cat ? (cat.title || "") : "");
+        setField("shopFormActive", cat && cat.active === false ? "0" : "1");
+
+        applyLabels({
+            key:   "Kategori Key (unik, huruf kecil)",
+            tier:  "Variant (tema warna)",
+            icon:  "Currency Icon (item ID)",
+            value: "Currency Name",
+            unit:  "Subtitle",
+            price: "Eyebrow",
+            order: "Order",
+            badge: "Judul (Title)",
+            active: "Status"
+        });
+
+        var rewardsSection = $("shopFormRewardsSection");
+        if (rewardsSection) rewardsSection.style.display = "none";
+
+        showView("editorViewShopForm");
+
+        var iconInput = $("shopFormIcon");
+        if (iconInput) iconInput.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function saveCategoryForm() {
+        var key = (getField("shopFormKey") || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+        if (!key) { alert("Kategori Key wajib diisi."); return; }
+
+        var existing = state.categoryKey ? findCategory(state.categoryKey) : null;
+        var currencyName = getField("shopFormValue").trim() || "GEMS";
+
+        var newCat = {
+            key: key,
+            variant: getField("shopFormTier") || "crystal",
+            currencyIcon: parseInt(getField("shopFormIcon"), 10) || 112,
+            currencyName: currencyName,
+            currencyKey: currencyName.toLowerCase() || key,
+            subtitle: getField("shopFormUnit").trim(),
+            eyebrow: getField("shopFormPrice").trim(),
+            order: parseInt(getField("shopFormOrder"), 10) || 0,
+            title: getField("shopFormBadge").trim() || key.toUpperCase(),
+            showBalance: true,
+            active: getField("shopFormActive") === "1",
+            packages: existing ? (existing.packages || []) : []
+        };
+
+        if (existing) {
+            var idx = shopConfig.categories.indexOf(existing);
+            shopConfig.categories[idx] = newCat;
+        } else {
+            if (findCategory(key)) { alert("Kategori '" + key + "' sudah ada."); return; }
+            shopConfig.categories.push(newCat);
+        }
+
+        saveConfigToServer().then(function () {
+            showView("editorViewShopCategories");
+            renderCategoryList();
+            reloadShop();
+            alert("Kategori disimpan!");
+        }).catch(function (err) { alert("Gagal: " + err.message); });
     }
 
     /* ===== PACKAGE LIST ===== */
@@ -167,9 +296,7 @@
         var titleEl = $("shopPackagesTitle");
         if (!container) return;
 
-        var cfg = window.GroweraShop ? window.GroweraShop.getConfig() : { categories: [] };
-        var cat = (cfg.categories || []).filter(function (c) { return c.key === state.categoryKey; })[0];
-
+        var cat = findCategory(state.categoryKey);
         if (!cat) {
             alert("Kategori tidak ditemukan.");
             showView("editorViewShopCategories");
@@ -197,7 +324,7 @@
             return;
         }
 
-        pkgs.forEach(function (pkg) {
+        pkgs.forEach(function (pkg, idx) {
             var row = document.createElement("div");
             row.className = "shop-editor-item";
 
@@ -238,7 +365,7 @@
             editBtn.type = "button";
             editBtn.className = "shop-editor-btn";
             editBtn.appendChild(iconEl(UI.edit, 16));
-            editBtn.addEventListener("click", function () { openPackageForm(pkg.backendId); });
+            editBtn.addEventListener("click", function () { openPackageForm(idx); });
             actions.appendChild(editBtn);
 
             var delBtn = document.createElement("button");
@@ -247,7 +374,11 @@
             delBtn.appendChild(iconEl(UI.trash, 16));
             delBtn.addEventListener("click", function () {
                 if (!confirm("Hapus paket '" + pkg.id + "'?")) return;
-                deletePackage(pkg.backendId);
+                cat.packages.splice(idx, 1);
+                saveConfigToServer().then(function () {
+                    renderPackageList();
+                    reloadShop();
+                }).catch(function (err) { alert("Gagal: " + err.message); });
             });
             actions.appendChild(delBtn);
 
@@ -258,15 +389,15 @@
 
     /* ===== PACKAGE FORM ===== */
 
-    function openPackageForm(backendId) {
-        state.packageId = backendId || null;
+    function openPackageForm(editIdx) {
+        state.mode = "package";
+        state.packageId = (editIdx === undefined || editIdx === null) ? null : editIdx;
 
-        var cfg = window.GroweraShop ? window.GroweraShop.getConfig() : { categories: [] };
-        var cat = (cfg.categories || []).filter(function (c) { return c.key === state.categoryKey; })[0];
+        var cat = findCategory(state.categoryKey);
         if (!cat) return;
 
-        var pkg = backendId
-            ? (cat.packages || []).filter(function (p) { return p.backendId === backendId; })[0]
+        var pkg = state.packageId !== null
+            ? (cat.packages || [])[state.packageId]
             : null;
 
         var titleEl = $("shopFormTitle");
@@ -284,7 +415,7 @@
         setField("shopFormActive", pkg && pkg.active === false ? "0" : "1");
 
         applyLabels({
-            key:    "Package Key (unik, huruf kecil)",
+            key:    "Package Key (unik)",
             tier:   "Tier",
             icon:   "Icon Item ID",
             value:  "Display Value",
@@ -305,82 +436,63 @@
         if (iconInput) iconInput.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
-    /* ===== CRUD ===== */
-
     function parseBonusPercent(text) {
         if (isEmpty(text)) return 0;
         var m = String(text).match(/(\d+)\s*%/);
         return m ? (parseInt(m[1], 10) || 0) : 0;
     }
 
-    function savePackage() {
+    function savePackageForm() {
         var key = (getField("shopFormKey") || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
-        if (!key) { alert("Package Key wajib diisi (huruf kecil, angka, -, _)."); return; }
+        if (!key) { alert("Package Key wajib diisi."); return; }
 
-        var payload = {
-            package_key: key,
-            gems: parseInt(getField("shopFormValue"), 10) || 0,
-            bonus_percent: parseBonusPercent(getField("shopFormBonus")),
+        var cat = findCategory(state.categoryKey);
+        if (!cat) return;
+
+        var displayValue = getField("shopFormValue").trim();
+        var displayUnit = getField("shopFormUnit").trim() || "GEMS";
+
+        var newPkg = {
+            id: key,
+            iconId: parseInt(getField("shopFormIcon"), 10) || 112,
             price: parseInt(getField("shopFormPrice"), 10) || 0,
             tier: getField("shopFormTier") || "starter",
-            badge: (getField("shopFormBadge") || "").trim(),
+            badge: getField("shopFormBadge").trim() || null,
             order: parseInt(getField("shopFormOrder"), 10) || 0,
-            active: getField("shopFormActive") === "1"
+            active: getField("shopFormActive") === "1",
+            displayValue: displayValue,
+            displayUnit: displayUnit,
+            bonusText: getField("shopFormBonus").trim() || null,
+            rewards: [{
+                type: "gems",
+                amount: parseInt(displayValue, 10) || 0
+            }]
         };
 
-        var url, method;
-        if (state.packageId) {
-            url = "/api/growera/admin/topup/" + state.packageId;
-            method = "PUT";
+        if (state.packageId !== null) {
+            cat.packages[state.packageId] = newPkg;
         } else {
-            url = "/api/growera/admin/topup";
-            method = "POST";
+            if ((cat.packages || []).some(function (p) { return p.id === key; })) {
+                alert("Package Key '" + key + "' sudah dipakai.");
+                return;
+            }
+            cat.packages = cat.packages || [];
+            cat.packages.push(newPkg);
         }
 
-        apiFetch(url, { method: method, body: JSON.stringify(payload) })
-            .then(function (r) {
-                if (!r.ok || !r.data || r.data.success !== true) {
-                    throw new Error((r.data && r.data.message) || ("HTTP " + r.status));
-                }
-                return reloadShop();
-            })
-            .then(function () {
-                showView("editorViewShopPackages");
-                renderPackageList();
-                alert("Paket disimpan!");
-            })
-            .catch(function (err) {
-                console.error("[ShopEditor] Save error:", err);
-                alert("Gagal simpan: " + err.message);
-            });
-    }
-
-    function deletePackage(backendId) {
-        if (!backendId) { alert("Package ID tidak valid."); return; }
-        apiFetch("/api/growera/admin/topup/" + backendId, { method: "DELETE" })
-            .then(function (r) {
-                if (!r.ok || !r.data || r.data.success !== true) {
-                    throw new Error((r.data && r.data.message) || ("HTTP " + r.status));
-                }
-                return reloadShop();
-            })
-            .then(function () { renderPackageList(); })
-            .catch(function (err) {
-                console.error("[ShopEditor] Delete error:", err);
-                alert("Gagal hapus: " + err.message);
-            });
+        saveConfigToServer().then(function () {
+            showView("editorViewShopPackages");
+            renderPackageList();
+            reloadShop();
+            alert("Paket disimpan!");
+        }).catch(function (err) { alert("Gagal: " + err.message); });
     }
 
     /* ===== FIELD HELPERS ===== */
 
-    function setField(id, value) {
-        var el = $(id);
-        if (el) el.value = value;
-    }
-    function getField(id) {
-        var el = $(id);
-        return el ? el.value : "";
-    }
+    function setField(id, value) { var el = $(id); if (el) el.value = value; }
+    function getField(id) { var el = $(id); return el ? el.value : ""; }
+
     function applyLabels(map) {
         var ids = {
             key: "shopFormKey", tier: "shopFormTier", icon: "shopFormIcon",
@@ -400,11 +512,23 @@
 
     /* ===== WIRE ===== */
 
+    function goBackFromForm() {
+        if (state.mode === "package") {
+            showView("editorViewShopPackages");
+            renderPackageList();
+        } else {
+            showView("editorViewShopCategories");
+            renderCategoryList();
+        }
+    }
+
     function wire() {
         document.querySelectorAll('[data-editor-module="topup"]').forEach(function (btn) {
             btn.addEventListener("click", function () {
                 showView("editorViewShopCategories");
-                renderCategoryList();
+                loadConfigFromServer().then(renderCategoryList).catch(function (err) {
+                    alert("Gagal load: " + err.message);
+                });
             });
         });
 
@@ -417,24 +541,25 @@
             renderCategoryList();
         });
 
+        var createCat = $("shopEditorCreateCategoryBtn");
+        if (createCat) createCat.addEventListener("click", function () { openCategoryForm(null); });
+
         var createPkg = $("shopEditorCreatePackageBtn");
         if (createPkg) createPkg.addEventListener("click", function () { openPackageForm(null); });
 
         var formBack = $("shopFormBackBtn");
-        if (formBack) formBack.addEventListener("click", goBack);
+        if (formBack) formBack.addEventListener("click", goBackFromForm);
 
         var formCancel = $("shopFormCancelBtn");
-        if (formCancel) formCancel.addEventListener("click", goBack);
+        if (formCancel) formCancel.addEventListener("click", goBackFromForm);
 
         var formSave = $("shopFormSaveBtn");
-        if (formSave) formSave.addEventListener("click", savePackage);
+        if (formSave) formSave.addEventListener("click", function () {
+            if (state.mode === "category") saveCategoryForm();
+            else if (state.mode === "package") savePackageForm();
+        });
 
         console.log("[ShopEditor] Ready.");
-    }
-
-    function goBack() {
-        showView("editorViewShopPackages");
-        renderPackageList();
     }
 
     if (document.readyState === "loading") {
