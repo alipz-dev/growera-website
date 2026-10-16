@@ -25,6 +25,10 @@
 .meta-item strong{display:block;font-family:var(--display);font-size:12.5px;font-weight:600;color:#e8f0ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .meta-item.is-empty strong{color:#4b5670;font-weight:500}
 
+/* ===== Mini Stat Icons (Level & Gems) ===== */
+.mini-stat-icon{display:block;width:30px;height:30px;margin:0 auto 6px;image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 0 8px rgba(140,232,255,.15));transition:filter .2s,transform .2s}
+.mini-stats>div:hover .mini-stat-icon{filter:drop-shadow(0 0 12px rgba(140,232,255,.35));transform:scale(1.05)}
+
 .toast-container{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:min(360px,calc(100vw - 32px))}
 .toast{pointer-events:auto;display:flex;align-items:flex-start;gap:10px;min-width:240px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d1628f2;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#e8f0ff;font-size:12px;line-height:1.5;box-shadow:0 12px 40px #0009;opacity:0;transform:translateX(20px);transition:opacity .25s,transform .25s}
 .toast.show{opacity:1;transform:translateX(0)}
@@ -114,7 +118,6 @@
 .player-card-tabs .tab-loading{text-align:center;padding:24px 12px;color:#667392;font-size:11px}
 .player-card-tabs .tab-empty{text-align:center;padding:24px 12px;color:#4b5670;font-size:11px;font-style:italic}
 
-/* Inventory inside player card */
 .player-card-tabs .inventory-grid-content{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px}
 .player-card-tabs .inv-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px 6px;border:1px solid var(--line);border-radius:10px;background:#050a1614;transition:border-color .15s,background .15s;cursor:default}
 .player-card-tabs .inv-item:hover{border-color:#8ce8ff40;background:#8ce8ff08}
@@ -124,7 +127,6 @@
 .player-card-tabs .inv-item-count{position:absolute;top:3px;right:3px;padding:0 5px;border-radius:5px;background:#000000cc;color:#9cecff;font-family:monospace;font-size:8px;font-weight:bold;line-height:1.5}
 .player-card-tabs .inv-item-id{position:absolute;top:3px;left:3px;padding:0 4px;border-radius:4px;background:#00000088;color:#667392;font-family:monospace;font-size:7.5px;line-height:1.5}
 
-/* Worlds inside player card */
 .player-card-tabs .worlds-content{display:flex;flex-direction:column;gap:14px}
 .player-card-tabs .world-group{display:flex;flex-direction:column;gap:6px}
 .player-card-tabs .world-group-head{display:flex;align-items:center;justify-content:space-between;font-size:8px;font-weight:700;letter-spacing:.12em;color:#8190b0;padding:3px 0;border-bottom:1px solid #ffffff08}
