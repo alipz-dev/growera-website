@@ -8,7 +8,7 @@
   // Jangan tambahkan /api/growera di bagian ini.
   // =========================================================
 
-  const API_BASE_URL = "https://ALAMAT-SERVER-LUA-KAMU";
+  const API_BASE_URL = "";
 
   const API_PREFIX = "/api/growera";
   const TOKEN_KEY = "growera_session_token";
