@@ -252,6 +252,16 @@
             <span>WORLDS</span>
             <span class="tab-count" id="tabCountWorlds">—</span>
         </button>
+        <button class="tab-btn" data-tab="friends" role="tab" aria-selected="false">
+            <img src="https://api.gtps.cloud/api/item/texture/1791/980/" alt="" width="18" height="18" style="image-rendering:pixelated">
+            <span>FRIENDS</span>
+            <span class="tab-count" id="tabCountFriends">—</span>
+        </button>
+        <button class="tab-btn" data-tab="guild" role="tab" aria-selected="false">
+            <img src="https://api.gtps.cloud/api/item/texture/1791/1744/" alt="" width="18" height="18" style="image-rendering:pixelated">
+            <span>GUILD</span>
+            <span class="tab-count" id="tabCountGuild">—</span>
+        </button>
         <button class="tab-btn" data-tab="achievements" role="tab" aria-selected="false">
             <img src="https://api.gtps.cloud/api/item/texture/1791/1458/" alt="" width="18" height="18" style="image-rendering:pixelated">
             <span>ACHIEVEMENTS</span>
@@ -301,6 +311,58 @@
                     <div class="world-chips" id="worldsLockedList"></div>
                 </div>
             </div>
+        </div>
+
+        <!-- FRIENDS TAB -->
+        <div class="tab-panel" id="tabPanelFriends" role="tabpanel">
+            <div class="tab-loading" id="friendsLoading">Memuat daftar teman...</div>
+            <div class="friends-grid" id="friendsGridContent" hidden></div>
+            <div class="tab-empty" id="friendsEmpty" hidden>Belum ada teman.</div>
+        </div>
+
+        <!-- GUILD TAB -->
+        <div class="tab-panel" id="tabPanelGuild" role="tabpanel">
+            <div class="tab-loading" id="guildLoading">Memuat data guild...</div>
+            <div class="guild-content" id="guildContent" hidden>
+                <div class="guild-hero">
+                    <div class="guild-mascot" id="guildMascotWrap">
+                        <img id="guildMascotImg" alt="" width="64" height="64" style="image-rendering:pixelated;display:none">
+                        <span id="guildMascotFallback" style="font-size:32px">🛡</span>
+                    </div>
+                    <div class="guild-hero-info">
+                        <h3 class="guild-name" id="guildName">—</h3>
+                        <p class="guild-desc" id="guildDesc">—</p>
+                        <span class="guild-level-chip" id="guildLevel">LV 0</span>
+                    </div>
+                </div>
+                <div class="guild-stats-grid">
+                    <div class="guild-stat">
+                        <span>GUILD ID</span>
+                        <strong id="guildId">—</strong>
+                    </div>
+                    <div class="guild-stat">
+                        <span>LEVEL</span>
+                        <strong id="guildLevelValue">—</strong>
+                    </div>
+                    <div class="guild-stat">
+                        <span>XP</span>
+                        <strong id="guildXp">—</strong>
+                    </div>
+                    <div class="guild-stat">
+                        <span>POINTS</span>
+                        <strong id="guildPoints">—</strong>
+                    </div>
+                    <div class="guild-stat">
+                        <span>WORLD</span>
+                        <strong id="guildWorld">—</strong>
+                    </div>
+                    <div class="guild-stat">
+                        <span>CREATED</span>
+                        <strong id="guildCreated">—</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-empty" id="guildEmpty" hidden>Kamu belum bergabung dengan guild mana pun.</div>
         </div>
 
         <!-- ACHIEVEMENTS TAB -->
