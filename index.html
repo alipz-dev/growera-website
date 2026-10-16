@@ -1,3 +1,41 @@
 <!doctype html>
-<html lang="id"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="theme-color" content="#080d19"/><title>GROWERA | Crystal Era</title></head>
-<body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body></html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d19"><meta name="description" content="GROWERA Crystal Era — Player Portal">
+<title>GROWERA | Crystal Era</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/login.css"><link rel="stylesheet" href="css/profile.css">
+</head>
+<body><div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+<main class="app-shell">
+<section class="login-view" id="loginView" aria-labelledby="loginTitle">
+<div class="login-brand"><div class="brand-gem">◆</div><div><span class="brand-name">GROWERA</span><span class="brand-subtitle">CRYSTAL ERA</span></div></div>
+<div class="login-card glass"><div class="eyebrow"><span class="eyebrow-line"></span> PLAYER PORTAL</div>
+<h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1><p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
+<form id="loginForm" novalidate><label for="username">USERNAME</label><div class="input-wrap"><span class="input-icon">♙</span><input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="24"></div>
+<label for="password">PASSWORD</label><div class="input-wrap"><span class="input-icon">⌑</span><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter any password" required></div>
+<p class="form-message" id="formMessage" role="status"></p><button class="button button-primary button-wide" type="submit">SIGN IN <span>↗</span></button></form>
+<div class="demo-note"><span class="status-dot"></span> DEMO MODE <span class="demo-divider">•</span> No real authentication yet</div></div>
+<footer class="site-footer">GROWERA © <span id="year"></span> CRYSTAL ERA</footer>
+</section>
+<section class="profile-view hidden" id="profileView" aria-labelledby="profileTitle">
+<header class="topbar"><div class="login-brand compact"><div class="brand-gem">◆</div><div><span class="brand-name">GROWERA</span><span class="brand-subtitle">CRYSTAL ERA</span></div></div><button class="button button-quiet" id="logoutButton" type="button">↪ <span>LOG OUT</span></button></header>
+<div class="dashboard-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PLAYER ACCOUNT</div><h1 id="profileTitle">Welcome back, <span id="welcomeName">Player</span>.</h1><p class="muted">Your Crystal Era journey at a glance.</p></div><div class="online-pill"><span class="status-dot"></span> PLAYER PREVIEW</div></div>
+<div class="profile-grid">
+<article class="player-card glass"><div class="card-topline"><span>PLAYER PROFILE</span><span class="tiny-badge">✦ BETA</span></div>
+<div class="avatar-orbit"><div class="avatar" id="avatarInitial">P</div><span class="orbit-spark">✦</span></div><h2 id="profileName">Player</h2><p class="player-handle" id="profileHandle">@player</p><div class="rank-chip"><span>◇</span> CRYSTAL EXPLORER</div>
+<div class="card-divider"></div><div class="mini-stats"><div><span>LEVEL</span><strong id="levelValue">24</strong></div><div><span>GEMS</span><strong id="gemsValue">1,250</strong></div></div>
+<div class="xp-heading"><span>EXPERIENCE</span><span id="xpPercent">68%</span></div><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><div class="xp-caption"><span id="xpCurrent">6,800 XP</span><span id="xpNext">10,000 XP</span></div>
+<button class="button button-outline button-wide" id="editPreviewButton" type="button">EDIT PREVIEW PROFILE</button></article>
+<div class="side-column"><article class="welcome-panel glass"><div class="welcome-art" aria-hidden="true"><div class="crystal crystal-a"></div><div class="crystal crystal-b"></div><div class="crystal crystal-c"></div><div class="art-glow"></div></div>
+<div class="welcome-content"><span class="tiny-badge">✧ YOUR JOURNEY</span><h2>A new era<br>begins with you.</h2><p class="muted">Every crystal tells a story. Keep exploring, collect rewards, and build your legacy in GROWERA.</p><button class="text-button" id="exploreButton" type="button">EXPLORE YOUR PROFILE <span>→</span></button></div></article>
+<div class="stat-grid"><article class="stat-card glass"><div class="stat-icon purple">✧</div><span class="stat-label">ACHIEVEMENTS</span><strong>Coming Soon</strong><p>Milestones await</p></article><article class="stat-card glass"><div class="stat-icon cyan">◷</div><span class="stat-label">PLAY TIME</span><strong>Coming Soon</strong><p>Adventure history</p></article></div>
+<article class="notice-panel"><span class="notice-icon">ⓘ</span><p><strong>Preview environment</strong><br>This profile currently uses sample data. Server/API integration can be added later.</p></article></div></div>
+<footer class="site-footer">GROWERA © <span id="yearProfile"></span> CRYSTAL ERA <span class="footer-separator">•</span> BUILT FOR EXPLORERS</footer>
+</section></main>
+<dialog class="edit-dialog glass" id="editDialog"><form id="editForm" method="dialog"><div class="dialog-heading"><div><div class="eyebrow">PROFILE SETTINGS</div><h2>Edit preview</h2></div><button class="icon-button" value="cancel" aria-label="Close dialog">×</button></div>
+<label for="editUsername">DISPLAY NAME</label><input id="editUsername" maxlength="24" required><label for="editLevel">LEVEL</label><input id="editLevel" type="number" min="1" max="999" required><label for="editGems">GEMS</label><input id="editGems" type="number" min="0" max="999999999" required>
+<div class="dialog-actions"><button class="button button-quiet" value="cancel">CANCEL</button><button class="button button-primary" id="saveProfileButton" value="default">SAVE PREVIEW</button></div></form></dialog>
+<script src="js/demo-data.js"></script><script src="js/app.js"></script></body></html>
