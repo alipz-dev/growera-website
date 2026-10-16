@@ -1126,7 +1126,7 @@ function renderAchievementsTab(result) {
             const icon = document.createElement("div");
             icon.className = "ach-icon";
             const img = document.createElement("img");
-            const iconId = ach.unlocked ? 1458 : 202;
+            const iconId = ach.iconId || (ach.unlocked ? 1458 : 202);
             img.src = avatarUrl(iconId);
             img.alt = "";
             img.addEventListener("error", () => {
