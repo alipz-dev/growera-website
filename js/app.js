@@ -199,6 +199,7 @@ function setSavingEdit(saving) {
 
 function setLoginVisible() {
     isAuthenticated = false;
+    document.documentElement.setAttribute("data-auth", "out");
     loginView?.classList.remove("hidden");
     profileView?.classList.add("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -207,6 +208,7 @@ function setLoginVisible() {
 
 function setProfileVisible() {
     if (!isAuthenticated) return;
+    document.documentElement.setAttribute("data-auth", "in");
     renderProfile();
     loginView?.classList.add("hidden");
     profileView?.classList.remove("hidden");
@@ -345,7 +347,6 @@ function renderProfile() {
             name.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24);
     }
 
-    // Avatar
     const avatarEl = $("#avatarInitial");
     if (avatarEl) {
         avatarEl.replaceChildren();
@@ -362,7 +363,6 @@ function renderProfile() {
         }
     }
 
-    // Role
     const roleBadge = $("#roleBadge");
     if (roleBadge) {
         roleBadge.classList.remove("role-admin", "role-player");
@@ -375,7 +375,6 @@ function renderProfile() {
         }
     }
 
-    // Stats
     if ($("#levelValue")) $("#levelValue").textContent = fmt(player.level);
     if ($("#gemsValue")) $("#gemsValue").textContent = fmt(player.gems);
 
@@ -390,7 +389,6 @@ function renderProfile() {
 
     if ($("#playtimeValue")) $("#playtimeValue").textContent = fmtPlaytime(player.playtime);
 
-    // Bio
     const bio = $("#bioValue");
     if (bio) {
         if (player.bio) {
@@ -402,7 +400,6 @@ function renderProfile() {
         }
     }
 
-    // Meta
     setMetaValue("#countryValue", player.country);
     setMetaValue("#birthdateValue", fmtBirthdate(player.birthdate));
     setMetaValue("#discordValue", player.discordUsername ? "@" + player.discordUsername : "");
@@ -413,7 +410,6 @@ function renderProfile() {
         msBadge.textContent = player.createdAt > 0 ? fmtDateId(player.createdAt) : "NEW";
     }
 
-    // Online
     const pill = $("#onlinePill");
     const onlineText = $("#onlineText");
     if (pill && onlineText) {
@@ -428,7 +424,6 @@ function renderProfile() {
 
     document.documentElement.dataset.groweraRole = player.role;
 
-    // Update Discord bind state
     renderDiscordState();
 }
 
@@ -515,7 +510,6 @@ async function handleLogin(event) {
         setProfileVisible();
         toast("Selamat datang, " + player.username + "!", "success");
 
-        // Auto detect country di background (tidak blocking)
         autoFillCountryIfEmpty();
     } catch (error) {
         clearToken();
@@ -752,7 +746,6 @@ async function handleDiscordBind() {
         return;
     }
 
-    // Mode bind
     toast("Discord OAuth akan tersedia setelah admin mengkonfigurasi. Hubungi admin.", "info", 5000);
 }
 
