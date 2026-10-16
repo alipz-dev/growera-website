@@ -17,7 +17,9 @@
 <!-- ============ LOGIN ============ -->
 <section class="login-view" id="loginView" aria-labelledby="loginTitle">
     <div class="login-brand">
-        <div class="brand-gem">◆</div>
+        <div class="brand-gem">
+            <img src="https://api.gtps.cloud/api/item/texture/1791/112/" alt="" width="22" height="22" style="image-rendering:pixelated">
+        </div>
         <div>
             <span class="brand-name">GROWERA</span>
             <span class="brand-subtitle">CRYSTAL ERA</span>
@@ -32,20 +34,20 @@
         <form id="loginForm" novalidate>
             <label for="username">USERNAME</label>
             <div class="input-wrap">
-                <span class="input-icon">♙</span>
+                <span class="input-icon"><img src="https://api.gtps.cloud/api/item/texture/1791/980/" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
                 <input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="64" spellcheck="false" autocapitalize="off">
             </div>
 
             <label for="password">PASSWORD</label>
             <div class="input-wrap">
-                <span class="input-icon">⌑</span>
+                <span class="input-icon"><img src="https://api.gtps.cloud/api/item/texture/1791/202/" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
                 <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required maxlength="256">
                 <button class="password-toggle" id="passwordToggle" type="button" aria-label="Show password" aria-pressed="false">
-                    <span class="eye-open">👁</span>
-                    <span class="eye-closed hidden">🙈</span>
+                    <img class="eye-open" src="https://api.gtps.cloud/api/item/texture/1791/1226/" alt="Show password" width="20" height="20" style="image-rendering:pixelated">
+                    <img class="eye-closed hidden" src="https://api.gtps.cloud/api/item/texture/1791/290/" alt="Hide password" width="20" height="20" style="image-rendering:pixelated">
                 </button>
             </div>
-            <p class="caps-warning" id="capsLockWarning">⚠ CAPS LOCK AKTIF</p>
+            <p class="caps-warning" id="capsLockWarning"><img src="https://api.gtps.cloud/api/item/texture/1791/1182/" alt="" width="14" height="14" style="image-rendering:pixelated;vertical-align:-2px"> CAPS LOCK AKTIF</p>
 
             <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
 
@@ -69,15 +71,22 @@
 
     <header class="topbar">
         <div class="login-brand compact">
-            <div class="brand-gem">◆</div>
+            <div class="brand-gem">
+                <img src="https://api.gtps.cloud/api/item/texture/1791/112/" alt="" width="18" height="18" style="image-rendering:pixelated">
+            </div>
             <div>
                 <span class="brand-name">GROWERA</span>
                 <span class="brand-subtitle">CRYSTAL ERA</span>
             </div>
         </div>
         <div class="topbar-actions">
-            <button class="refresh-button" id="refreshButton" type="button" aria-label="Refresh profile" title="Refresh profile">⟳</button>
-            <button class="button button-quiet" id="logoutButton" type="button">↪ <span>LOG OUT</span></button>
+            <button class="refresh-button" id="refreshButton" type="button" aria-label="Refresh profile" title="Refresh profile">
+                <img src="https://api.gtps.cloud/api/item/texture/1791/1274/" alt="" width="20" height="20" style="image-rendering:pixelated">
+            </button>
+            <button class="button button-quiet" id="logoutButton" type="button">
+                <img src="https://api.gtps.cloud/api/item/texture/1791/6/" alt="" width="14" height="14" style="image-rendering:pixelated">
+                <span>LOG OUT</span>
+            </button>
         </div>
     </header>
 
@@ -99,17 +108,19 @@
         <article class="player-card glass">
             <div class="card-topline">
                 <span>PLAYER PROFILE</span>
-                <span class="tiny-badge" id="roleBadge">✦ PLAYER</span>
+                <span class="tiny-badge" id="roleBadge">PLAYER</span>
             </div>
 
             <div class="avatar-orbit">
                 <div class="avatar" id="avatarInitial">P</div>
-                <span class="orbit-spark">✦</span>
             </div>
 
             <h2 id="profileName">Player</h2>
             <p class="player-handle" id="profileHandle">@player</p>
-            <div class="rank-chip"><span>◇</span> CRYSTAL EXPLORER</div>
+            <div class="rank-chip" id="rankChip">
+                <img src="https://api.gtps.cloud/api/item/texture/1791/262/" alt="" width="12" height="12" style="image-rendering:pixelated">
+                <span>CRYSTAL EXPLORER</span>
+            </div>
 
             <div class="card-divider"></div>
 
@@ -134,13 +145,15 @@
                 <span id="xpNext">1 XP</span>
             </div>
 
-            <button class="button button-outline button-wide" id="editPreviewButton" type="button">EDIT PROFILE</button>
+            <button class="button button-outline button-wide" id="editPreviewButton" type="button">
+                <img src="https://api.gtps.cloud/api/item/texture/1791/3494/" alt="" width="14" height="14" style="image-rendering:pixelated">
+                <span>EDIT PROFILE</span>
+            </button>
         </article>
 
-        <!-- RIGHT: Side Column -->
+        <!-- RIGHT -->
         <div class="side-column">
 
-            <!-- ABOUT ME -->
             <article class="profile-meta glass">
                 <div class="meta-header">
                     <h3>ABOUT ME</h3>
@@ -152,21 +165,13 @@
                         <span class="meta-label">COUNTRY</span>
                         <strong id="countryValue">—</strong>
                     </div>
-                    <div class="meta-item" id="metaFavoriteWorld">
-                        <span class="meta-label">FAVORITE WORLD</span>
-                        <strong id="favoriteWorldValue">—</strong>
+                    <div class="meta-item" id="metaBirthdate">
+                        <span class="meta-label">BIRTHDATE</span>
+                        <strong id="birthdateValue">—</strong>
                     </div>
                     <div class="meta-item" id="metaDiscord">
                         <span class="meta-label">DISCORD</span>
                         <strong id="discordValue">—</strong>
-                    </div>
-                    <div class="meta-item" id="metaInstagram">
-                        <span class="meta-label">INSTAGRAM</span>
-                        <strong id="instagramValue">—</strong>
-                    </div>
-                    <div class="meta-item" id="metaBirthdate">
-                        <span class="meta-label">BIRTHDATE</span>
-                        <strong id="birthdateValue">—</strong>
                     </div>
                     <div class="meta-item" id="metaMemberSince">
                         <span class="meta-label">MEMBER SINCE</span>
@@ -175,7 +180,6 @@
                 </div>
             </article>
 
-            <!-- WELCOME PANEL -->
             <article class="welcome-panel glass">
                 <div class="welcome-art" aria-hidden="true">
                     <div class="crystal crystal-a"></div>
@@ -184,7 +188,7 @@
                     <div class="art-glow"></div>
                 </div>
                 <div class="welcome-content">
-                    <span class="tiny-badge">✧ YOUR JOURNEY</span>
+                    <span class="tiny-badge">YOUR JOURNEY</span>
                     <h2>A new era<br>begins with you.</h2>
                     <p class="muted">Every crystal tells a story. Keep exploring, collect rewards, and build your legacy in GROWERA.</p>
                     <button class="text-button" id="exploreButton" type="button">EXPLORE YOUR PROFILE <span>→</span></button>
@@ -193,13 +197,17 @@
 
             <div class="stat-grid">
                 <article class="stat-card glass">
-                    <div class="stat-icon purple">✧</div>
+                    <div class="stat-icon purple">
+                        <img src="https://api.gtps.cloud/api/item/texture/1791/1458/" alt="" width="20" height="20" style="image-rendering:pixelated">
+                    </div>
                     <span class="stat-label">ACHIEVEMENTS</span>
                     <strong>Coming Soon</strong>
                     <p>Milestones await</p>
                 </article>
                 <article class="stat-card glass">
-                    <div class="stat-icon cyan">◷</div>
+                    <div class="stat-icon cyan">
+                        <img src="https://api.gtps.cloud/api/item/texture/1791/7162/" alt="" width="20" height="20" style="image-rendering:pixelated">
+                    </div>
                     <span class="stat-label">PLAY TIME</span>
                     <strong id="playtimeValue">—</strong>
                     <p>Adventure history</p>
@@ -207,7 +215,9 @@
             </div>
 
             <article class="notice-panel">
-                <span class="notice-icon">ⓘ</span>
+                <span class="notice-icon">
+                    <img src="https://api.gtps.cloud/api/item/texture/1791/660/" alt="" width="16" height="16" style="image-rendering:pixelated">
+                </span>
                 <p><strong>Preview environment</strong><br>Data profil mengikuti server GROWERA secara langsung.</p>
             </article>
 
@@ -219,7 +229,7 @@
 
 </main>
 
-<!-- ============ EDIT DIALOG (Sprint 4) ============ -->
+<!-- ============ EDIT DIALOG ============ -->
 <dialog class="edit-dialog glass" id="editDialog">
     <form id="editForm" novalidate>
         <div class="dialog-heading">
@@ -231,9 +241,6 @@
         </div>
 
         <div class="edit-scroll">
-
-            <label for="editDisplayName">DISPLAY NAME</label>
-            <input id="editDisplayName" type="text" maxlength="32" placeholder="Your display name" autocomplete="off">
 
             <div class="edit-label-row">
                 <label for="editBio">BIO</label>
@@ -251,19 +258,13 @@
                     <p class="edit-hint">Kosongkan untuk pakai inisial nama.</p>
                 </div>
             </div>
-            <div class="avatar-presets" id="avatarPresets">
-                <button type="button" data-avatar-id="112" title="Gems">💎</button>
-                <button type="button" data-avatar-id="242" title="World Lock">🔒</button>
-                <button type="button" data-avatar-id="1458" title="Golden Heart Crystal">💠</button>
-                <button type="button" data-avatar-id="4820" title="Phoenix Crown">👑</button>
-                <button type="button" data-avatar-id="1796" title="Diamond Lock">💎</button>
-                <button type="button" data-avatar-id="3020" title="Whizmo Gizmo">⚙</button>
-            </div>
+            <div class="avatar-presets" id="avatarPresets"></div>
 
             <div class="edit-row">
                 <div>
-                    <label for="editCountry">COUNTRY CODE</label>
-                    <input id="editCountry" type="text" maxlength="2" placeholder="ID" autocomplete="off" style="text-transform:uppercase">
+                    <label>COUNTRY</label>
+                    <input id="editCountry" type="text" readonly placeholder="Auto" style="opacity:.7;cursor:not-allowed">
+                    <p class="edit-hint">Terdeteksi otomatis dari IP.</p>
                 </div>
                 <div>
                     <label for="editBirthdate">BIRTHDATE</label>
@@ -271,17 +272,22 @@
                 </div>
             </div>
 
-            <label for="editFavoriteWorld">FAVORITE WORLD</label>
-            <input id="editFavoriteWorld" type="text" maxlength="32" placeholder="WORLD NAME" autocomplete="off" style="text-transform:uppercase">
-
-            <div class="edit-row">
-                <div>
-                    <label for="editDiscord">DISCORD</label>
-                    <input id="editDiscord" type="text" maxlength="37" placeholder="username" autocomplete="off">
-                </div>
-                <div>
-                    <label for="editInstagram">INSTAGRAM</label>
-                    <input id="editInstagram" type="text" maxlength="30" placeholder="username" autocomplete="off">
+            <div class="edit-discord-section">
+                <label>DISCORD</label>
+                <div class="discord-bind" id="discordBind">
+                    <div class="discord-status">
+                        <div class="discord-icon-wrap">
+                            <img src="https://api.gtps.cloud/api/item/texture/1791/278/" alt="" width="22" height="22" style="image-rendering:pixelated">
+                        </div>
+                        <div class="discord-info">
+                            <strong id="discordName">Belum terhubung</strong>
+                            <span id="discordHint">Hubungkan akun Discord untuk verifikasi</span>
+                        </div>
+                    </div>
+                    <button type="button" id="discordBindBtn" class="button button-outline" disabled>
+                        <span class="btn-label">BIND DISCORD</span>
+                        <span class="badge-soon">SOON</span>
+                    </button>
                 </div>
             </div>
 
@@ -298,7 +304,6 @@
     </form>
 </dialog>
 
-<!-- ============ TOAST ============ -->
 <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
 <script src="js/app.js"></script>
