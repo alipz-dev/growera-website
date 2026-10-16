@@ -93,6 +93,11 @@ function avatarUrl(id) {
     return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id + "/";
 }
 
+function flagUrl(code) {
+    if (!code || code.length !== 2) return "";
+    return "https://flagcdn.com/w40/" + code.toLowerCase() + ".png";
+}
+
 /* ===== Token ===== */
 
 function getToken() {
@@ -336,6 +341,38 @@ function setMetaValue(id, value, emptyText = "—") {
     }
 }
 
+/* Country with flag icon */
+function setCountryValue(code) {
+    const el = $("#countryValue");
+    const item = el?.closest(".meta-item");
+    if (!el) return;
+
+    el.replaceChildren();
+
+    if (!code || !/^[A-Z]{2}$/.test(code)) {
+        el.textContent = "—";
+        if (item) item.classList.add("is-empty");
+        return;
+    }
+
+    if (item) item.classList.remove("is-empty");
+
+    const img = document.createElement("img");
+    img.src = flagUrl(code);
+    img.alt = code;
+    img.loading = "lazy";
+    img.style.cssText =
+        "display:inline-block;vertical-align:-2px;margin-right:7px;" +
+        "border-radius:3px;box-shadow:0 0 0 1px #ffffff1f;width:20px;height:auto";
+
+    img.addEventListener("error", () => {
+        img.remove();
+    }, { once: true });
+
+    el.appendChild(img);
+    el.appendChild(document.createTextNode(code));
+}
+
 function renderProfile() {
     const name = safeName(player.username);
 
@@ -400,7 +437,7 @@ function renderProfile() {
         }
     }
 
-    setMetaValue("#countryValue", player.country);
+    setCountryValue(player.country);
     setMetaValue("#birthdateValue", fmtBirthdate(player.birthdate));
     setMetaValue("#discordValue", player.discordUsername ? "@" + player.discordUsername : "");
     setMetaValue("#memberSinceValue", fmtDateId(player.createdAt));
@@ -456,7 +493,6 @@ async function prefetchCardStats() {
         apiRequest("/guild", { method: "GET", headers })
     ]);
 
-    // Achievements card
     if (achRes.status === "fulfilled") {
         const r = achRes.value;
         const achievements = r?.achievements || [];
@@ -468,7 +504,6 @@ async function prefetchCardStats() {
         console.warn("[GROWERA] Prefetch achievements gagal:", achRes.reason);
     }
 
-    // Friends card
     if (frRes.status === "fulfilled") {
         const list = frRes.value?.friends || [];
         const el = $("#statFriendsValue");
@@ -477,7 +512,6 @@ async function prefetchCardStats() {
         console.warn("[GROWERA] Prefetch friends gagal:", frRes.reason);
     }
 
-    // Guild card
     if (gdRes.status === "fulfilled") {
         const guild = gdRes.value?.guild || { id: 0 };
         const el = $("#statGuildValue");
@@ -576,7 +610,6 @@ async function handleLogin(event) {
         setProfileVisible();
         toast("Selamat datang, " + player.username + "!", "success");
 
-        // Prefetch stat cards + auto country (parallel)
         cardPrefetched = false;
         prefetchCardStats();
         autoFillCountryIfEmpty();
@@ -624,7 +657,6 @@ async function refreshProfile(silent = false) {
         await loadCurrentPlayer();
         renderProfile();
 
-        // Re-prefetch stat cards on manual refresh
         cardPrefetched = false;
         prefetchCardStats();
 
@@ -646,7 +678,6 @@ function forceLogout(message) {
     closeEditDialog();
     closeAllInfoDialogs();
 
-    // Reset stat cards
     cardPrefetched = false;
     resetStatCardValues();
 
