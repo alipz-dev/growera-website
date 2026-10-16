@@ -96,7 +96,7 @@
 .content-tabs{margin-top:20px;padding:0;border-radius:22px;overflow:hidden}
 .tabs-header{display:flex;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .tabs-header::-webkit-scrollbar{display:none}
-.tab-btn{flex:1;min-width:110px;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 12px;border:0;background:transparent;color:#8190b0;font-family:inherit;font-size:9.5px;font-weight:700;letter-spacing:.14em;cursor:pointer;transition:color .15s,background .15s;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.tab-btn{flex:1;min-width:130px;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 12px;border:0;background:transparent;color:#8190b0;font-family:inherit;font-size:9.5px;font-weight:700;letter-spacing:.14em;cursor:pointer;transition:color .15s,background .15s;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent}
 .tab-btn img{display:block;image-rendering:pixelated;opacity:.6;transition:opacity .15s}
 .tab-btn:hover{color:#cbd5ee;background:#ffffff04}
 .tab-btn:hover img{opacity:.85}
@@ -166,8 +166,8 @@
 .ach-progress-mini{margin-top:6px;height:4px;border-radius:999px;background:#ffffff0d;overflow:hidden}
 .ach-progress-mini-fill{height:100%;background:linear-gradient(90deg,#79dff4,#a9a6ff);border-radius:999px;transition:width .3s}
 
-/* ===== Friends Tab ===== */
-.friends-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:440px;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:#8ce8ff33 transparent}
+/* ===== Friends Grid ===== */
+.friends-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;scrollbar-width:thin;scrollbar-color:#8ce8ff33 transparent}
 .friends-grid::-webkit-scrollbar{width:8px}
 .friends-grid::-webkit-scrollbar-thumb{background:#8ce8ff26;border-radius:4px}
 .friend-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#050a1614;transition:border-color .15s,background .15s;cursor:default}
@@ -177,10 +177,8 @@
 .friend-name{font-size:12.5px;font-weight:600;color:#e8f0ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .friend-id{font-family:monospace;font-size:9.5px;color:#667392;margin-top:2px}
 
-/* ===== Guild Tab ===== */
-.guild-content{max-height:500px;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:#8ce8ff33 transparent}
-.guild-content::-webkit-scrollbar{width:8px}
-.guild-content::-webkit-scrollbar-thumb{background:#8ce8ff26;border-radius:4px}
+/* ===== Guild Content ===== */
+.guild-content{padding:0}
 .guild-hero{display:flex;align-items:center;gap:16px;padding:16px;border:1px solid #f8d58c33;border-radius:14px;background:linear-gradient(135deg,#f8d58c08,#050a1614);margin-bottom:14px}
 .guild-mascot{width:80px;height:80px;flex-shrink:0;display:grid;place-items:center;border:1px solid #f8d58c40;border-radius:14px;background:radial-gradient(circle at 30% 20%,#f8d58c12,transparent 60%),#0a1220;overflow:hidden;position:relative}
 .guild-mascot img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;padding:6px;box-sizing:border-box}
@@ -196,10 +194,41 @@
 .guild-stat strong{display:block;font-family:var(--display);font-size:14px;font-weight:600;color:#e8f0ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .guild-stat.is-empty strong{color:#4b5670;font-weight:500}
 
+/* ===== Clickable Stat Cards ===== */
+.stat-card.is-clickable{cursor:pointer;transition:border-color .15s,background .15s,transform .15s,box-shadow .15s;position:relative;-webkit-tap-highlight-color:transparent}
+.stat-card.is-clickable:hover{border-color:#8ce8ff40;background:#8ce8ff08;transform:translateY(-2px);box-shadow:0 8px 24px #8ce8ff0f}
+.stat-card.is-clickable:focus-visible{outline:2px solid #8ce8ff;outline-offset:2px}
+.stat-card.is-clickable::after{content:"→";position:absolute;top:14px;right:14px;color:#4b5670;font-size:14px;transition:color .15s,transform .15s}
+.stat-card.is-clickable:hover::after{color:#8ce8ff;transform:translateX(3px)}
+
+/* ===== Info Dialog ===== */
+.info-dialog{width:min(560px,calc(100% - 28px));padding:0;border-radius:20px;color:var(--text);max-height:min(88vh,720px);overflow:hidden}
+.info-dialog[open]{display:flex;flex-direction:column}
+.info-dialog::backdrop{background:#02050cbc;backdrop-filter:blur(6px)}
+.info-dialog .dialog-heading{padding:22px 26px 16px;margin:0;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;justify-content:space-between;align-items:flex-start}
+.info-dialog .dialog-heading h2{margin:9px 0 0;font-family:var(--display);font-size:24px}
+.info-dialog .info-scroll{flex:1;overflow-y:auto;padding:18px 22px 22px;scrollbar-width:thin;scrollbar-color:#8ce8ff33 transparent}
+.info-dialog .info-scroll::-webkit-scrollbar{width:8px}
+.info-dialog .info-scroll::-webkit-scrollbar-thumb{background:#8ce8ff26;border-radius:4px}
+
+/* ===== Playtime Dialog ===== */
+.playtime-total{display:flex;flex-direction:column;gap:4px;padding:18px;border:1px solid #8ce8ff33;border-radius:14px;background:linear-gradient(135deg,#8ce8ff08,#050a1614);margin-bottom:16px;text-align:center}
+.playtime-total span{color:#8190b0;font-size:9px;font-weight:700;letter-spacing:.16em}
+.playtime-total strong{font-family:var(--display);font-size:32px;font-weight:700;color:#9cecff;letter-spacing:-.02em}
+.playtime-chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#8190b0;font-size:9px;font-weight:700;letter-spacing:.14em}
+.playtime-chart{display:flex;align-items:flex-end;gap:6px;height:170px;padding:14px 12px 8px;border:1px solid var(--line);border-radius:14px;background:#050a1614;overflow-x:auto;scrollbar-width:thin}
+.playtime-chart::-webkit-scrollbar{height:6px}
+.playtime-chart::-webkit-scrollbar-thumb{background:#8ce8ff26;border-radius:3px}
+.pt-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:26px;height:100%;justify-content:flex-end}
+.pt-bar{width:100%;min-height:4px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,#79dff4,#a9a6ff);box-shadow:0 0 8px #8ce8ff33;transition:height .35s ease;flex-shrink:0;cursor:default}
+.pt-bar-wrap.is-today .pt-bar{background:linear-gradient(180deg,#f8d58c,#e5a646);box-shadow:0 0 12px #f8d58c66}
+.pt-label{font-family:monospace;font-size:8px;color:#667392;letter-spacing:0;white-space:nowrap}
+.pt-bar-wrap.is-today .pt-label{color:#f8d58c;font-weight:bold}
+.pt-empty{padding:40px 20px;text-align:center;color:#4b5670;font-style:italic;font-size:11px;width:100%}
+
 @media(max-width:760px){
     .tabs-content{padding:16px 14px}
-    .tab-btn{padding:12px 8px;font-size:8.5px;min-width:90px}
-    .tab-count{display:none}
+    .tab-btn{padding:12px 8px;font-size:8.5px;min-width:100px}
     .inventory-grid-content{grid-template-columns:repeat(auto-fill,minmax(74px,1fr))}
     .inv-item-img{width:34px;height:34px}
     .inv-item-name{font-size:9px}
@@ -210,4 +239,9 @@
     .guild-hero{flex-direction:column;text-align:center}
     .guild-name{white-space:normal;word-break:break-word}
     .guild-stats-grid{grid-template-columns:1fr 1fr}
+    .info-dialog .dialog-heading{padding:18px 20px 14px}
+    .info-dialog .dialog-heading h2{font-size:20px}
+    .info-dialog .info-scroll{padding:14px 16px 18px}
+    .playtime-total strong{font-size:26px}
+    .playtime-chart{height:150px}
 }
