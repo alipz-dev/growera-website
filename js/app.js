@@ -915,6 +915,283 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && editDialog?.open) closeEditDialog();
 });
 
+    /* ===== TABS: Inventory / Worlds / Achievements ===== */
+
+const contentTabs = {
+    loaded: { inventory: false, worlds: false, achievements: false },
+    current: "inventory",
+    data: { inventory: null, worlds: null, achievements: null }
+};
+
+function switchTab(tabName) {
+    contentTabs.current = tabName;
+
+    document.querySelectorAll(".tab-btn").forEach((b) => {
+        const active = b.dataset.tab === tabName;
+        b.classList.toggle("active", active);
+        b.setAttribute("aria-selected", String(active));
+    });
+
+    document.querySelectorAll(".tab-panel").forEach((p) => {
+        p.classList.toggle("active", p.id === "tabPanel" + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+    });
+
+    if (!contentTabs.loaded[tabName]) {
+        loadTabData(tabName);
+    }
+}
+
+async function loadTabData(tabName) {
+    const token = getToken();
+    if (!token) return;
+
+    const loadingId = tabName + "Loading";
+    const loading = $("#" + loadingId);
+    if (loading) loading.hidden = false;
+
+    try {
+        if (tabName === "inventory") {
+            const result = await apiRequest("/inventory", {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token }
+            });
+            contentTabs.data.inventory = result;
+            renderInventoryTab(result);
+            contentTabs.loaded.inventory = true;
+        } else if (tabName === "worlds") {
+            const result = await apiRequest("/worlds", {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token }
+            });
+            contentTabs.data.worlds = result;
+            renderWorldsTab(result);
+            contentTabs.loaded.worlds = true;
+        } else if (tabName === "achievements") {
+            const result = await apiRequest("/achievements", {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token }
+            });
+            contentTabs.data.achievements = result;
+            renderAchievementsTab(result);
+            contentTabs.loaded.achievements = true;
+        }
+    } catch (error) {
+        console.error("[GROWERA] Load tab " + tabName + " gagal:", error);
+        if (loading) {
+            loading.textContent = "Gagal memuat: " + error.message;
+            loading.hidden = false;
+        }
+    } finally {
+        if (loading) loading.hidden = true;
+    }
+}
+
+function renderInventoryTab(result) {
+    const items = result?.items || [];
+    const grid = $("#inventoryGridContent");
+    const empty = $("#inventoryEmpty");
+    const count = $("#tabCountInventory");
+
+    if (count) count.textContent = String(items.length);
+
+    if (!items.length) {
+        if (empty) empty.hidden = false;
+        if (grid) grid.hidden = true;
+        return;
+    }
+
+    if (empty) empty.hidden = true;
+    if (grid) {
+        grid.hidden = false;
+        grid.replaceChildren();
+
+        items.forEach((item) => {
+            const card = document.createElement("div");
+            card.className = "inv-item";
+            card.title = (item.name || "Item #" + item.id) + " · x" + item.count;
+
+            const idBadge = document.createElement("div");
+            idBadge.className = "inv-item-id";
+            idBadge.textContent = "#" + item.id;
+
+            const countBadge = document.createElement("div");
+            countBadge.className = "inv-item-count";
+            countBadge.textContent = "×" + fmt(item.count);
+
+            const imgWrap = document.createElement("div");
+            imgWrap.className = "inv-item-img";
+            const img = document.createElement("img");
+            img.src = avatarUrl(item.id);
+            img.alt = item.name || "Item";
+            img.loading = "lazy";
+            img.addEventListener("error", () => {
+                imgWrap.textContent = "?";
+                imgWrap.style.color = "#4b5670";
+                imgWrap.style.fontSize = "18px";
+            });
+            imgWrap.appendChild(img);
+
+            const name = document.createElement("div");
+            name.className = "inv-item-name";
+            name.textContent = item.name || ("Item #" + item.id);
+
+            card.appendChild(idBadge);
+            card.appendChild(countBadge);
+            card.appendChild(imgWrap);
+            card.appendChild(name);
+            grid.appendChild(card);
+        });
+    }
+}
+
+function renderWorldsTab(result) {
+    const groups = [
+        { key: "owned", listId: "worldsOwnedList", countId: "worldsOwnedCount", data: result?.owned || [] },
+        { key: "recent", listId: "worldsRecentList", countId: "worldsRecentCount", data: result?.recent || [] },
+        { key: "access", listId: "worldsAccessList", countId: "worldsAccessCount", data: result?.access || [] },
+        { key: "locked", listId: "worldsLockedList", countId: "worldsLockedCount", data: result?.locked || [] }
+    ];
+
+    let total = 0;
+    groups.forEach((g) => {
+        total += g.data.length;
+        const countEl = $("#" + g.countId);
+        if (countEl) countEl.textContent = String(g.data.length);
+
+        const listEl = $("#" + g.listId);
+        if (!listEl) return;
+        listEl.replaceChildren();
+
+        if (!g.data.length) {
+            const empty = document.createElement("div");
+            empty.className = "world-empty";
+            empty.textContent = "Tidak ada data.";
+            listEl.appendChild(empty);
+            return;
+        }
+
+        g.data.forEach((w) => {
+            const chip = document.createElement("span");
+            chip.className = "world-chip";
+            chip.textContent = w.name || ("World #" + w.id);
+            if (w.id) chip.title = "ID: " + w.id;
+            listEl.appendChild(chip);
+        });
+    });
+
+    const tabCount = $("#tabCountWorlds");
+    if (tabCount) tabCount.textContent = String(total);
+
+    const content = $("#worldsContent");
+    if (content) content.hidden = false;
+}
+
+function renderAchievementsTab(result) {
+    const achievements = result?.achievements || [];
+    const total = result?.total || achievements.length;
+    const unlocked = result?.unlocked || achievements.filter((a) => a.unlocked).length;
+
+    const count = $("#tabCountAchievements");
+    if (count) count.textContent = unlocked + "/" + total;
+
+    const empty = $("#achievementsEmpty");
+    const summary = $("#achSummary");
+    const grid = $("#achGridContent");
+
+    if (!achievements.length) {
+        if (empty) empty.hidden = false;
+        if (summary) summary.hidden = true;
+        if (grid) grid.hidden = true;
+        return;
+    }
+
+    if (empty) empty.hidden = true;
+    if (summary) summary.hidden = false;
+    if (grid) grid.hidden = false;
+
+    if ($("#achUnlockedCount")) $("#achUnlockedCount").textContent = String(unlocked);
+    if ($("#achTotalCount")) $("#achTotalCount").textContent = String(total);
+
+    const percent = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+    if ($("#achProgressFill")) $("#achProgressFill").style.width = percent + "%";
+    if ($("#achProgressText")) $("#achProgressText").textContent = percent + "%";
+
+    if (grid) {
+        grid.replaceChildren();
+
+        achievements.forEach((ach) => {
+            const card = document.createElement("div");
+            card.className = "ach-card" + (ach.unlocked ? " unlocked" : "");
+
+            const icon = document.createElement("div");
+            icon.className = "ach-icon";
+            const img = document.createElement("img");
+            const iconId = ach.unlocked ? 1458 : 202;
+            img.src = avatarUrl(iconId);
+            img.alt = "";
+            img.addEventListener("error", () => {
+                icon.textContent = ach.unlocked ? "★" : "○";
+                icon.style.color = ach.unlocked ? "#f8d58c" : "#4b5670";
+                icon.style.fontSize = "20px";
+            });
+            icon.appendChild(img);
+
+            const info = document.createElement("div");
+            info.className = "ach-info";
+
+            const name = document.createElement("div");
+            name.className = "ach-name";
+            name.textContent = ach.name || ("Achievement #" + ach.id);
+
+            const desc = document.createElement("div");
+            desc.className = "ach-desc";
+            desc.textContent = ach.description || "—";
+
+            const badge = document.createElement("span");
+            badge.className = "ach-badge";
+            badge.textContent = ach.unlocked ? "UNLOCKED" : "LOCKED";
+
+            info.appendChild(name);
+            if (ach.description) info.appendChild(desc);
+            info.appendChild(badge);
+
+            if (!ach.unlocked && ach.target > 0) {
+                const mini = document.createElement("div");
+                mini.className = "ach-progress-mini";
+                const fill = document.createElement("div");
+                fill.className = "ach-progress-mini-fill";
+                const pct = Math.min(100, Math.round((ach.progress / ach.target) * 100));
+                fill.style.width = pct + "%";
+                mini.appendChild(fill);
+                info.appendChild(mini);
+            }
+
+            card.appendChild(icon);
+            card.appendChild(info);
+            grid.appendChild(card);
+        });
+    }
+}
+
+// Wire tab clicks
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        switchTab(btn.dataset.tab);
+    });
+});
+
+// Reset tabs on logout
+const originalForceLogout = forceLogout;
+forceLogout = function(message) {
+    contentTabs.loaded = { inventory: false, worlds: false, achievements: false };
+    contentTabs.data = { inventory: null, worlds: null, achievements: null };
+    contentTabs.current = "inventory";
+    switchTab("inventory");
+    originalForceLogout(message);
+};
+
+// Set default tab on init
+switchTab("inventory");
 /* ===== Init ===== */
 
 updateFooterYear();
