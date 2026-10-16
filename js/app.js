@@ -427,6 +427,72 @@ function renderProfile() {
     renderDiscordState();
 }
 
+/* ===== Stat Cards Prefetch ===== */
+
+let cardPrefetched = false;
+
+function resetStatCardValues() {
+    const ach = $("#statAchValue");
+    const fr = $("#statFriendsValue");
+    const gd = $("#statGuildValue");
+    if (ach) ach.textContent = "—";
+    if (fr) fr.textContent = "—";
+    if (gd) gd.textContent = "—";
+}
+
+async function prefetchCardStats() {
+    if (cardPrefetched) return;
+
+    const token = getToken();
+    if (!token) return;
+
+    cardPrefetched = true;
+
+    const headers = { Authorization: "Bearer " + token };
+
+    const [achRes, frRes, gdRes] = await Promise.allSettled([
+        apiRequest("/achievements", { method: "GET", headers }),
+        apiRequest("/friends", { method: "GET", headers }),
+        apiRequest("/guild", { method: "GET", headers })
+    ]);
+
+    // Achievements card
+    if (achRes.status === "fulfilled") {
+        const r = achRes.value;
+        const achievements = r?.achievements || [];
+        const total = r?.total || achievements.length;
+        const unlocked = r?.unlocked || achievements.filter((a) => a.unlocked).length;
+        const el = $("#statAchValue");
+        if (el) el.textContent = total > 0 ? (unlocked + "/" + total) : "0/0";
+    } else {
+        console.warn("[GROWERA] Prefetch achievements gagal:", achRes.reason);
+    }
+
+    // Friends card
+    if (frRes.status === "fulfilled") {
+        const list = frRes.value?.friends || [];
+        const el = $("#statFriendsValue");
+        if (el) el.textContent = String(list.length);
+    } else {
+        console.warn("[GROWERA] Prefetch friends gagal:", frRes.reason);
+    }
+
+    // Guild card
+    if (gdRes.status === "fulfilled") {
+        const guild = gdRes.value?.guild || { id: 0 };
+        const el = $("#statGuildValue");
+        if (el) {
+            if (!guild.id || guild.id <= 0) {
+                el.textContent = "None";
+            } else {
+                el.textContent = guild.title || ("#" + guild.id);
+            }
+        }
+    } else {
+        console.warn("[GROWERA] Prefetch guild gagal:", gdRes.reason);
+    }
+}
+
 /* ===== Auto-detect Country ===== */
 
 async function detectCountry() {
@@ -510,6 +576,9 @@ async function handleLogin(event) {
         setProfileVisible();
         toast("Selamat datang, " + player.username + "!", "success");
 
+        // Prefetch stat cards + auto country (parallel)
+        cardPrefetched = false;
+        prefetchCardStats();
         autoFillCountryIfEmpty();
     } catch (error) {
         clearToken();
@@ -554,6 +623,11 @@ async function refreshProfile(silent = false) {
     try {
         await loadCurrentPlayer();
         renderProfile();
+
+        // Re-prefetch stat cards on manual refresh
+        cardPrefetched = false;
+        prefetchCardStats();
+
         if (!silent) toast("Profil diperbarui.", "info", 2200);
     } catch (error) {
         console.error("[GROWERA] Refresh gagal:", error);
@@ -571,6 +645,11 @@ function forceLogout(message) {
     isAuthenticated = false;
     closeEditDialog();
     closeAllInfoDialogs();
+
+    // Reset stat cards
+    cardPrefetched = false;
+    resetStatCardValues();
+
     if (passwordInput) passwordInput.value = "";
     setMessage("");
     setLoginVisible();
@@ -610,6 +689,9 @@ async function restoreSession() {
     try {
         await loadCurrentPlayer();
         setProfileVisible();
+
+        cardPrefetched = false;
+        prefetchCardStats();
         autoFillCountryIfEmpty();
     } catch (error) {
         console.warn("[GROWERA] Sesi tidak dapat dipulihkan:", error);
@@ -1153,7 +1235,7 @@ async function loadAchievementsDialog() {
         const unlocked = result?.unlocked || achievements.filter((a) => a.unlocked).length;
 
         const statAch = $("#statAchValue");
-        if (statAch) statAch.textContent = unlocked + "/" + total;
+        if (statAch) statAch.textContent = total > 0 ? (unlocked + "/" + total) : "0/0";
 
         if (!achievements.length) {
             if (empty) empty.hidden = false;
@@ -1417,13 +1499,11 @@ async function loadGuildDialog() {
 function fmtDayKeyShort(dayKey) {
     const n = Number(dayKey) || 0;
     if (n <= 0) return "";
-    // Format: YYYYMMDD
     if (n > 100000000) {
         const m = Math.floor((n % 10000) / 100);
         const d = n % 100;
         return m + "/" + d;
     }
-    // Fallback: unix day count
     try {
         const dt = new Date(n * 86400 * 1000);
         return (dt.getMonth() + 1) + "/" + dt.getDate();
@@ -1487,7 +1567,6 @@ async function loadPlaytimeDialog() {
                     chartEl.appendChild(wrap);
                 });
 
-                // Auto-scroll to the end (today)
                 requestAnimationFrame(() => {
                     chartEl.scrollLeft = chartEl.scrollWidth;
                 });
