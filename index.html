@@ -221,17 +221,79 @@
 
 <!-- ============ EDIT DIALOG (Sprint 4) ============ -->
 <dialog class="edit-dialog glass" id="editDialog">
-    <form id="editForm" method="dialog">
+    <form id="editForm" novalidate>
         <div class="dialog-heading">
             <div>
                 <div class="eyebrow">PROFILE SETTINGS</div>
                 <h2>Edit profile</h2>
             </div>
-            <button class="icon-button" value="cancel" type="button" aria-label="Close dialog">×</button>
+            <button class="icon-button" id="editCloseBtn" type="button" aria-label="Close">×</button>
         </div>
-        <p class="muted" style="margin:0 0 14px;font-size:12px">Editing akan aktif pada Sprint berikutnya.</p>
+
+        <div class="edit-scroll">
+
+            <label for="editDisplayName">DISPLAY NAME</label>
+            <input id="editDisplayName" type="text" maxlength="32" placeholder="Your display name" autocomplete="off">
+
+            <div class="edit-label-row">
+                <label for="editBio">BIO</label>
+                <span class="edit-counter" id="bioCounter">0 / 200</span>
+            </div>
+            <textarea id="editBio" maxlength="200" rows="3" placeholder="Ceritakan singkat tentang dirimu..." class="edit-textarea"></textarea>
+
+            <label for="editAvatarId">AVATAR ITEM ID</label>
+            <div class="avatar-picker">
+                <div class="avatar-preview" id="avatarPreview">
+                    <span class="avatar-placeholder">?</span>
+                </div>
+                <div class="avatar-picker-input">
+                    <input id="editAvatarId" type="number" min="0" max="999999" placeholder="contoh: 112" inputmode="numeric">
+                    <p class="edit-hint">Kosongkan untuk pakai inisial nama.</p>
+                </div>
+            </div>
+            <div class="avatar-presets" id="avatarPresets">
+                <button type="button" data-avatar-id="112" title="Gems">💎</button>
+                <button type="button" data-avatar-id="242" title="World Lock">🔒</button>
+                <button type="button" data-avatar-id="1458" title="Golden Heart Crystal">💠</button>
+                <button type="button" data-avatar-id="4820" title="Phoenix Crown">👑</button>
+                <button type="button" data-avatar-id="1796" title="Diamond Lock">💎</button>
+                <button type="button" data-avatar-id="3020" title="Whizmo Gizmo">⚙</button>
+            </div>
+
+            <div class="edit-row">
+                <div>
+                    <label for="editCountry">COUNTRY CODE</label>
+                    <input id="editCountry" type="text" maxlength="2" placeholder="ID" autocomplete="off" style="text-transform:uppercase">
+                </div>
+                <div>
+                    <label for="editBirthdate">BIRTHDATE</label>
+                    <input id="editBirthdate" type="date">
+                </div>
+            </div>
+
+            <label for="editFavoriteWorld">FAVORITE WORLD</label>
+            <input id="editFavoriteWorld" type="text" maxlength="32" placeholder="WORLD NAME" autocomplete="off" style="text-transform:uppercase">
+
+            <div class="edit-row">
+                <div>
+                    <label for="editDiscord">DISCORD</label>
+                    <input id="editDiscord" type="text" maxlength="37" placeholder="username" autocomplete="off">
+                </div>
+                <div>
+                    <label for="editInstagram">INSTAGRAM</label>
+                    <input id="editInstagram" type="text" maxlength="30" placeholder="username" autocomplete="off">
+                </div>
+            </div>
+
+            <p class="edit-error" id="editError" role="alert"></p>
+
+        </div>
+
         <div class="dialog-actions">
-            <button class="button button-quiet" value="cancel" type="button">CLOSE</button>
+            <button class="button button-quiet" id="editCancelBtn" type="button">CANCEL</button>
+            <button class="button button-primary" id="editSaveBtn" type="submit">
+                <span class="btn-label">SAVE CHANGES</span>
+            </button>
         </div>
     </form>
 </dialog>
