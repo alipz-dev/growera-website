@@ -220,15 +220,22 @@
 
     let data = {};
 
-    if (rawText.trim()) {
-      try {
-        data = JSON.parse(rawText);
-      } catch {
-        throw new Error(
-          "Respons server bukan JSON yang valid. Periksa endpoint API Lua."
-        );
-      }
-    }
+    if (rawText) {
+  try {
+    data = JSON.parse(rawText);
+  } catch {
+    console.error("[GROWERA] Respons bukan JSON:", {
+      status: response.status,
+      url: response.url,
+      contentType: response.headers.get("content-type"),
+      body: rawText.slice(0, 2000)
+    });
+
+    throw new Error(
+      `Respons server bukan JSON (HTTP ${response.status}). Periksa Console browser untuk melihat respons aslinya.`
+    );
+  }
+}
 
     if (!response.ok) {
       const message =
