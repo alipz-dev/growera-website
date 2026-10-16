@@ -8,34 +8,237 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/login.css"><link rel="stylesheet" href="css/profile.css">
 </head>
-<body><div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+<body>
+
+<div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+
 <main class="app-shell">
+
+<!-- ============ LOGIN ============ -->
 <section class="login-view" id="loginView" aria-labelledby="loginTitle">
-<div class="login-brand"><div class="brand-gem">◆</div><div><span class="brand-name">GROWERA</span><span class="brand-subtitle">CRYSTAL ERA</span></div></div>
-<div class="login-card glass"><div class="eyebrow"><span class="eyebrow-line"></span> PLAYER PORTAL</div>
-<h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1><p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
-<form id="loginForm" novalidate><label for="username">USERNAME</label><div class="input-wrap"><span class="input-icon">♙</span><input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="24"></div>
-<label for="password">PASSWORD</label><div class="input-wrap"><span class="input-icon">⌑</span><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter any password" required></div>
-<p class="form-message" id="formMessage" role="status"></p><button class="button button-primary button-wide" type="submit">SIGN IN <span>↗</span></button></form>
-<div class="demo-note"><span class="status-dot"></span> DEMO MODE <span class="demo-divider">•</span> No real authentication yet</div></div>
-<footer class="site-footer">GROWERA © <span id="year"></span> CRYSTAL ERA</footer>
+    <div class="login-brand">
+        <div class="brand-gem">◆</div>
+        <div>
+            <span class="brand-name">GROWERA</span>
+            <span class="brand-subtitle">CRYSTAL ERA</span>
+        </div>
+    </div>
+
+    <div class="login-card glass">
+        <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER PORTAL</div>
+        <h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1>
+        <p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
+
+        <form id="loginForm" novalidate>
+            <label for="username">USERNAME</label>
+            <div class="input-wrap">
+                <span class="input-icon">♙</span>
+                <input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="64" spellcheck="false" autocapitalize="off">
+            </div>
+
+            <label for="password">PASSWORD</label>
+            <div class="input-wrap">
+                <span class="input-icon">⌑</span>
+                <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required maxlength="256">
+                <button class="password-toggle" id="passwordToggle" type="button" aria-label="Show password" aria-pressed="false">
+                    <span class="eye-open">👁</span>
+                    <span class="eye-closed hidden">🙈</span>
+                </button>
+            </div>
+            <p class="caps-warning" id="capsLockWarning">⚠ CAPS LOCK AKTIF</p>
+
+            <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+
+            <button class="button button-primary button-wide" id="loginButton" type="submit">
+                <span class="btn-label">SIGN IN</span>
+                <span>↗</span>
+            </button>
+        </form>
+
+        <div class="demo-note">
+            <span class="status-dot"></span> LIVE MODE <span class="demo-divider">•</span> GROWERA Player Server
+        </div>
+    </div>
+
+    <footer class="site-footer">GROWERA © <span id="year"></span> CRYSTAL ERA</footer>
 </section>
+
+
+<!-- ============ PROFILE ============ -->
 <section class="profile-view hidden" id="profileView" aria-labelledby="profileTitle">
-<header class="topbar"><div class="login-brand compact"><div class="brand-gem">◆</div><div><span class="brand-name">GROWERA</span><span class="brand-subtitle">CRYSTAL ERA</span></div></div><button class="button button-quiet" id="logoutButton" type="button">↪ <span>LOG OUT</span></button></header>
-<div class="dashboard-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PLAYER ACCOUNT</div><h1 id="profileTitle">Welcome back, <span id="welcomeName">Player</span>.</h1><p class="muted">Your Crystal Era journey at a glance.</p></div><div class="online-pill"><span class="status-dot"></span> PLAYER PREVIEW</div></div>
-<div class="profile-grid">
-<article class="player-card glass"><div class="card-topline"><span>PLAYER PROFILE</span><span class="tiny-badge">✦ BETA</span></div>
-<div class="avatar-orbit"><div class="avatar" id="avatarInitial">P</div><span class="orbit-spark">✦</span></div><h2 id="profileName">Player</h2><p class="player-handle" id="profileHandle">@player</p><div class="rank-chip"><span>◇</span> CRYSTAL EXPLORER</div>
-<div class="card-divider"></div><div class="mini-stats"><div><span>LEVEL</span><strong id="levelValue">24</strong></div><div><span>GEMS</span><strong id="gemsValue">1,250</strong></div></div>
-<div class="xp-heading"><span>EXPERIENCE</span><span id="xpPercent">68%</span></div><div class="xp-track"><div class="xp-fill" id="xpFill"></div></div><div class="xp-caption"><span id="xpCurrent">6,800 XP</span><span id="xpNext">10,000 XP</span></div>
-<button class="button button-outline button-wide" id="editPreviewButton" type="button">EDIT PREVIEW PROFILE</button></article>
-<div class="side-column"><article class="welcome-panel glass"><div class="welcome-art" aria-hidden="true"><div class="crystal crystal-a"></div><div class="crystal crystal-b"></div><div class="crystal crystal-c"></div><div class="art-glow"></div></div>
-<div class="welcome-content"><span class="tiny-badge">✧ YOUR JOURNEY</span><h2>A new era<br>begins with you.</h2><p class="muted">Every crystal tells a story. Keep exploring, collect rewards, and build your legacy in GROWERA.</p><button class="text-button" id="exploreButton" type="button">EXPLORE YOUR PROFILE <span>→</span></button></div></article>
-<div class="stat-grid"><article class="stat-card glass"><div class="stat-icon purple">✧</div><span class="stat-label">ACHIEVEMENTS</span><strong>Coming Soon</strong><p>Milestones await</p></article><article class="stat-card glass"><div class="stat-icon cyan">◷</div><span class="stat-label">PLAY TIME</span><strong>Coming Soon</strong><p>Adventure history</p></article></div>
-<article class="notice-panel"><span class="notice-icon">ⓘ</span><p><strong>Preview environment</strong><br>This profile currently uses sample data. Server/API integration can be added later.</p></article></div></div>
-<footer class="site-footer">GROWERA © <span id="yearProfile"></span> CRYSTAL ERA <span class="footer-separator">•</span> BUILT FOR EXPLORERS</footer>
-</section></main>
-<dialog class="edit-dialog glass" id="editDialog"><form id="editForm" method="dialog"><div class="dialog-heading"><div><div class="eyebrow">PROFILE SETTINGS</div><h2>Edit preview</h2></div><button class="icon-button" value="cancel" aria-label="Close dialog">×</button></div>
-<label for="editUsername">DISPLAY NAME</label><input id="editUsername" maxlength="24" required><label for="editLevel">LEVEL</label><input id="editLevel" type="number" min="1" max="999" required><label for="editGems">GEMS</label><input id="editGems" type="number" min="0" max="999999999" required>
-<div class="dialog-actions"><button class="button button-quiet" value="cancel">CANCEL</button><button class="button button-primary" id="saveProfileButton" value="default">SAVE PREVIEW</button></div></form></dialog>
-<script src="js/demo-data.js"></script><script src="js/app.js"></script></body></html>
+
+    <header class="topbar">
+        <div class="login-brand compact">
+            <div class="brand-gem">◆</div>
+            <div>
+                <span class="brand-name">GROWERA</span>
+                <span class="brand-subtitle">CRYSTAL ERA</span>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <button class="refresh-button" id="refreshButton" type="button" aria-label="Refresh profile" title="Refresh profile">⟳</button>
+            <button class="button button-quiet" id="logoutButton" type="button">↪ <span>LOG OUT</span></button>
+        </div>
+    </header>
+
+    <div class="dashboard-heading">
+        <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER ACCOUNT</div>
+            <h1 id="profileTitle">Welcome back, <span id="welcomeName">Player</span>.</h1>
+            <p class="muted">Your Crystal Era journey at a glance.</p>
+        </div>
+        <div class="online-pill" id="onlinePill">
+            <span class="status-dot"></span>
+            <span id="onlineText">OFFLINE</span>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+
+        <!-- LEFT: Player Card -->
+        <article class="player-card glass">
+            <div class="card-topline">
+                <span>PLAYER PROFILE</span>
+                <span class="tiny-badge" id="roleBadge">✦ PLAYER</span>
+            </div>
+
+            <div class="avatar-orbit">
+                <div class="avatar" id="avatarInitial">P</div>
+                <span class="orbit-spark">✦</span>
+            </div>
+
+            <h2 id="profileName">Player</h2>
+            <p class="player-handle" id="profileHandle">@player</p>
+            <div class="rank-chip"><span>◇</span> CRYSTAL EXPLORER</div>
+
+            <div class="card-divider"></div>
+
+            <div class="mini-stats">
+                <div>
+                    <span>LEVEL</span>
+                    <strong id="levelValue">—</strong>
+                </div>
+                <div>
+                    <span>GEMS</span>
+                    <strong id="gemsValue">—</strong>
+                </div>
+            </div>
+
+            <div class="xp-heading">
+                <span>EXPERIENCE</span>
+                <span id="xpPercent">0%</span>
+            </div>
+            <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+            <div class="xp-caption">
+                <span id="xpCurrent">0 XP</span>
+                <span id="xpNext">1 XP</span>
+            </div>
+
+            <button class="button button-outline button-wide" id="editPreviewButton" type="button">EDIT PROFILE</button>
+        </article>
+
+        <!-- RIGHT: Side Column -->
+        <div class="side-column">
+
+            <!-- ABOUT ME -->
+            <article class="profile-meta glass">
+                <div class="meta-header">
+                    <h3>ABOUT ME</h3>
+                    <span class="tiny-badge" id="memberSinceBadge">—</span>
+                </div>
+                <p class="meta-bio" id="bioValue">Belum ada bio.</p>
+                <div class="meta-grid">
+                    <div class="meta-item" id="metaCountry">
+                        <span class="meta-label">COUNTRY</span>
+                        <strong id="countryValue">—</strong>
+                    </div>
+                    <div class="meta-item" id="metaFavoriteWorld">
+                        <span class="meta-label">FAVORITE WORLD</span>
+                        <strong id="favoriteWorldValue">—</strong>
+                    </div>
+                    <div class="meta-item" id="metaDiscord">
+                        <span class="meta-label">DISCORD</span>
+                        <strong id="discordValue">—</strong>
+                    </div>
+                    <div class="meta-item" id="metaInstagram">
+                        <span class="meta-label">INSTAGRAM</span>
+                        <strong id="instagramValue">—</strong>
+                    </div>
+                    <div class="meta-item" id="metaBirthdate">
+                        <span class="meta-label">BIRTHDATE</span>
+                        <strong id="birthdateValue">—</strong>
+                    </div>
+                    <div class="meta-item" id="metaMemberSince">
+                        <span class="meta-label">MEMBER SINCE</span>
+                        <strong id="memberSinceValue">—</strong>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WELCOME PANEL -->
+            <article class="welcome-panel glass">
+                <div class="welcome-art" aria-hidden="true">
+                    <div class="crystal crystal-a"></div>
+                    <div class="crystal crystal-b"></div>
+                    <div class="crystal crystal-c"></div>
+                    <div class="art-glow"></div>
+                </div>
+                <div class="welcome-content">
+                    <span class="tiny-badge">✧ YOUR JOURNEY</span>
+                    <h2>A new era<br>begins with you.</h2>
+                    <p class="muted">Every crystal tells a story. Keep exploring, collect rewards, and build your legacy in GROWERA.</p>
+                    <button class="text-button" id="exploreButton" type="button">EXPLORE YOUR PROFILE <span>→</span></button>
+                </div>
+            </article>
+
+            <div class="stat-grid">
+                <article class="stat-card glass">
+                    <div class="stat-icon purple">✧</div>
+                    <span class="stat-label">ACHIEVEMENTS</span>
+                    <strong>Coming Soon</strong>
+                    <p>Milestones await</p>
+                </article>
+                <article class="stat-card glass">
+                    <div class="stat-icon cyan">◷</div>
+                    <span class="stat-label">PLAY TIME</span>
+                    <strong id="playtimeValue">—</strong>
+                    <p>Adventure history</p>
+                </article>
+            </div>
+
+            <article class="notice-panel">
+                <span class="notice-icon">ⓘ</span>
+                <p><strong>Preview environment</strong><br>Data profil mengikuti server GROWERA secara langsung.</p>
+            </article>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">GROWERA © <span id="yearProfile"></span> CRYSTAL ERA <span class="footer-separator">•</span> BUILT FOR EXPLORERS</footer>
+</section>
+
+</main>
+
+<!-- ============ EDIT DIALOG (Sprint 4) ============ -->
+<dialog class="edit-dialog glass" id="editDialog">
+    <form id="editForm" method="dialog">
+        <div class="dialog-heading">
+            <div>
+                <div class="eyebrow">PROFILE SETTINGS</div>
+                <h2>Edit profile</h2>
+            </div>
+            <button class="icon-button" value="cancel" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <p class="muted" style="margin:0 0 14px;font-size:12px">Editing akan aktif pada Sprint berikutnya.</p>
+        <div class="dialog-actions">
+            <button class="button button-quiet" value="cancel" type="button">CLOSE</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- ============ TOAST ============ -->
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
