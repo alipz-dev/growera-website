@@ -915,12 +915,12 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && editDialog?.open) closeEditDialog();
 });
 
-    /* ===== TABS: Inventory / Worlds / Achievements ===== */
+/* ===== TABS: Inventory / Worlds / Achievements / Friends / Guild ===== */
 
 const contentTabs = {
-    loaded: { inventory: false, worlds: false, achievements: false },
+    loaded: { inventory: false, worlds: false, achievements: false, friends: false, guild: false },
     current: "inventory",
-    data: { inventory: null, worlds: null, achievements: null }
+    data: { inventory: null, worlds: null, achievements: null, friends: null, guild: null }
 };
 
 function switchTab(tabName) {
@@ -937,7 +937,13 @@ function switchTab(tabName) {
     });
 
     if (!contentTabs.loaded[tabName]) {
-        loadTabData(tabName);
+        if (tabName === "friends") {
+            loadFriendsTab();
+        } else if (tabName === "guild") {
+            loadGuildTab();
+        } else {
+            loadTabData(tabName);
+        }
     }
 }
 
@@ -1173,18 +1179,204 @@ function renderAchievementsTab(result) {
     }
 }
 
-// Wire tab clicks
+/* ===== FRIENDS TAB ===== */
+
+async function loadFriendsTab() {
+    const token = getToken();
+    if (!token) return;
+
+    const loading = $("#friendsLoading");
+    const grid = $("#friendsGridContent");
+    const empty = $("#friendsEmpty");
+    const count = $("#tabCountFriends");
+
+    if (loading) { loading.hidden = false; loading.textContent = "Memuat daftar teman..."; }
+    if (grid) grid.hidden = true;
+    if (empty) empty.hidden = true;
+
+    try {
+        const result = await apiRequest("/friends", {
+            method: "GET",
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        contentTabs.data.friends = result;
+        const list = result?.friends || [];
+        if (count) count.textContent = String(list.length);
+
+        if (!list.length) {
+            if (empty) empty.hidden = false;
+            contentTabs.loaded.friends = true;
+            return;
+        }
+
+        if (grid) {
+            grid.hidden = false;
+            grid.replaceChildren();
+
+            list.forEach((friend) => {
+                const card = document.createElement("div");
+                card.className = "friend-card";
+
+                const avatar = document.createElement("div");
+                avatar.className = "friend-avatar";
+                const fname = friend.username || "?";
+                avatar.textContent = fname.charAt(0).toUpperCase();
+
+                const info = document.createElement("div");
+                info.className = "friend-info";
+
+                const name = document.createElement("div");
+                name.className = "friend-name";
+                name.textContent = fname || "(unknown)";
+
+                const id = document.createElement("div");
+                id.className = "friend-id";
+                id.textContent = friend.userID > 0 ? "#" + friend.userID : "";
+
+                info.appendChild(name);
+                if (friend.userID > 0) info.appendChild(id);
+
+                card.appendChild(avatar);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+        }
+
+        contentTabs.loaded.friends = true;
+    } catch (error) {
+        console.error("[GROWERA] Load friends gagal:", error);
+        if (loading) {
+            loading.textContent = "Gagal memuat: " + error.message;
+            loading.hidden = false;
+        }
+    } finally {
+        if (loading && contentTabs.loaded.friends) loading.hidden = true;
+    }
+}
+
+/* ===== GUILD TAB ===== */
+
+function fmtGuildDate(unixSec) {
+    const n = Number(unixSec) || 0;
+    if (n <= 0) return "—";
+    try {
+        return new Date(n * 1000).toLocaleDateString("id-ID", {
+            day: "numeric", month: "short", year: "numeric"
+        });
+    } catch { return "—"; }
+}
+
+async function loadGuildTab() {
+    const token = getToken();
+    if (!token) return;
+
+    const loading = $("#guildLoading");
+    const content = $("#guildContent");
+    const empty = $("#guildEmpty");
+    const count = $("#tabCountGuild");
+
+    if (loading) { loading.hidden = false; loading.textContent = "Memuat data guild..."; }
+    if (content) content.hidden = true;
+    if (empty) empty.hidden = true;
+
+    try {
+        const result = await apiRequest("/guild", {
+            method: "GET",
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        contentTabs.data.guild = result;
+        const guild = result?.guild || { id: 0 };
+
+        if (!guild.id || guild.id <= 0) {
+            if (count) count.textContent = "0";
+            if (empty) empty.hidden = false;
+            contentTabs.loaded.guild = true;
+            return;
+        }
+
+        if (count) count.textContent = "1";
+
+        if (content) {
+            content.hidden = false;
+
+            if ($("#guildName")) $("#guildName").textContent = guild.title || ("Guild #" + guild.id);
+            if ($("#guildDesc")) {
+                if (guild.description) {
+                    $("#guildDesc").textContent = guild.description;
+                    $("#guildDesc").style.color = "";
+                } else {
+                    $("#guildDesc").textContent = "Tidak ada deskripsi.";
+                    $("#guildDesc").style.color = "#4b5670";
+                }
+            }
+            if ($("#guildLevel")) $("#guildLevel").textContent = "LV " + (guild.level || 0);
+            if ($("#guildId")) $("#guildId").textContent = "#" + guild.id;
+            if ($("#guildLevelValue")) $("#guildLevelValue").textContent = guild.level || 0;
+            if ($("#guildXp")) $("#guildXp").textContent = fmt(guild.xp || 0);
+            if ($("#guildPoints")) $("#guildPoints").textContent = fmt(guild.points || 0);
+            if ($("#guildWorld")) {
+                $("#guildWorld").textContent = guild.worldID > 0 ? ("#" + guild.worldID) : "—";
+            }
+            if ($("#guildCreated")) $("#guildCreated").textContent = fmtGuildDate(guild.created);
+
+            const mascotWrap = $("#guildMascotWrap");
+            const mascotImg = $("#guildMascotImg");
+            const mascotFallback = $("#guildMascotFallback");
+
+            if (mascotWrap) {
+                mascotWrap.querySelectorAll(".guild-mascot-bg").forEach((el) => el.remove());
+            }
+
+            if (guild.mascotBg > 0 && mascotWrap) {
+                const bg = document.createElement("div");
+                bg.className = "guild-mascot-bg";
+                bg.style.backgroundImage = "url('" + avatarUrl(guild.mascotBg) + "')";
+                mascotWrap.insertBefore(bg, mascotWrap.firstChild);
+            }
+
+            if (guild.mascotFg > 0 && mascotImg) {
+                mascotImg.src = avatarUrl(guild.mascotFg);
+                mascotImg.style.display = "block";
+                mascotImg.className = "guild-mascot-fg";
+                mascotImg.addEventListener("error", function () {
+                    mascotImg.style.display = "none";
+                    if (mascotFallback) mascotFallback.style.display = "";
+                }, { once: true });
+                if (mascotFallback) mascotFallback.style.display = "none";
+            } else {
+                if (mascotImg) mascotImg.style.display = "none";
+                if (mascotFallback) mascotFallback.style.display = "";
+            }
+        }
+
+        contentTabs.loaded.guild = true;
+    } catch (error) {
+        console.error("[GROWERA] Load guild gagal:", error);
+        if (loading) {
+            loading.textContent = "Gagal memuat: " + error.message;
+            loading.hidden = false;
+        }
+    } finally {
+        if (loading && contentTabs.loaded.guild) loading.hidden = true;
+    }
+}
+
+/* ===== Wire tab clicks ===== */
+
 document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
         switchTab(btn.dataset.tab);
     });
 });
 
-// Reset tabs on logout
+/* ===== Reset tabs on logout ===== */
+
 const originalForceLogout = forceLogout;
 forceLogout = function(message) {
-    contentTabs.loaded = { inventory: false, worlds: false, achievements: false };
-    contentTabs.data = { inventory: null, worlds: null, achievements: null };
+    contentTabs.loaded = { inventory: false, worlds: false, achievements: false, friends: false, guild: false };
+    contentTabs.data = { inventory: null, worlds: null, achievements: null, friends: null, guild: null };
     contentTabs.current = "inventory";
     switchTab("inventory");
     originalForceLogout(message);
@@ -1192,6 +1384,7 @@ forceLogout = function(message) {
 
 // Set default tab on init
 switchTab("inventory");
+
 /* ===== Init ===== */
 
 updateFooterYear();
