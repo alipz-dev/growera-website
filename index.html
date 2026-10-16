@@ -121,6 +121,7 @@
 
     <div class="profile-grid">
 
+        <!-- ===== PLAYER CARD (with INVENTORY + WORLDS tabs) ===== -->
         <article class="player-card glass">
             <div class="card-topline">
                 <span>PLAYER PROFILE</span>
@@ -165,7 +166,72 @@
                 <img src="https://api.gtps.cloud/api/item/texture/1791/3494/" alt="" width="14" height="14" style="image-rendering:pixelated">
                 <span>EDIT PROFILE</span>
             </button>
+
+            <!-- ===== INVENTORY / WORLDS TABS (inside player card) ===== -->
+            <div class="player-card-tabs">
+                <div class="tabs-header" role="tablist">
+                    <button class="tab-btn active" data-tab="inventory" role="tab" aria-selected="true">
+                        <img src="https://api.gtps.cloud/api/item/texture/1791/448/" alt="" width="14" height="14" style="image-rendering:pixelated">
+                        <span>INVENTORY</span>
+                        <span class="tab-count" id="tabCountInventory">—</span>
+                    </button>
+                    <button class="tab-btn" data-tab="worlds" role="tab" aria-selected="false">
+                        <img src="https://api.gtps.cloud/api/item/texture/1791/242/" alt="" width="14" height="14" style="image-rendering:pixelated">
+                        <span>WORLDS</span>
+                        <span class="tab-count" id="tabCountWorlds">—</span>
+                    </button>
+                </div>
+
+                <div class="tabs-content">
+
+                    <!-- INVENTORY PANEL -->
+                    <div class="tab-panel active" id="tabPanelInventory" role="tabpanel">
+                        <div class="tab-loading" id="inventoryLoading">Memuat inventory...</div>
+                        <div class="inventory-grid-content" id="inventoryGridContent" hidden></div>
+                        <div class="tab-empty" id="inventoryEmpty" hidden>Inventory kosong.</div>
+                    </div>
+
+                    <!-- WORLDS PANEL -->
+                    <div class="tab-panel" id="tabPanelWorlds" role="tabpanel">
+                        <div class="tab-loading" id="worldsLoading">Memuat world list...</div>
+                        <div class="worlds-content" id="worldsContent" hidden>
+                            <div class="world-group" data-cat="owned">
+                                <div class="world-group-head">
+                                    <span>OWNED</span>
+                                    <strong id="worldsOwnedCount">0</strong>
+                                </div>
+                                <div class="world-chips" id="worldsOwnedList"></div>
+                            </div>
+                            <div class="world-group" data-cat="recent">
+                                <div class="world-group-head">
+                                    <span>RECENT</span>
+                                    <strong id="worldsRecentCount">0</strong>
+                                </div>
+                                <div class="world-chips" id="worldsRecentList"></div>
+                            </div>
+                            <div class="world-group" data-cat="access">
+                                <div class="world-group-head">
+                                    <span>ACCESS</span>
+                                    <strong id="worldsAccessCount">0</strong>
+                                </div>
+                                <div class="world-chips" id="worldsAccessList"></div>
+                            </div>
+                            <div class="world-group" data-cat="locked">
+                                <div class="world-group-head">
+                                    <span>LOCKED</span>
+                                    <strong id="worldsLockedCount">0</strong>
+                                </div>
+                                <div class="world-chips" id="worldsLockedList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ===== /TABS ===== -->
+
         </article>
+        <!-- ===== /PLAYER CARD ===== -->
 
         <div class="side-column">
 
@@ -256,67 +322,6 @@
         </div>
     </div>
 
-    <!-- ============ CONTENT TABS (INVENTORY + WORLDS ONLY) ============ -->
-    <article class="content-tabs glass">
-        <div class="tabs-header" role="tablist">
-            <button class="tab-btn active" data-tab="inventory" role="tab" aria-selected="true">
-                <img src="https://api.gtps.cloud/api/item/texture/1791/448/" alt="" width="18" height="18" style="image-rendering:pixelated">
-                <span>INVENTORY</span>
-                <span class="tab-count" id="tabCountInventory">—</span>
-            </button>
-            <button class="tab-btn" data-tab="worlds" role="tab" aria-selected="false">
-                <img src="https://api.gtps.cloud/api/item/texture/1791/242/" alt="" width="18" height="18" style="image-rendering:pixelated">
-                <span>WORLDS</span>
-                <span class="tab-count" id="tabCountWorlds">—</span>
-            </button>
-        </div>
-
-        <div class="tabs-content">
-
-            <!-- INVENTORY TAB -->
-            <div class="tab-panel active" id="tabPanelInventory" role="tabpanel">
-                <div class="tab-loading" id="inventoryLoading">Memuat inventory...</div>
-                <div class="inventory-grid-content" id="inventoryGridContent" hidden></div>
-                <div class="tab-empty" id="inventoryEmpty" hidden>Inventory kosong.</div>
-            </div>
-
-            <!-- WORLDS TAB -->
-            <div class="tab-panel" id="tabPanelWorlds" role="tabpanel">
-                <div class="tab-loading" id="worldsLoading">Memuat world list...</div>
-                <div class="worlds-content" id="worldsContent" hidden>
-                    <div class="world-group" data-cat="owned">
-                        <div class="world-group-head">
-                            <span>OWNED WORLDS</span>
-                            <strong id="worldsOwnedCount">0</strong>
-                        </div>
-                        <div class="world-chips" id="worldsOwnedList"></div>
-                    </div>
-                    <div class="world-group" data-cat="recent">
-                        <div class="world-group-head">
-                            <span>RECENT WORLDS</span>
-                            <strong id="worldsRecentCount">0</strong>
-                        </div>
-                        <div class="world-chips" id="worldsRecentList"></div>
-                    </div>
-                    <div class="world-group" data-cat="access">
-                        <div class="world-group-head">
-                            <span>ACCESS WORLDS</span>
-                            <strong id="worldsAccessCount">0</strong>
-                        </div>
-                        <div class="world-chips" id="worldsAccessList"></div>
-                    </div>
-                    <div class="world-group" data-cat="locked">
-                        <div class="world-group-head">
-                            <span>SMALL LOCKED WORLDS</span>
-                            <strong id="worldsLockedCount">0</strong>
-                        </div>
-                        <div class="world-chips" id="worldsLockedList"></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </article>
     <footer class="site-footer">GROWERA © <span id="yearProfile"></span> CRYSTAL ERA <span class="footer-separator">•</span> BUILT FOR EXPLORERS</footer>
 </section>
 
