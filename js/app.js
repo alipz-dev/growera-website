@@ -570,6 +570,7 @@ function forceLogout(message) {
     clearToken();
     isAuthenticated = false;
     closeEditDialog();
+    closeAllInfoDialogs();
     if (passwordInput) passwordInput.value = "";
     setMessage("");
     setLoginVisible();
@@ -915,12 +916,11 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && editDialog?.open) closeEditDialog();
 });
 
-/* ===== TABS: Inventory / Worlds / Achievements / Friends / Guild ===== */
+/* ===== TABS: Inventory / Worlds ===== */
 
 const contentTabs = {
-    loaded: { inventory: false, worlds: false, achievements: false, friends: false, guild: false },
-    current: "inventory",
-    data: { inventory: null, worlds: null, achievements: null, friends: null, guild: null }
+    loaded: { inventory: false, worlds: false },
+    current: "inventory"
 };
 
 function switchTab(tabName) {
@@ -937,13 +937,7 @@ function switchTab(tabName) {
     });
 
     if (!contentTabs.loaded[tabName]) {
-        if (tabName === "friends") {
-            loadFriendsTab();
-        } else if (tabName === "guild") {
-            loadGuildTab();
-        } else {
-            loadTabData(tabName);
-        }
+        loadTabData(tabName);
     }
 }
 
@@ -961,7 +955,6 @@ async function loadTabData(tabName) {
                 method: "GET",
                 headers: { Authorization: "Bearer " + token }
             });
-            contentTabs.data.inventory = result;
             renderInventoryTab(result);
             contentTabs.loaded.inventory = true;
         } else if (tabName === "worlds") {
@@ -969,17 +962,8 @@ async function loadTabData(tabName) {
                 method: "GET",
                 headers: { Authorization: "Bearer " + token }
             });
-            contentTabs.data.worlds = result;
             renderWorldsTab(result);
             contentTabs.loaded.worlds = true;
-        } else if (tabName === "achievements") {
-            const result = await apiRequest("/achievements", {
-                method: "GET",
-                headers: { Authorization: "Bearer " + token }
-            });
-            contentTabs.data.achievements = result;
-            renderAchievementsTab(result);
-            contentTabs.loaded.achievements = true;
         }
     } catch (error) {
         console.error("[GROWERA] Load tab " + tabName + " gagal:", error);
@@ -1092,103 +1076,167 @@ function renderWorldsTab(result) {
     if (content) content.hidden = false;
 }
 
-function renderAchievementsTab(result) {
-    const achievements = result?.achievements || [];
-    const total = result?.total || achievements.length;
-    const unlocked = result?.unlocked || achievements.filter((a) => a.unlocked).length;
+/* ===== INFO DIALOGS ===== */
 
-    const count = $("#tabCountAchievements");
-    if (count) count.textContent = unlocked + "/" + total;
+const infoDialogLoaded = {
+    achievements: false,
+    friends: false,
+    guild: false,
+    playtime: false
+};
 
-    const empty = $("#achievementsEmpty");
-    const summary = $("#achSummary");
-    const grid = $("#achGridContent");
+function openInfoDialog(name) {
+    const dlg = document.getElementById(name);
+    if (!dlg) return;
 
-    if (!achievements.length) {
-        if (empty) empty.hidden = false;
-        if (summary) summary.hidden = true;
-        if (grid) grid.hidden = true;
-        return;
+    if (typeof dlg.showModal === "function") {
+        if (!dlg.open) dlg.showModal();
+    } else {
+        dlg.setAttribute("open", "");
     }
 
-    if (empty) empty.hidden = true;
-    if (summary) summary.hidden = false;
-    if (grid) grid.hidden = false;
+    const key = name.replace("dialog", "").toLowerCase();
 
-    if ($("#achUnlockedCount")) $("#achUnlockedCount").textContent = String(unlocked);
-    if ($("#achTotalCount")) $("#achTotalCount").textContent = String(total);
-
-    const percent = total > 0 ? Math.round((unlocked / total) * 100) : 0;
-    if ($("#achProgressFill")) $("#achProgressFill").style.width = percent + "%";
-    if ($("#achProgressText")) $("#achProgressText").textContent = percent + "%";
-
-    if (grid) {
-        grid.replaceChildren();
-
-        achievements.forEach((ach) => {
-            const card = document.createElement("div");
-            card.className = "ach-card" + (ach.unlocked ? " unlocked" : "");
-
-            const icon = document.createElement("div");
-            icon.className = "ach-icon";
-            const img = document.createElement("img");
-            const iconId = ach.iconId || (ach.unlocked ? 1458 : 202);
-            img.src = avatarUrl(iconId);
-            img.alt = "";
-            img.addEventListener("error", () => {
-                icon.textContent = ach.unlocked ? "★" : "○";
-                icon.style.color = ach.unlocked ? "#f8d58c" : "#4b5670";
-                icon.style.fontSize = "20px";
-            });
-            icon.appendChild(img);
-
-            const info = document.createElement("div");
-            info.className = "ach-info";
-
-            const name = document.createElement("div");
-            name.className = "ach-name";
-            name.textContent = ach.name || ("Achievement #" + ach.id);
-
-            const desc = document.createElement("div");
-            desc.className = "ach-desc";
-            desc.textContent = ach.description || "—";
-
-            const badge = document.createElement("span");
-            badge.className = "ach-badge";
-            badge.textContent = ach.unlocked ? "UNLOCKED" : "LOCKED";
-
-            info.appendChild(name);
-            if (ach.description) info.appendChild(desc);
-            info.appendChild(badge);
-
-            if (!ach.unlocked && ach.target > 0) {
-                const mini = document.createElement("div");
-                mini.className = "ach-progress-mini";
-                const fill = document.createElement("div");
-                fill.className = "ach-progress-mini-fill";
-                const pct = Math.min(100, Math.round((ach.progress / ach.target) * 100));
-                fill.style.width = pct + "%";
-                mini.appendChild(fill);
-                info.appendChild(mini);
-            }
-
-            card.appendChild(icon);
-            card.appendChild(info);
-            grid.appendChild(card);
-        });
+    if (key === "achievements" && !infoDialogLoaded.achievements) {
+        loadAchievementsDialog();
+    } else if (key === "friends" && !infoDialogLoaded.friends) {
+        loadFriendsDialog();
+    } else if (key === "guild" && !infoDialogLoaded.guild) {
+        loadGuildDialog();
+    } else if (key === "playtime" && !infoDialogLoaded.playtime) {
+        loadPlaytimeDialog();
     }
 }
 
-/* ===== FRIENDS TAB ===== */
+function closeInfoDialog(name) {
+    const dlg = document.getElementById(name);
+    if (!dlg) return;
+    if (dlg.open && typeof dlg.close === "function") dlg.close();
+    else dlg.removeAttribute("open");
+}
 
-async function loadFriendsTab() {
+function closeAllInfoDialogs() {
+    ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime"].forEach((id) => {
+        const dlg = document.getElementById(id);
+        if (dlg && dlg.open && typeof dlg.close === "function") dlg.close();
+    });
+    infoDialogLoaded.achievements = false;
+    infoDialogLoaded.friends = false;
+    infoDialogLoaded.guild = false;
+    infoDialogLoaded.playtime = false;
+}
+
+/* ==== Achievements ==== */
+
+async function loadAchievementsDialog() {
+    const token = getToken();
+    if (!token) return;
+
+    const loading = $("#achievementsLoading");
+    const summary = $("#achSummary");
+    const grid = $("#achGridContent");
+    const empty = $("#achievementsEmpty");
+
+    if (loading) { loading.hidden = false; loading.textContent = "Memuat achievements..."; }
+    if (summary) summary.hidden = true;
+    if (grid) grid.hidden = true;
+    if (empty) empty.hidden = true;
+
+    try {
+        const result = await apiRequest("/achievements", {
+            method: "GET",
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        const achievements = result?.achievements || [];
+        const total = result?.total || achievements.length;
+        const unlocked = result?.unlocked || achievements.filter((a) => a.unlocked).length;
+
+        const statAch = $("#statAchValue");
+        if (statAch) statAch.textContent = unlocked + "/" + total;
+
+        if (!achievements.length) {
+            if (empty) empty.hidden = false;
+            infoDialogLoaded.achievements = true;
+            return;
+        }
+
+        if (summary) summary.hidden = false;
+        if (grid) grid.hidden = false;
+
+        if ($("#achUnlockedCount")) $("#achUnlockedCount").textContent = String(unlocked);
+        if ($("#achTotalCount")) $("#achTotalCount").textContent = String(total);
+
+        const percent = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+        if ($("#achProgressFill")) $("#achProgressFill").style.width = percent + "%";
+        if ($("#achProgressText")) $("#achProgressText").textContent = percent + "%";
+
+        if (grid) {
+            grid.replaceChildren();
+
+            achievements.forEach((ach) => {
+                const card = document.createElement("div");
+                card.className = "ach-card" + (ach.unlocked ? " unlocked" : "");
+
+                const icon = document.createElement("div");
+                icon.className = "ach-icon";
+                const img = document.createElement("img");
+                const iconId = ach.iconId || (ach.unlocked ? 1458 : 202);
+                img.src = avatarUrl(iconId);
+                img.alt = "";
+                img.addEventListener("error", () => {
+                    icon.textContent = ach.unlocked ? "★" : "○";
+                    icon.style.color = ach.unlocked ? "#f8d58c" : "#4b5670";
+                    icon.style.fontSize = "20px";
+                });
+                icon.appendChild(img);
+
+                const info = document.createElement("div");
+                info.className = "ach-info";
+
+                const name = document.createElement("div");
+                name.className = "ach-name";
+                name.textContent = ach.name || ("Achievement #" + ach.id);
+
+                const desc = document.createElement("div");
+                desc.className = "ach-desc";
+                desc.textContent = ach.description || "—";
+
+                const badge = document.createElement("span");
+                badge.className = "ach-badge";
+                badge.textContent = ach.unlocked ? "UNLOCKED" : "LOCKED";
+
+                info.appendChild(name);
+                if (ach.description) info.appendChild(desc);
+                info.appendChild(badge);
+
+                card.appendChild(icon);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+        }
+
+        infoDialogLoaded.achievements = true;
+    } catch (error) {
+        console.error("[GROWERA] Load achievements gagal:", error);
+        if (loading) {
+            loading.textContent = "Gagal memuat: " + error.message;
+            loading.hidden = false;
+        }
+    } finally {
+        if (loading && infoDialogLoaded.achievements) loading.hidden = true;
+    }
+}
+
+/* ==== Friends ==== */
+
+async function loadFriendsDialog() {
     const token = getToken();
     if (!token) return;
 
     const loading = $("#friendsLoading");
     const grid = $("#friendsGridContent");
     const empty = $("#friendsEmpty");
-    const count = $("#tabCountFriends");
 
     if (loading) { loading.hidden = false; loading.textContent = "Memuat daftar teman..."; }
     if (grid) grid.hidden = true;
@@ -1200,13 +1248,14 @@ async function loadFriendsTab() {
             headers: { Authorization: "Bearer " + token }
         });
 
-        contentTabs.data.friends = result;
         const list = result?.friends || [];
-        if (count) count.textContent = String(list.length);
+
+        const statFriends = $("#statFriendsValue");
+        if (statFriends) statFriends.textContent = String(list.length);
 
         if (!list.length) {
             if (empty) empty.hidden = false;
-            contentTabs.loaded.friends = true;
+            infoDialogLoaded.friends = true;
             return;
         }
 
@@ -1243,7 +1292,7 @@ async function loadFriendsTab() {
             });
         }
 
-        contentTabs.loaded.friends = true;
+        infoDialogLoaded.friends = true;
     } catch (error) {
         console.error("[GROWERA] Load friends gagal:", error);
         if (loading) {
@@ -1251,11 +1300,11 @@ async function loadFriendsTab() {
             loading.hidden = false;
         }
     } finally {
-        if (loading && contentTabs.loaded.friends) loading.hidden = true;
+        if (loading && infoDialogLoaded.friends) loading.hidden = true;
     }
 }
 
-/* ===== GUILD TAB ===== */
+/* ==== Guild ==== */
 
 function fmtGuildDate(unixSec) {
     const n = Number(unixSec) || 0;
@@ -1267,14 +1316,13 @@ function fmtGuildDate(unixSec) {
     } catch { return "—"; }
 }
 
-async function loadGuildTab() {
+async function loadGuildDialog() {
     const token = getToken();
     if (!token) return;
 
     const loading = $("#guildLoading");
     const content = $("#guildContent");
     const empty = $("#guildEmpty");
-    const count = $("#tabCountGuild");
 
     if (loading) { loading.hidden = false; loading.textContent = "Memuat data guild..."; }
     if (content) content.hidden = true;
@@ -1286,17 +1334,18 @@ async function loadGuildTab() {
             headers: { Authorization: "Bearer " + token }
         });
 
-        contentTabs.data.guild = result;
         const guild = result?.guild || { id: 0 };
 
+        const statGuild = $("#statGuildValue");
+
         if (!guild.id || guild.id <= 0) {
-            if (count) count.textContent = "0";
+            if (statGuild) statGuild.textContent = "None";
             if (empty) empty.hidden = false;
-            contentTabs.loaded.guild = true;
+            infoDialogLoaded.guild = true;
             return;
         }
 
-        if (count) count.textContent = "1";
+        if (statGuild) statGuild.textContent = guild.title || ("#" + guild.id);
 
         if (content) {
             content.hidden = false;
@@ -1351,7 +1400,7 @@ async function loadGuildTab() {
             }
         }
 
-        contentTabs.loaded.guild = true;
+        infoDialogLoaded.guild = true;
     } catch (error) {
         console.error("[GROWERA] Load guild gagal:", error);
         if (loading) {
@@ -1359,7 +1408,102 @@ async function loadGuildTab() {
             loading.hidden = false;
         }
     } finally {
-        if (loading && contentTabs.loaded.guild) loading.hidden = true;
+        if (loading && infoDialogLoaded.guild) loading.hidden = true;
+    }
+}
+
+/* ==== Playtime + Chart ==== */
+
+function fmtDayKeyShort(dayKey) {
+    const n = Number(dayKey) || 0;
+    if (n <= 0) return "";
+    // Format: YYYYMMDD
+    if (n > 100000000) {
+        const m = Math.floor((n % 10000) / 100);
+        const d = n % 100;
+        return m + "/" + d;
+    }
+    // Fallback: unix day count
+    try {
+        const dt = new Date(n * 86400 * 1000);
+        return (dt.getMonth() + 1) + "/" + dt.getDate();
+    } catch { return ""; }
+}
+
+async function loadPlaytimeDialog() {
+    const token = getToken();
+    if (!token) return;
+
+    const loading = $("#playtimeLoading");
+    const content = $("#playtimeContent");
+    const totalEl = $("#playtimeTotal");
+    const chartEl = $("#playtimeChart");
+    const daysEl = $("#playtimeDaysCount");
+
+    if (loading) { loading.hidden = false; loading.textContent = "Memuat data playtime..."; }
+    if (content) content.hidden = true;
+
+    try {
+        const result = await apiRequest("/playtime", {
+            method: "GET",
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        const total = result?.totalPlaytime || 0;
+        const history = result?.history || [];
+
+        if (totalEl) totalEl.textContent = fmtPlaytime(total);
+        if (daysEl) daysEl.textContent = history.length + " hari";
+
+        if (chartEl) {
+            chartEl.replaceChildren();
+
+            if (!history.length) {
+                const em = document.createElement("div");
+                em.className = "pt-empty";
+                em.textContent = "Belum ada riwayat playtime. Data akan terkumpul seiring waktu.";
+                chartEl.appendChild(em);
+            } else {
+                const max = Math.max(...history.map((h) => h.playtime), 1);
+
+                history.forEach((h, idx) => {
+                    const wrap = document.createElement("div");
+                    wrap.className = "pt-bar-wrap";
+                    if (idx === history.length - 1) wrap.classList.add("is-today");
+
+                    const pct = Math.max(4, Math.round((h.playtime / max) * 100));
+
+                    const bar = document.createElement("div");
+                    bar.className = "pt-bar";
+                    bar.style.height = pct + "%";
+                    bar.title = fmtPlaytime(h.playtime);
+
+                    const label = document.createElement("span");
+                    label.className = "pt-label";
+                    label.textContent = fmtDayKeyShort(h.dayKey);
+
+                    wrap.appendChild(bar);
+                    wrap.appendChild(label);
+                    chartEl.appendChild(wrap);
+                });
+
+                // Auto-scroll to the end (today)
+                requestAnimationFrame(() => {
+                    chartEl.scrollLeft = chartEl.scrollWidth;
+                });
+            }
+        }
+
+        if (content) content.hidden = false;
+        infoDialogLoaded.playtime = true;
+    } catch (error) {
+        console.error("[GROWERA] Load playtime gagal:", error);
+        if (loading) {
+            loading.textContent = "Gagal memuat: " + error.message;
+            loading.hidden = false;
+        }
+    } finally {
+        if (loading && infoDialogLoaded.playtime) loading.hidden = true;
     }
 }
 
@@ -1371,12 +1515,43 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
     });
 });
 
+/* ===== Wire info dialog opens (stat-cards) ===== */
+
+document.querySelectorAll("[data-open-dialog]").forEach((el) => {
+    const handler = () => openInfoDialog(el.dataset.openDialog);
+
+    el.addEventListener("click", handler);
+    el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handler();
+        }
+    });
+});
+
+/* ===== Wire info dialog closes ===== */
+
+document.querySelectorAll("[data-close-dialog]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        closeInfoDialog(btn.dataset.closeDialog);
+    });
+});
+
+/* ===== Backdrop click closes dialog ===== */
+
+["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime"].forEach((id) => {
+    const dlg = document.getElementById(id);
+    if (!dlg) return;
+    dlg.addEventListener("click", (e) => {
+        if (e.target === dlg) closeInfoDialog(id);
+    });
+});
+
 /* ===== Reset tabs on logout ===== */
 
 const originalForceLogout = forceLogout;
 forceLogout = function(message) {
-    contentTabs.loaded = { inventory: false, worlds: false, achievements: false, friends: false, guild: false };
-    contentTabs.data = { inventory: null, worlds: null, achievements: null, friends: null, guild: null };
+    contentTabs.loaded = { inventory: false, worlds: false };
     contentTabs.current = "inventory";
     switchTab("inventory");
     originalForceLogout(message);
