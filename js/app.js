@@ -8,13 +8,13 @@
 const API_BASE_URL = "";
 const API_PREFIX = "/api/growera";
 const TOKEN_KEY = "growera_session_token";
+const GTPS_SERVER_ID = "1791";
 
 // =========================================================
 // DOM HELPERS
 // =========================================================
 
 const $ = (s) => document.querySelector(s);
-const $$ = (s) => document.querySelectorAll(s);
 
 const loginView = $("#loginView");
 const profileView = $("#profileView");
@@ -27,6 +27,7 @@ const passwordInput = $("#password");
 
 let isAuthenticated = false;
 let isBusy = false;
+let isSavingEdit = false;
 
 // =========================================================
 // PLAYER STATE
@@ -103,15 +104,17 @@ function fmtPlaytime(seconds) {
     return parts.length ? parts.join(" ") : "< 1m";
 }
 
+function avatarUrl(id) {
+    return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id;
+}
+
 // =========================================================
-// TOKEN STORAGE (localStorage 24h)
+// TOKEN STORAGE
 // =========================================================
 
 function getToken() {
     try {
-        return localStorage.getItem(TOKEN_KEY)
-            || sessionStorage.getItem(TOKEN_KEY)
-            || "";
+        return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || "";
     } catch { return ""; }
 }
 
@@ -143,7 +146,7 @@ function toast(message, type = "info", duration = 4000) {
     const icons = { success: "✓", error: "✕", info: "ℹ" };
 
     const el = document.createElement("div");
-    el.className = `toast toast-${type}`;
+    el.className = "toast toast-" + type;
 
     const icon = document.createElement("span");
     icon.className = "toast-icon";
@@ -176,8 +179,20 @@ function setMessage(message, type = "error") {
     else delete formMessage.dataset.type;
 }
 
+function setEditError(message) {
+    const el = $("#editError");
+    if (!el) return;
+    if (message) {
+        el.textContent = message;
+        el.classList.add("show");
+    } else {
+        el.textContent = "";
+        el.classList.remove("show");
+    }
+}
+
 // =========================================================
-// BUSY STATE
+// BUSY STATES
 // =========================================================
 
 function setBusy(busy) {
@@ -191,6 +206,22 @@ function setBusy(busy) {
     }
 
     if (loginForm) loginForm.setAttribute("aria-busy", String(isBusy));
+}
+
+function setSavingEdit(saving) {
+    isSavingEdit = Boolean(saving);
+
+    const btn = $("#editSaveBtn");
+    if (!btn) return;
+
+    btn.disabled = isSavingEdit;
+    btn.setAttribute("aria-busy", String(isSavingEdit));
+
+    const label = btn.querySelector(".btn-label");
+    if (label) label.textContent = isSavingEdit ? "SAVING" : "SAVE CHANGES";
+
+    const cancel = $("#editCancelBtn");
+    if (cancel) cancel.disabled = isSavingEdit;
 }
 
 // =========================================================
@@ -220,10 +251,6 @@ function setProfileLoading(loading) {
     if (btn) btn.classList.toggle("is-loading", Boolean(loading));
 }
 
-// =========================================================
-// FOOTER YEAR
-// =========================================================
-
 function updateFooterYear() {
     const year = String(new Date().getFullYear());
     if ($("#year")) $("#year").textContent = year;
@@ -250,12 +277,7 @@ async function apiRequest(path, options = {}) {
     try {
         response = await fetch(
             API_BASE_URL.replace(/\/+$/, "") + API_PREFIX + path,
-            {
-                ...options,
-                headers,
-                cache: "no-store",
-                credentials: "same-origin"
-            }
+            { ...options, headers, cache: "no-store", credentials: "same-origin" }
         );
     } catch (error) {
         const networkError = new Error(
@@ -273,21 +295,16 @@ async function apiRequest(path, options = {}) {
             data = JSON.parse(rawText);
         } catch {
             console.error("[GROWERA] Respons bukan JSON:", {
-                status: response.status,
-                url: response.url,
+                status: response.status, url: response.url,
                 body: rawText.slice(0, 2000)
             });
-            throw new Error(
-                `Respons server bukan JSON (HTTP ${response.status}).`
-            );
+            throw new Error("Respons server bukan JSON (HTTP " + response.status + ").");
         }
     }
 
     if (!response.ok) {
-        const message =
-            data?.message || data?.error ||
-            `Permintaan gagal (HTTP ${response.status}).`;
-
+        const message = data?.message || data?.error ||
+            ("Permintaan gagal (HTTP " + response.status + ").");
         const error = new Error(String(message));
         error.status = response.status;
         error.data = data;
@@ -304,12 +321,8 @@ async function apiRequest(path, options = {}) {
 
 function normalizePlayer(data) {
     const source =
-        data?.player ||
-        data?.data?.player ||
-        data?.data?.user ||
-        data?.user ||
-        data?.data ||
-        data;
+        data?.player || data?.data?.player || data?.data?.user ||
+        data?.user || data?.data || data;
 
     if (!source || typeof source !== "object") {
         throw new Error("Data pemain dari server tidak valid.");
@@ -318,30 +331,19 @@ function normalizePlayer(data) {
     const username = safeName(source.username || source.displayName || source.name);
     const displayName = safeName(source.displayName || source.username || source.name);
 
-    const level = Math.max(1, toNumber(source.level, 1));
-    const xp = Math.max(0, toNumber(source.xp, 0));
-    const nextLevelXp = Math.max(1, toNumber(
-        source.nextLevelXp ?? source.requiredXP ?? source.requiredXp ?? source.xpRequired,
-        1
-    ));
-
-    const gems = Math.max(0, toNumber(source.gems, 0));
-    const playtime = Math.max(0, toNumber(source.playtime, 0));
-    const online = source.online === true;
-
-    const role = String(source.role || "player").trim().toLowerCase() === "admin"
-        ? "admin" : "player";
-
     return {
         username,
         displayName,
-        role,
-        level,
-        xp,
-        nextLevelXp,
-        gems,
-        playtime,
-        online,
+        role: String(source.role || "player").trim().toLowerCase() === "admin"
+            ? "admin" : "player",
+        level: Math.max(1, toNumber(source.level, 1)),
+        xp: Math.max(0, toNumber(source.xp, 0)),
+        nextLevelXp: Math.max(1, toNumber(
+            source.nextLevelXp ?? source.requiredXP ?? source.requiredXp ?? source.xpRequired, 1
+        )),
+        gems: Math.max(0, toNumber(source.gems, 0)),
+        playtime: Math.max(0, toNumber(source.playtime, 0)),
+        online: source.online === true,
         bio: String(source.bio || "").trim(),
         avatarItemId: toNumber(source.avatarItemId, 0),
         country: String(source.country || "").trim().toUpperCase(),
@@ -374,7 +376,6 @@ function setMetaValue(id, value, emptyText = "—") {
 function renderProfile() {
     const name = safeName(player.displayName || player.username);
 
-    // Header
     if ($("#welcomeName")) $("#welcomeName").textContent = name;
     if ($("#profileName")) $("#profileName").textContent = name;
 
@@ -384,16 +385,16 @@ function renderProfile() {
                 .replace(/[^a-z0-9_]/g, "").slice(0, 24);
     }
 
-    // Avatar: pakai PNG kalau ada avatarItemId, kalau tidak pakai inisial
+    // Avatar
     const avatarEl = $("#avatarInitial");
     if (avatarEl) {
         avatarEl.replaceChildren();
         if (player.avatarItemId > 0) {
             const img = document.createElement("img");
-            img.src = "https://api.gtps.cloud/api/item/texture/1791/" + player.avatarItemId;
+            img.src = avatarUrl(player.avatarItemId);
             img.alt = name;
             img.loading = "eager";
-            img.style.cssText = "width:100%;height:100%;object-fit:contain;image-rendering:pixelated;border-radius:50%";
+            img.style.cssText = "width:100%;height:100%;object-fit:contain;image-rendering:pixelated;border-radius:50%;padding:6px;box-sizing:border-box";
             img.addEventListener("error", () => {
                 avatarEl.textContent = name.charAt(0).toUpperCase();
             });
@@ -416,7 +417,6 @@ function renderProfile() {
         }
     }
 
-    // Level & Gems
     if ($("#levelValue")) $("#levelValue").textContent = fmt(player.level);
     if ($("#gemsValue")) $("#gemsValue").textContent = fmt(player.gems);
 
@@ -430,7 +430,6 @@ function renderProfile() {
     if ($("#xpCurrent")) $("#xpCurrent").textContent = fmt(xp) + " XP";
     if ($("#xpNext")) $("#xpNext").textContent = fmt(next) + " XP";
 
-    // Playtime
     if ($("#playtimeValue")) $("#playtimeValue").textContent = fmtPlaytime(player.playtime);
 
     // About Me
@@ -452,14 +451,12 @@ function renderProfile() {
     setMetaValue("#birthdateValue", fmtBirthdate(player.birthdate));
     setMetaValue("#memberSinceValue", fmtDateId(player.createdAt));
 
-    // Member since badge
     const msBadge = $("#memberSinceBadge");
     if (msBadge) {
-        if (player.createdAt > 0) msBadge.textContent = "📅 " + fmtDateId(player.createdAt);
-        else msBadge.textContent = "NEW";
+        msBadge.textContent = player.createdAt > 0 ? "📅 " + fmtDateId(player.createdAt) : "NEW";
     }
 
-    // Online indicator
+    // Online
     const pill = $("#onlinePill");
     const onlineText = $("#onlineText");
     if (pill && onlineText) {
@@ -472,7 +469,6 @@ function renderProfile() {
         }
     }
 
-    // Dataset untuk CSS
     document.documentElement.dataset.groweraRole = player.role;
 }
 
@@ -503,11 +499,8 @@ async function handleLogin(event) {
             body: JSON.stringify({ username, password })
         });
 
-        const token =
-            result?.token ||
-            result?.accessToken ||
-            result?.data?.token ||
-            result?.data?.accessToken;
+        const token = result?.token || result?.accessToken ||
+            result?.data?.token || result?.data?.accessToken;
 
         saveToken(token);
 
@@ -534,7 +527,7 @@ async function handleLogin(event) {
 }
 
 // =========================================================
-// LOAD CURRENT PLAYER
+// LOAD / REFRESH
 // =========================================================
 
 async function loadCurrentPlayer() {
@@ -553,13 +546,8 @@ async function loadCurrentPlayer() {
     const normalized = normalizePlayer(result);
     Object.assign(player, normalized);
     isAuthenticated = true;
-
     return player;
 }
-
-// =========================================================
-// REFRESH
-// =========================================================
 
 async function refreshProfile(silent = false) {
     if (isBusy) return;
@@ -589,11 +577,10 @@ async function refreshProfile(silent = false) {
 function forceLogout(message) {
     clearToken();
     isAuthenticated = false;
-
+    closeEditDialog();
     if (passwordInput) passwordInput.value = "";
     setMessage("");
     setLoginVisible();
-
     if (message) toast(message, "info");
 }
 
@@ -643,7 +630,184 @@ async function restoreSession() {
 }
 
 // =========================================================
-// PASSWORD TOGGLE
+// EDIT DIALOG
+// =========================================================
+
+function updateAvatarPreview() {
+    const preview = $("#avatarPreview");
+    const input = $("#editAvatarId");
+    if (!preview || !input) return;
+
+    const id = Math.floor(Number(input.value) || 0);
+    preview.replaceChildren();
+
+    if (id <= 0) {
+        const ph = document.createElement("span");
+        ph.className = "avatar-placeholder";
+        ph.textContent = "?";
+        preview.appendChild(ph);
+    } else {
+        const img = document.createElement("img");
+        img.src = avatarUrl(id);
+        img.alt = "Avatar";
+        img.addEventListener("error", () => {
+            preview.replaceChildren();
+            const ph = document.createElement("span");
+            ph.className = "avatar-placeholder";
+            ph.textContent = "?";
+            preview.appendChild(ph);
+        });
+        preview.appendChild(img);
+    }
+
+    // Highlight preset
+    document.querySelectorAll("#avatarPresets button").forEach((b) => {
+        b.classList.toggle("active", Number(b.dataset.avatarId) === id);
+    });
+}
+
+function updateBioCounter() {
+    const bio = $("#editBio");
+    const counter = $("#bioCounter");
+    if (!bio || !counter) return;
+    counter.textContent = bio.value.length + " / 200";
+}
+
+function openEditDialog() {
+    if (!editDialog) return;
+
+    $("#editDisplayName").value = player.displayName || "";
+    $("#editBio").value = player.bio || "";
+    $("#editAvatarId").value = player.avatarItemId > 0 ? String(player.avatarItemId) : "";
+    $("#editCountry").value = player.country || "";
+    $("#editFavoriteWorld").value = player.favoriteWorld || "";
+    $("#editDiscord").value = player.discord || "";
+    $("#editInstagram").value = player.instagram || "";
+    $("#editBirthdate").value = /^\d{4}-\d{2}-\d{2}$/.test(player.birthdate) ? player.birthdate : "";
+
+    updateAvatarPreview();
+    updateBioCounter();
+    setEditError("");
+    setSavingEdit(false);
+
+    if (typeof editDialog.showModal === "function") {
+        editDialog.showModal();
+    } else {
+        editDialog.setAttribute("open", "");
+    }
+
+    setTimeout(() => $("#editDisplayName")?.focus(), 120);
+}
+
+function closeEditDialog() {
+    if (!editDialog) return;
+    if (editDialog.open && typeof editDialog.close === "function") {
+        editDialog.close();
+    } else {
+        editDialog.removeAttribute("open");
+    }
+}
+
+async function handleEditSubmit(event) {
+    event.preventDefault();
+    if (isSavingEdit) return;
+
+    setEditError("");
+
+    const displayName = $("#editDisplayName").value.trim();
+    const bio = $("#editBio").value.trim();
+    const avatarRaw = $("#editAvatarId").value.trim();
+    const country = $("#editCountry").value.trim().toUpperCase();
+    const favoriteWorld = $("#editFavoriteWorld").value.trim();
+    const discord = $("#editDiscord").value.trim();
+    const instagram = $("#editInstagram").value.trim().replace(/^@/, "");
+    const birthdate = $("#editBirthdate").value.trim();
+
+    // Validasi
+    if (!displayName) {
+        setEditError("Display name wajib diisi.");
+        return;
+    }
+
+    if (displayName.length > 32) {
+        setEditError("Display name maksimal 32 karakter.");
+        return;
+    }
+
+    if (bio.length > 200) {
+        setEditError("Bio maksimal 200 karakter.");
+        return;
+    }
+
+    let avatarItemId = 0;
+    if (avatarRaw !== "") {
+        avatarItemId = Math.floor(Number(avatarRaw) || 0);
+        if (avatarItemId < 0 || avatarItemId > 999999) {
+            setEditError("Avatar item ID harus antara 0 sampai 999999.");
+            return;
+        }
+    }
+
+    if (country !== "" && !/^[A-Z]{2}$/.test(country)) {
+        setEditError("Country code harus 2 huruf, contoh: ID, US, MY.");
+        return;
+    }
+
+    if (birthdate !== "" && !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
+        setEditError("Format birthdate tidak valid.");
+        return;
+    }
+
+    const token = getToken();
+    if (!token) {
+        setEditError("Sesi tidak ditemukan. Silakan login kembali.");
+        return;
+    }
+
+    setSavingEdit(true);
+
+    try {
+        const payload = {
+            displayName,
+            bio,
+            avatarItemId,
+            country,
+            favoriteWorld,
+            discord,
+            instagram,
+            birthdate
+        };
+
+        const result = await apiRequest("/me", {
+            method: "PUT",
+            headers: { Authorization: "Bearer " + token },
+            body: JSON.stringify(payload)
+        });
+
+        // Update state lokal
+        const updated = normalizePlayer(result);
+        Object.assign(player, updated);
+
+        renderProfile();
+        closeEditDialog();
+        toast("Profil berhasil disimpan.", "success");
+    } catch (error) {
+        console.error("[GROWERA] Save profile gagal:", error);
+
+        if (error.isAuthError) {
+            closeEditDialog();
+            forceLogout("Sesi berakhir. Silakan login kembali.");
+            return;
+        }
+
+        setEditError(error.message || "Gagal menyimpan profil.");
+    } finally {
+        setSavingEdit(false);
+    }
+}
+
+// =========================================================
+// PASSWORD TOGGLE + CAPS + AUTOFOCUS
 // =========================================================
 
 function wirePasswordToggle() {
@@ -664,10 +828,6 @@ function wirePasswordToggle() {
     });
 }
 
-// =========================================================
-// CAPS LOCK DETECTION
-// =========================================================
-
 function wireCapsLock() {
     const warn = $("#capsLockWarning");
     if (!warn) return;
@@ -682,13 +842,8 @@ function wireCapsLock() {
     document.addEventListener("keyup", check);
 }
 
-// =========================================================
-// AUTOFOCUS
-// =========================================================
-
 function wireAutofocus() {
     if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
-
     if (!loginView?.classList.contains("hidden")) {
         setTimeout(() => usernameInput?.focus(), 200);
     }
@@ -702,12 +857,49 @@ loginForm?.addEventListener("submit", handleLogin);
 $("#logoutButton")?.addEventListener("click", handleLogout);
 $("#refreshButton")?.addEventListener("click", () => refreshProfile(false));
 
-$("#editPreviewButton")?.addEventListener("click", () => {
-    toast("Edit profile akan aktif di Sprint berikutnya.", "info");
+$("#editPreviewButton")?.addEventListener("click", openEditDialog);
+
+$("#editForm")?.addEventListener("submit", handleEditSubmit);
+
+$("#editCloseBtn")?.addEventListener("click", closeEditDialog);
+$("#editCancelBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeEditDialog();
 });
 
-$("#exploreButton")?.addEventListener("click", () => {
-    $("#editPreviewButton")?.scrollIntoView({ behavior: "smooth", block: "center" });
+// Close dialog kalau klik backdrop
+editDialog?.addEventListener("click", (e) => {
+    if (e.target === editDialog) closeEditDialog();
+});
+
+// Avatar input & presets
+$("#editAvatarId")?.addEventListener("input", updateAvatarPreview);
+
+document.querySelectorAll("#avatarPresets button").forEach((b) => {
+    b.addEventListener("click", () => {
+        const id = b.dataset.avatarId;
+        const input = $("#editAvatarId");
+        if (!input) return;
+        input.value = input.value === id ? "" : id;
+        updateAvatarPreview();
+    });
+});
+
+// Bio counter
+$("#editBio")?.addEventListener("input", updateBioCounter);
+
+// Country auto-uppercase
+$("#editCountry")?.addEventListener("input", (e) => {
+    e.target.value = e.target.value.toUpperCase().slice(0, 2);
+});
+
+$("#editFavoriteWorld")?.addEventListener("input", (e) => {
+    e.target.value = e.target.value.toUpperCase();
+});
+
+// ESC close
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && editDialog?.open) closeEditDialog();
 });
 
 // =========================================================
