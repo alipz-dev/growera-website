@@ -1,18 +1,10 @@
 (() => {
 "use strict";
 
-// =========================================================
-// CONFIG
-// =========================================================
-
 const API_BASE_URL = "";
 const API_PREFIX = "/api/growera";
 const TOKEN_KEY = "growera_session_token";
 const GTPS_SERVER_ID = "1791";
-
-// =========================================================
-// DOM HELPERS
-// =========================================================
 
 const $ = (s) => document.querySelector(s);
 
@@ -29,10 +21,6 @@ let isAuthenticated = false;
 let isBusy = false;
 let isSavingEdit = false;
 
-// =========================================================
-// PLAYER STATE
-// =========================================================
-
 const player = {
     username: "Player",
     displayName: "Player",
@@ -46,17 +34,14 @@ const player = {
     bio: "",
     avatarItemId: 0,
     country: "",
-    favoriteWorld: "",
-    discord: "",
-    instagram: "",
+    discordId: "",
+    discordUsername: "",
     birthdate: "",
     createdAt: 0,
     updatedAt: 0
 };
 
-// =========================================================
-// HELPERS
-// =========================================================
+/* ===== Helpers ===== */
 
 function safeName(v) {
     return String(v ?? "Player").trim().slice(0, 32) || "Player";
@@ -105,12 +90,10 @@ function fmtPlaytime(seconds) {
 }
 
 function avatarUrl(id) {
-    return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id;
+    return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id + "/";
 }
 
-// =========================================================
-// TOKEN STORAGE
-// =========================================================
+/* ===== Token ===== */
 
 function getToken() {
     try {
@@ -135,9 +118,7 @@ function clearToken() {
     try { sessionStorage.removeItem(TOKEN_KEY); } catch {}
 }
 
-// =========================================================
-// TOAST
-// =========================================================
+/* ===== Toast ===== */
 
 function toast(message, type = "info", duration = 4000) {
     const container = $("#toastContainer");
@@ -168,9 +149,7 @@ function toast(message, type = "info", duration = 4000) {
     }, duration);
 }
 
-// =========================================================
-// FORM MESSAGE
-// =========================================================
+/* ===== Messages ===== */
 
 function setMessage(message, type = "error") {
     if (!formMessage) return;
@@ -191,42 +170,32 @@ function setEditError(message) {
     }
 }
 
-// =========================================================
-// BUSY STATES
-// =========================================================
+/* ===== Busy ===== */
 
 function setBusy(busy) {
     isBusy = Boolean(busy);
-
     if (loginButton) {
         loginButton.disabled = isBusy;
         loginButton.setAttribute("aria-busy", String(isBusy));
         const label = loginButton.querySelector(".btn-label");
         if (label) label.textContent = isBusy ? "SIGNING IN" : "SIGN IN";
     }
-
     if (loginForm) loginForm.setAttribute("aria-busy", String(isBusy));
 }
 
 function setSavingEdit(saving) {
     isSavingEdit = Boolean(saving);
-
     const btn = $("#editSaveBtn");
     if (!btn) return;
-
     btn.disabled = isSavingEdit;
     btn.setAttribute("aria-busy", String(isSavingEdit));
-
     const label = btn.querySelector(".btn-label");
     if (label) label.textContent = isSavingEdit ? "SAVING" : "SAVE CHANGES";
-
     const cancel = $("#editCancelBtn");
     if (cancel) cancel.disabled = isSavingEdit;
 }
 
-// =========================================================
-// VIEW SWITCH
-// =========================================================
+/* ===== View ===== */
 
 function setLoginVisible() {
     isAuthenticated = false;
@@ -257,9 +226,7 @@ function updateFooterYear() {
     if ($("#yearProfile")) $("#yearProfile").textContent = year;
 }
 
-// =========================================================
-// API REQUEST
-// =========================================================
+/* ===== API ===== */
 
 async function apiRequest(path, options = {}) {
     if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) {
@@ -315,9 +282,7 @@ async function apiRequest(path, options = {}) {
     return data;
 }
 
-// =========================================================
-// NORMALIZE PLAYER
-// =========================================================
+/* ===== Normalize ===== */
 
 function normalizePlayer(data) {
     const source =
@@ -328,12 +293,11 @@ function normalizePlayer(data) {
         throw new Error("Data pemain dari server tidak valid.");
     }
 
-    const username = safeName(source.username || source.displayName || source.name);
-    const displayName = safeName(source.displayName || source.username || source.name);
+    const username = safeName(source.username || source.name);
 
     return {
         username,
-        displayName,
+        displayName: username,
         role: String(source.role || "player").trim().toLowerCase() === "admin"
             ? "admin" : "player",
         level: Math.max(1, toNumber(source.level, 1)),
@@ -347,18 +311,15 @@ function normalizePlayer(data) {
         bio: String(source.bio || "").trim(),
         avatarItemId: toNumber(source.avatarItemId, 0),
         country: String(source.country || "").trim().toUpperCase(),
-        favoriteWorld: String(source.favoriteWorld || "").trim(),
-        discord: String(source.discord || "").trim(),
-        instagram: String(source.instagram || "").trim(),
+        discordId: String(source.discordId || "").trim(),
+        discordUsername: String(source.discordUsername || "").trim(),
         birthdate: String(source.birthdate || "").trim(),
         createdAt: toNumber(source.createdAt, 0),
         updatedAt: toNumber(source.updatedAt, 0)
     };
 }
 
-// =========================================================
-// RENDER PROFILE
-// =========================================================
+/* ===== Render ===== */
 
 function setMetaValue(id, value, emptyText = "—") {
     const el = $(id);
@@ -374,15 +335,14 @@ function setMetaValue(id, value, emptyText = "—") {
 }
 
 function renderProfile() {
-    const name = safeName(player.displayName || player.username);
+    const name = safeName(player.username);
 
     if ($("#welcomeName")) $("#welcomeName").textContent = name;
     if ($("#profileName")) $("#profileName").textContent = name;
 
     if ($("#profileHandle")) {
         $("#profileHandle").textContent = "@" +
-            String(player.username || name).toLowerCase()
-                .replace(/[^a-z0-9_]/g, "").slice(0, 24);
+            name.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24);
     }
 
     // Avatar
@@ -393,8 +353,6 @@ function renderProfile() {
             const img = document.createElement("img");
             img.src = avatarUrl(player.avatarItemId);
             img.alt = name;
-            img.loading = "eager";
-            img.style.cssText = "width:100%;height:100%;object-fit:contain;image-rendering:pixelated;border-radius:50%;padding:6px;box-sizing:border-box";
             img.addEventListener("error", () => {
                 avatarEl.textContent = name.charAt(0).toUpperCase();
             });
@@ -404,23 +362,23 @@ function renderProfile() {
         }
     }
 
-    // Role badge
+    // Role
     const roleBadge = $("#roleBadge");
     if (roleBadge) {
         roleBadge.classList.remove("role-admin", "role-player");
         if (player.role === "admin") {
             roleBadge.classList.add("role-admin");
-            roleBadge.textContent = "✦ ADMIN";
+            roleBadge.textContent = "ADMIN";
         } else {
             roleBadge.classList.add("role-player");
-            roleBadge.textContent = "✦ PLAYER";
+            roleBadge.textContent = "PLAYER";
         }
     }
 
+    // Stats
     if ($("#levelValue")) $("#levelValue").textContent = fmt(player.level);
     if ($("#gemsValue")) $("#gemsValue").textContent = fmt(player.gems);
 
-    // XP
     const xp = Math.max(0, toNumber(player.xp));
     const next = Math.max(1, toNumber(player.nextLevelXp, 1));
     const percent = Math.min(100, Math.round((xp / next) * 100));
@@ -432,7 +390,7 @@ function renderProfile() {
 
     if ($("#playtimeValue")) $("#playtimeValue").textContent = fmtPlaytime(player.playtime);
 
-    // About Me
+    // Bio
     const bio = $("#bioValue");
     if (bio) {
         if (player.bio) {
@@ -444,16 +402,15 @@ function renderProfile() {
         }
     }
 
+    // Meta
     setMetaValue("#countryValue", player.country);
-    setMetaValue("#favoriteWorldValue", player.favoriteWorld);
-    setMetaValue("#discordValue", player.discord);
-    setMetaValue("#instagramValue", player.instagram ? "@" + player.instagram.replace(/^@/, "") : "");
     setMetaValue("#birthdateValue", fmtBirthdate(player.birthdate));
+    setMetaValue("#discordValue", player.discordUsername ? "@" + player.discordUsername : "");
     setMetaValue("#memberSinceValue", fmtDateId(player.createdAt));
 
     const msBadge = $("#memberSinceBadge");
     if (msBadge) {
-        msBadge.textContent = player.createdAt > 0 ? "📅 " + fmtDateId(player.createdAt) : "NEW";
+        msBadge.textContent = player.createdAt > 0 ? fmtDateId(player.createdAt) : "NEW";
     }
 
     // Online
@@ -470,11 +427,57 @@ function renderProfile() {
     }
 
     document.documentElement.dataset.groweraRole = player.role;
+
+    // Update Discord bind state
+    renderDiscordState();
 }
 
-// =========================================================
-// LOGIN
-// =========================================================
+/* ===== Auto-detect Country ===== */
+
+async function detectCountry() {
+    try {
+        const res = await fetch("https://ipwho.is/", { cache: "no-store" });
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data || data.success === false) return null;
+        const code = String(data.country_code || "").toUpperCase();
+        return /^[A-Z]{2}$/.test(code) ? code : null;
+    } catch {
+        return null;
+    }
+}
+
+async function autoFillCountryIfEmpty() {
+    if (player.country && player.country.length === 2) return;
+
+    const token = getToken();
+    if (!token) return;
+
+    const detected = await detectCountry();
+    if (!detected) return;
+
+    try {
+        const result = await apiRequest("/me", {
+            method: "PUT",
+            headers: { Authorization: "Bearer " + token },
+            body: JSON.stringify({
+                bio: player.bio,
+                avatarItemId: player.avatarItemId,
+                country: detected,
+                birthdate: player.birthdate
+            })
+        });
+
+        const updated = normalizePlayer(result);
+        Object.assign(player, updated);
+        renderProfile();
+        console.log("[GROWERA] Country auto-set to " + detected);
+    } catch (e) {
+        console.warn("[GROWERA] Auto country failed:", e);
+    }
+}
+
+/* ===== Login ===== */
 
 async function handleLogin(event) {
     event.preventDefault();
@@ -510,7 +513,10 @@ async function handleLogin(event) {
 
         setMessage("");
         setProfileVisible();
-        toast("Selamat datang, " + player.displayName + "!", "success");
+        toast("Selamat datang, " + player.username + "!", "success");
+
+        // Auto detect country di background (tidak blocking)
+        autoFillCountryIfEmpty();
     } catch (error) {
         clearToken();
         setLoginVisible();
@@ -526,9 +532,7 @@ async function handleLogin(event) {
     }
 }
 
-// =========================================================
-// LOAD / REFRESH
-// =========================================================
+/* ===== Load ===== */
 
 async function loadCurrentPlayer() {
     const token = getToken();
@@ -551,7 +555,6 @@ async function loadCurrentPlayer() {
 
 async function refreshProfile(silent = false) {
     if (isBusy) return;
-
     setProfileLoading(true);
 
     try {
@@ -560,19 +563,14 @@ async function refreshProfile(silent = false) {
         if (!silent) toast("Profil diperbarui.", "info", 2200);
     } catch (error) {
         console.error("[GROWERA] Refresh gagal:", error);
-        if (error.isAuthError) {
-            forceLogout("Sesi berakhir. Silakan login kembali.");
-        } else if (!silent) {
-            toast("Gagal refresh: " + error.message, "error");
-        }
+        if (error.isAuthError) forceLogout("Sesi berakhir. Silakan login kembali.");
+        else if (!silent) toast("Gagal refresh: " + error.message, "error");
     } finally {
         setProfileLoading(false);
     }
 }
 
-// =========================================================
-// LOGOUT
-// =========================================================
+/* ===== Logout ===== */
 
 function forceLogout(message) {
     clearToken();
@@ -586,7 +584,6 @@ function forceLogout(message) {
 
 async function handleLogout() {
     if (isBusy) return;
-
     const token = getToken();
     setBusy(true);
 
@@ -605,9 +602,7 @@ async function handleLogout() {
     }
 }
 
-// =========================================================
-// SESSION RESTORE
-// =========================================================
+/* ===== Restore ===== */
 
 async function restoreSession() {
     if (!getToken()) {
@@ -620,6 +615,7 @@ async function restoreSession() {
     try {
         await loadCurrentPlayer();
         setProfileVisible();
+        autoFillCountryIfEmpty();
     } catch (error) {
         console.warn("[GROWERA] Sesi tidak dapat dipulihkan:", error);
         clearToken();
@@ -629,9 +625,39 @@ async function restoreSession() {
     }
 }
 
-// =========================================================
-// EDIT DIALOG
-// =========================================================
+/* ===== Edit Dialog ===== */
+
+function buildAvatarPresets() {
+    const container = $("#avatarPresets");
+    if (!container) return;
+
+    const ids = [112, 242, 1458, 4820, 1796, 6016];
+    container.replaceChildren();
+
+    ids.forEach((id) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.avatarId = String(id);
+        btn.title = "Item #" + id;
+
+        const img = document.createElement("img");
+        img.src = avatarUrl(id);
+        img.width = 24;
+        img.height = 24;
+        img.alt = "Item " + id;
+        img.style.cssText = "image-rendering:pixelated";
+
+        btn.appendChild(img);
+        btn.addEventListener("click", () => {
+            const input = $("#editAvatarId");
+            if (!input) return;
+            input.value = input.value === String(id) ? "" : String(id);
+            updateAvatarPreview();
+        });
+
+        container.appendChild(btn);
+    });
+}
 
 function updateAvatarPreview() {
     const preview = $("#avatarPreview");
@@ -660,7 +686,6 @@ function updateAvatarPreview() {
         preview.appendChild(img);
     }
 
-    // Highlight preset
     document.querySelectorAll("#avatarPresets button").forEach((b) => {
         b.classList.toggle("active", Number(b.dataset.avatarId) === id);
     });
@@ -673,39 +698,89 @@ function updateBioCounter() {
     counter.textContent = bio.value.length + " / 200";
 }
 
+function renderDiscordState() {
+    const name = $("#discordName");
+    const hint = $("#discordHint");
+    const btn = $("#discordBindBtn");
+    const btnLabel = btn?.querySelector(".btn-label");
+
+    if (!name || !hint || !btn) return;
+
+    if (player.discordId && player.discordUsername) {
+        name.textContent = "@" + player.discordUsername;
+        hint.textContent = "ID: " + player.discordId;
+        if (btnLabel) btnLabel.textContent = "UNBIND";
+        btn.disabled = false;
+        btn.dataset.mode = "unbind";
+        const badge = btn.querySelector(".badge-soon");
+        if (badge) badge.remove();
+    } else {
+        name.textContent = "Belum terhubung";
+        hint.textContent = "Hubungkan akun Discord untuk verifikasi";
+        if (btnLabel) btnLabel.textContent = "BIND DISCORD";
+        btn.disabled = true;
+        btn.dataset.mode = "bind";
+        if (!btn.querySelector(".badge-soon")) {
+            const badge = document.createElement("span");
+            badge.className = "badge-soon";
+            badge.textContent = "SOON";
+            btn.appendChild(badge);
+        }
+    }
+}
+
+async function handleDiscordBind() {
+    const btn = $("#discordBindBtn");
+    const mode = btn?.dataset.mode;
+
+    if (mode === "unbind") {
+        if (!confirm("Unbind akun Discord?")) return;
+        const token = getToken();
+        if (!token) return;
+        try {
+            await apiRequest("/me/discord/unbind", {
+                method: "POST",
+                headers: { Authorization: "Bearer " + token }
+            });
+            player.discordId = "";
+            player.discordUsername = "";
+            renderProfile();
+            toast("Discord berhasil di-unbind.", "success");
+        } catch (e) {
+            toast("Gagal unbind: " + e.message, "error");
+        }
+        return;
+    }
+
+    // Mode bind
+    toast("Discord OAuth akan tersedia setelah admin mengkonfigurasi. Hubungi admin.", "info", 5000);
+}
+
 function openEditDialog() {
     if (!editDialog) return;
 
-    $("#editDisplayName").value = player.displayName || "";
     $("#editBio").value = player.bio || "";
     $("#editAvatarId").value = player.avatarItemId > 0 ? String(player.avatarItemId) : "";
     $("#editCountry").value = player.country || "";
-    $("#editFavoriteWorld").value = player.favoriteWorld || "";
-    $("#editDiscord").value = player.discord || "";
-    $("#editInstagram").value = player.instagram || "";
     $("#editBirthdate").value = /^\d{4}-\d{2}-\d{2}$/.test(player.birthdate) ? player.birthdate : "";
 
+    buildAvatarPresets();
     updateAvatarPreview();
     updateBioCounter();
+    renderDiscordState();
     setEditError("");
     setSavingEdit(false);
 
-    if (typeof editDialog.showModal === "function") {
-        editDialog.showModal();
-    } else {
-        editDialog.setAttribute("open", "");
-    }
+    if (typeof editDialog.showModal === "function") editDialog.showModal();
+    else editDialog.setAttribute("open", "");
 
-    setTimeout(() => $("#editDisplayName")?.focus(), 120);
+    setTimeout(() => $("#editBio")?.focus(), 120);
 }
 
 function closeEditDialog() {
     if (!editDialog) return;
-    if (editDialog.open && typeof editDialog.close === "function") {
-        editDialog.close();
-    } else {
-        editDialog.removeAttribute("open");
-    }
+    if (editDialog.open && typeof editDialog.close === "function") editDialog.close();
+    else editDialog.removeAttribute("open");
 }
 
 async function handleEditSubmit(event) {
@@ -714,25 +789,9 @@ async function handleEditSubmit(event) {
 
     setEditError("");
 
-    const displayName = $("#editDisplayName").value.trim();
     const bio = $("#editBio").value.trim();
     const avatarRaw = $("#editAvatarId").value.trim();
-    const country = $("#editCountry").value.trim().toUpperCase();
-    const favoriteWorld = $("#editFavoriteWorld").value.trim();
-    const discord = $("#editDiscord").value.trim();
-    const instagram = $("#editInstagram").value.trim().replace(/^@/, "");
     const birthdate = $("#editBirthdate").value.trim();
-
-    // Validasi
-    if (!displayName) {
-        setEditError("Display name wajib diisi.");
-        return;
-    }
-
-    if (displayName.length > 32) {
-        setEditError("Display name maksimal 32 karakter.");
-        return;
-    }
 
     if (bio.length > 200) {
         setEditError("Bio maksimal 200 karakter.");
@@ -746,11 +805,6 @@ async function handleEditSubmit(event) {
             setEditError("Avatar item ID harus antara 0 sampai 999999.");
             return;
         }
-    }
-
-    if (country !== "" && !/^[A-Z]{2}$/.test(country)) {
-        setEditError("Country code harus 2 huruf, contoh: ID, US, MY.");
-        return;
     }
 
     if (birthdate !== "" && !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
@@ -767,24 +821,17 @@ async function handleEditSubmit(event) {
     setSavingEdit(true);
 
     try {
-        const payload = {
-            displayName,
-            bio,
-            avatarItemId,
-            country,
-            favoriteWorld,
-            discord,
-            instagram,
-            birthdate
-        };
-
         const result = await apiRequest("/me", {
             method: "PUT",
             headers: { Authorization: "Bearer " + token },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                bio,
+                avatarItemId,
+                country: player.country,
+                birthdate
+            })
         });
 
-        // Update state lokal
         const updated = normalizePlayer(result);
         Object.assign(player, updated);
 
@@ -793,22 +840,18 @@ async function handleEditSubmit(event) {
         toast("Profil berhasil disimpan.", "success");
     } catch (error) {
         console.error("[GROWERA] Save profile gagal:", error);
-
         if (error.isAuthError) {
             closeEditDialog();
             forceLogout("Sesi berakhir. Silakan login kembali.");
             return;
         }
-
         setEditError(error.message || "Gagal menyimpan profil.");
     } finally {
         setSavingEdit(false);
     }
 }
 
-// =========================================================
-// PASSWORD TOGGLE + CAPS + AUTOFOCUS
-// =========================================================
+/* ===== Password Toggle ===== */
 
 function wirePasswordToggle() {
     const btn = $("#passwordToggle");
@@ -849,62 +892,37 @@ function wireAutofocus() {
     }
 }
 
-// =========================================================
-// EVENTS
-// =========================================================
+/* ===== Events ===== */
 
 loginForm?.addEventListener("submit", handleLogin);
 $("#logoutButton")?.addEventListener("click", handleLogout);
 $("#refreshButton")?.addEventListener("click", () => refreshProfile(false));
-
 $("#editPreviewButton")?.addEventListener("click", openEditDialog);
 
 $("#editForm")?.addEventListener("submit", handleEditSubmit);
-
 $("#editCloseBtn")?.addEventListener("click", closeEditDialog);
 $("#editCancelBtn")?.addEventListener("click", (e) => {
     e.preventDefault();
     closeEditDialog();
 });
 
-// Close dialog kalau klik backdrop
 editDialog?.addEventListener("click", (e) => {
     if (e.target === editDialog) closeEditDialog();
 });
 
-// Avatar input & presets
 $("#editAvatarId")?.addEventListener("input", updateAvatarPreview);
-
-document.querySelectorAll("#avatarPresets button").forEach((b) => {
-    b.addEventListener("click", () => {
-        const id = b.dataset.avatarId;
-        const input = $("#editAvatarId");
-        if (!input) return;
-        input.value = input.value === id ? "" : id;
-        updateAvatarPreview();
-    });
-});
-
-// Bio counter
 $("#editBio")?.addEventListener("input", updateBioCounter);
+$("#discordBindBtn")?.addEventListener("click", handleDiscordBind);
 
-// Country auto-uppercase
-$("#editCountry")?.addEventListener("input", (e) => {
-    e.target.value = e.target.value.toUpperCase().slice(0, 2);
+$("#exploreButton")?.addEventListener("click", () => {
+    $("#editPreviewButton")?.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
-$("#editFavoriteWorld")?.addEventListener("input", (e) => {
-    e.target.value = e.target.value.toUpperCase();
-});
-
-// ESC close
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && editDialog?.open) closeEditDialog();
 });
 
-// =========================================================
-// INIT
-// =========================================================
+/* ===== Init ===== */
 
 updateFooterYear();
 wirePasswordToggle();
