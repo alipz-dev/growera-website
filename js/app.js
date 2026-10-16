@@ -3,13 +3,11 @@
 
   // =========================================================
   // GROWERA API CONFIGURATION
-  // Ganti dengan alamat server Lua yang sebenarnya.
-  // Contoh: https://api.domainkamu.com
-  // Jangan tambahkan /api/growera di bagian ini.
+  // Menggunakan Vercel Rewrite:
+  // /api/growera/* -> server Lua
   // =========================================================
 
   const API_BASE_URL = "";
-
   const API_PREFIX = "/api/growera";
   const TOKEN_KEY = "growera_session_token";
 
@@ -31,12 +29,13 @@
 
   // =========================================================
   // PLAYER DATA
-  // Data ini hanya diisi dari API server.
+  // Data profil hanya berasal dari API server.
   // =========================================================
 
   const player = {
     username: "Player",
     displayName: "Player",
+    role: "player",
     level: 1,
     gems: 0,
     xp: 0,
@@ -50,11 +49,26 @@
   // HELPERS
   // =========================================================
 
-  const safeName = (value) =>
-    String(value || "Player").trim().slice(0, 24) || "Player";
+  function safeName(value) {
+    return String(value ?? "Player")
+      .trim()
+      .slice(0, 24) || "Player";
+  }
 
-  const fmt = (value) =>
-    Math.max(0, Number(value) || 0).toLocaleString("en-US");
+  function toNumber(value, fallback = 0) {
+    const number = Number(value);
+
+    return Number.isFinite(number)
+      ? number
+      : fallback;
+  }
+
+  function fmt(value) {
+    return Math.max(
+      0,
+      toNumber(value)
+    ).toLocaleString("en-US");
+  }
 
   function getToken() {
     try {
@@ -65,7 +79,7 @@
   }
 
   function saveToken(token) {
-    if (!token) {
+    if (typeof token !== "string" || !token.trim()) {
       throw new Error("Server tidak memberikan token sesi.");
     }
 
@@ -82,7 +96,7 @@
     try {
       sessionStorage.removeItem(TOKEN_KEY);
     } catch {
-      // Tidak ada tindakan tambahan jika storage tidak tersedia.
+      // Storage mungkin tidak tersedia.
     }
   }
 
@@ -94,28 +108,66 @@
   }
 
   function setBusy(busy) {
-    isBusy = busy;
+    isBusy = Boolean(busy);
 
     if (loginButton) {
-      loginButton.disabled = busy;
-      loginButton.textContent = busy ? "PLEASE WAIT..." : "SIGN IN";
+      loginButton.disabled = isBusy;
+
+      if (loginButton.tagName === "INPUT") {
+        loginButton.value = isBusy
+          ? "PLEASE WAIT..."
+          : "SIGN IN";
+      } else {
+        loginButton.textContent = isBusy
+          ? "PLEASE WAIT..."
+          : "SIGN IN";
+      }
     }
 
     if (loginForm) {
-      loginForm.setAttribute("aria-busy", String(busy));
+      loginForm.setAttribute(
+        "aria-busy",
+        String(isBusy)
+      );
     }
   }
 
   function setLoginVisible() {
     isAuthenticated = false;
 
-    profileView?.classList.add("hidden");
     loginView?.classList.remove("hidden");
+    profileView?.classList.add("hidden");
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
+  }
+
+  function setProfileVisible() {
+    if (!isAuthenticated) return;
+
+    renderProfile();
+
+    loginView?.classList.add("hidden");
+    profileView?.classList.remove("hidden");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  function updateFooterYear() {
+    const year = String(new Date().getFullYear());
+
+    if ($("#year")) {
+      $("#year").textContent = year;
+    }
+
+    if ($("#yearProfile")) {
+      $("#yearProfile").textContent = year;
+    }
   }
 
   // =========================================================
@@ -124,12 +176,11 @@
 
   async function apiRequest(path, options = {}) {
     if (
-      !API_BASE_URL ||
-      API_BASE_URL.includes("ALAMAT-SERVER-LUA-KAMU")
+      typeof path !== "string" ||
+      !path.startsWith("/") ||
+      path.startsWith("//")
     ) {
-      throw new Error(
-        "Alamat API belum dikonfigurasi. Atur API_BASE_URL di js/app.js."
-      );
+      throw new Error("Path API tidak valid.");
     }
 
     const headers = {
@@ -141,37 +192,52 @@
       headers["Content-Type"] = "application/json";
     }
 
-    const response = await fetch(
-      API_BASE_URL.replace(/\/+$/, "") + API_PREFIX + path,
-      {
-        ...options,
-        headers,
-        mode: "cors",
-        cache: "no-store"
-      }
-    );
+    let response;
+
+    try {
+      response = await fetch(
+        API_BASE_URL.replace(/\/+$/, "") +
+          API_PREFIX +
+          path,
+        {
+          ...options,
+          headers,
+          cache: "no-store",
+          credentials: "same-origin"
+        }
+      );
+    } catch (error) {
+      const networkError = new Error(
+        "Tidak dapat terhubung ke server. Periksa koneksi, Vercel Rewrite, dan server Lua."
+      );
+
+      networkError.cause = error;
+
+      throw networkError;
+    }
 
     const rawText = await response.text();
 
     let data = {};
 
-    if (rawText) {
+    if (rawText.trim()) {
       try {
         data = JSON.parse(rawText);
       } catch {
         throw new Error(
-          "Respons server bukan JSON yang valid. Periksa konfigurasi API Lua."
+          "Respons server bukan JSON yang valid. Periksa endpoint API Lua."
         );
       }
     }
 
     if (!response.ok) {
       const message =
-        data.message ||
-        data.error ||
+        data?.message ||
+        data?.error ||
         `Permintaan gagal (HTTP ${response.status}).`;
 
-      const error = new Error(message);
+      const error = new Error(String(message));
+
       error.status = response.status;
       error.data = data;
 
@@ -182,11 +248,14 @@
   }
 
   // =========================================================
-  // PROFILE DATA
+  // RESPONSE NORMALIZATION
+  // Mendukung respons:
+  // { player: {...} }
+  // { data: {...} }
+  // { data: { player: {...} } }
   // =========================================================
 
   function normalizePlayer(data) {
-    // Mendukung respons yang dibungkus sebagai player atau data.
     const source =
       data?.player ||
       data?.data?.player ||
@@ -211,32 +280,40 @@
 
     const level = Math.max(
       1,
-      Number(source.level) || 1
+      toNumber(source.level, 1)
     );
 
     const xp = Math.max(
       0,
-      Number(source.xp) || 0
+      toNumber(source.xp, 0)
     );
 
     const nextLevelXp = Math.max(
       1,
-      Number(
+      toNumber(
         source.nextLevelXp ??
         source.requiredXP ??
         source.requiredXp ??
-        source.xpRequired
-      ) || 1
+        source.xpRequired,
+        1
+      )
     );
 
     const gems = Math.max(
       0,
-      Number(source.gems) || 0
+      toNumber(source.gems, 0)
     );
+
+    const role = String(source.role || "player")
+      .trim()
+      .toLowerCase() === "admin"
+      ? "admin"
+      : "player";
 
     return {
       username,
       displayName,
+      role,
       level,
       xp,
       nextLevelXp,
@@ -244,8 +321,14 @@
     };
   }
 
+  // =========================================================
+  // PROFILE RENDERING
+  // =========================================================
+
   function renderProfile() {
-    const name = safeName(player.displayName || player.username);
+    const name = safeName(
+      player.displayName || player.username
+    );
 
     const welcomeName = $("#welcomeName");
     const profileName = $("#profileName");
@@ -276,7 +359,8 @@
     }
 
     if (avatarInitial) {
-      avatarInitial.textContent = name.charAt(0).toUpperCase();
+      avatarInitial.textContent =
+        name.charAt(0).toUpperCase();
     }
 
     if (levelValue) {
@@ -287,8 +371,15 @@
       gemsValue.textContent = fmt(player.gems);
     }
 
-    const xp = Math.max(0, Number(player.xp) || 0);
-    const next = Math.max(1, Number(player.nextLevelXp) || 1);
+    const xp = Math.max(
+      0,
+      toNumber(player.xp)
+    );
+
+    const next = Math.max(
+      1,
+      toNumber(player.nextLevelXp, 1)
+    );
 
     const percent = Math.min(
       100,
@@ -296,34 +387,24 @@
     );
 
     if (xpPercent) {
-      xpPercent.textContent = percent + "%";
+      xpPercent.textContent = `${percent}%`;
     }
 
     if (xpFill) {
-      xpFill.style.width = percent + "%";
+      xpFill.style.width = `${percent}%`;
     }
 
     if (xpCurrent) {
-      xpCurrent.textContent = fmt(xp) + " XP";
+      xpCurrent.textContent = `${fmt(xp)} XP`;
     }
 
     if (xpNext) {
-      xpNext.textContent = fmt(next) + " XP";
+      xpNext.textContent = `${fmt(next)} XP`;
     }
-  }
 
-  function showProfile() {
-    if (!isAuthenticated) return;
-
-    renderProfile();
-
-    loginView?.classList.add("hidden");
-    profileView?.classList.remove("hidden");
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    // Role berasal dari server, bukan input pengguna.
+    document.documentElement.dataset.groweraRole =
+      player.role;
   }
 
   // =========================================================
@@ -350,6 +431,8 @@
     setMessage("");
 
     try {
+      clearToken();
+
       const result = await apiRequest("/login", {
         method: "POST",
         body: JSON.stringify({
@@ -358,36 +441,32 @@
         })
       });
 
-      // Menyesuaikan beberapa bentuk respons API.
       const token =
-        result.token ||
-        result.accessToken ||
-        result.data?.token ||
-        result.data?.accessToken;
+        result?.token ||
+        result?.accessToken ||
+        result?.data?.token ||
+        result?.data?.accessToken;
 
       saveToken(token);
 
-      // Jangan menampilkan profil berdasarkan username input saja.
-      // Ambil profil yang sudah diverifikasi oleh server.
+      // Profil harus dikonfirmasi melalui server.
       await loadCurrentPlayer();
 
-      setMessage("");
-      showProfile();
+      if ($("#password")) {
+        $("#password").value = "";
+      }
+
+      setMessage("", "success");
+      setProfileVisible();
     } catch (error) {
       clearToken();
       setLoginVisible();
 
       console.error("[GROWERA] Login gagal:", error);
 
-      if (error instanceof TypeError) {
-        setMessage(
-          "Tidak dapat terhubung ke server. Periksa alamat API, koneksi, dan konfigurasi CORS."
-        );
-      } else {
-        setMessage(
-          error.message || "Login gagal. Silakan coba lagi."
-        );
-      }
+      setMessage(
+        error.message || "Login gagal. Silakan coba lagi."
+      );
     } finally {
       setBusy(false);
     }
@@ -402,13 +481,15 @@
     const token = getToken();
 
     if (!token) {
-      throw new Error("Sesi tidak ditemukan. Silakan login kembali.");
+      throw new Error(
+        "Sesi tidak ditemukan. Silakan login kembali."
+      );
     }
 
     const result = await apiRequest("/me", {
       method: "GET",
       headers: {
-        Authorization: "Bearer " + token
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -438,14 +519,16 @@
         await apiRequest("/logout", {
           method: "POST",
           headers: {
-            Authorization: "Bearer " + token
+            Authorization: `Bearer ${token}`
           }
         });
       }
     } catch (error) {
-      console.error("[GROWERA] Logout API gagal:", error);
+      console.error(
+        "[GROWERA] Logout API gagal:",
+        error
+      );
     } finally {
-      // Hapus token lokal meskipun server tidak bisa dihubungi.
       clearToken();
       isAuthenticated = false;
 
@@ -460,8 +543,7 @@
   }
 
   // =========================================================
-  // RESTORE SESSION
-  // Memulihkan sesi saat halaman dimuat ulang.
+  // SESSION RESTORE
   // =========================================================
 
   async function restoreSession() {
@@ -474,7 +556,7 @@
 
     try {
       await loadCurrentPlayer();
-      showProfile();
+      setProfileVisible();
     } catch (error) {
       console.warn(
         "[GROWERA] Sesi tidak dapat dipulihkan:",
@@ -492,50 +574,54 @@
   // EVENTS
   // =========================================================
 
-  loginForm?.addEventListener("submit", handleLogin);
+  loginForm?.addEventListener(
+    "submit",
+    handleLogin
+  );
 
-  $("#logoutButton")?.addEventListener("click", handleLogout);
+  $("#logoutButton")?.addEventListener(
+    "click",
+    handleLogout
+  );
 
-  // Edit preview dihapus sebagai fungsi pengubah data.
-  // Level dan gems harus diubah melalui sistem server yang sah.
-  $("#editPreviewButton")?.addEventListener("click", () => {
-    setMessage(
-      "Pengubahan level dan gems harus dilakukan melalui sistem server."
-    );
-  });
-
-  // Nonaktifkan formulir edit demo agar tidak mengubah data lokal.
-  $("#editForm")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    if (editDialog?.open) {
-      editDialog.close();
+  $("#editPreviewButton")?.addEventListener(
+    "click",
+    () => {
+      setMessage(
+        "Pengubahan level dan gems harus dilakukan melalui sistem server."
+      );
     }
+  );
 
-    setMessage(
-      "Edit preview tidak tersedia. Data pemain mengikuti server GROWERA."
-    );
-  });
+  $("#editForm")?.addEventListener(
+    "submit",
+    (event) => {
+      event.preventDefault();
 
-  $("#exploreButton")?.addEventListener("click", () => {
-    $("#editPreviewButton")?.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  });
+      if (editDialog?.open) {
+        editDialog.close();
+      }
 
-  // Tahun footer.
-  if ($("#year")) {
-    $("#year").textContent = new Date().getFullYear();
-  }
+      setMessage(
+        "Edit preview tidak tersedia. Data pemain mengikuti server GROWERA."
+      );
+    }
+  );
 
-  if ($("#yearProfile")) {
-    $("#yearProfile").textContent = new Date().getFullYear();
-  }
+  $("#exploreButton")?.addEventListener(
+    "click",
+    () => {
+      $("#editPreviewButton")?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  );
 
   // =========================================================
-  // START
+  // INITIALIZATION
   // =========================================================
 
+  updateFooterYear();
   restoreSession();
 })();
