@@ -412,7 +412,7 @@
 </dialog>
 
 
-<!-- GUILD DIALOG (with members list) -->
+<!-- GUILD DIALOG -->
 <dialog class="info-dialog glass" id="dialogGuild">
     <div class="dialog-heading">
         <div>
@@ -445,7 +445,6 @@
                 <div class="guild-stat"><span>CREATED</span><strong id="guildCreated">—</strong></div>
             </div>
 
-            <!-- MEMBERS SECTION -->
             <div class="guild-members-section">
                 <div class="guild-members-head">
                     <span>MEMBERS ONLINE</span>
@@ -460,7 +459,7 @@
 </dialog>
 
 
-<!-- PLAY TIME DIALOG -->
+<!-- ============ PLAY TIME DIALOG (FIXED: weekly + monthly) ============ -->
 <dialog class="info-dialog glass" id="dialogPlaytime">
     <div class="dialog-heading">
         <div>
@@ -476,11 +475,22 @@
                 <span>TOTAL PLAY TIME</span>
                 <strong id="playtimeTotal">—</strong>
             </div>
-            <div class="playtime-chart-head">
-                <span>LIFETIME CHART</span>
-                <span id="playtimeDaysCount">0 hari</span>
+
+            <div class="playtime-chart-section">
+                <div class="playtime-chart-head">
+                    <span>THIS WEEK</span>
+                    <strong id="weeklySum">—</strong>
+                </div>
+                <div class="playtime-chart" id="weeklyChart"></div>
             </div>
-            <div class="playtime-chart" id="playtimeChart"></div>
+
+            <div class="playtime-chart-section">
+                <div class="playtime-chart-head">
+                    <span>THIS MONTH</span>
+                    <strong id="monthlySum">—</strong>
+                </div>
+                <div class="playtime-chart" id="monthlyChart"></div>
+            </div>
         </div>
     </div>
 </dialog>
