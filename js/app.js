@@ -6,6 +6,7 @@ const API_PREFIX = "/api/growera";
 const TOKEN_KEY = "growera_session_token";
 const GTPS_SERVER_ID = "1791";
 const ACHIEVEMENTS_JSON_URL = "data/achievements.json";
+const ITEMS_JSON_URL = "data/items.json";
 
 const $ = (s) => document.querySelector(s);
 const loginView = $("#loginView");
@@ -28,60 +29,17 @@ const player = {
     birthdate: "", createdAt: 0, updatedAt: 0, todayDate: "", todayEvents: ""
 };
 
-/* ===== Icon Fallback (port dari Lua) ===== */
-const ACH_ICON_MAP = {
-    0:116,1:116,3:194,4:194,6:98,9:1274,10:112,11:112,15:856,
-    18:3494,19:3494,21:3142,22:6746,26:242,27:3142,28:7162,29:7162,
-    30:1458,34:660,35:242,36:242,38:868,77:1274,80:2204,96:3000,
-    147:7232,162:112,165:1458,207:242,229:3142
-};
-const ACH_KEYWORD_ICONS = [
-    { keywords: ["gem","rich","millionaire","hoarder","wealth"], iconId: 112 },
-    { keywords: ["level","strong","experienced","expert","master","veteran"], iconId: 3142 },
-    { keywords: ["world","lock","owner","top-10"], iconId: 242 },
-    { keywords: ["harvest","farm","plant","seed","splice","grow","tree","flower"], iconId: 194 },
-    { keywords: ["fish","sea","ocean","water"], iconId: 3000 },
-    { keywords: ["kill","pvp","combat","fight","sword"], iconId: 94 },
-    { keywords: ["build","block","place","architect"], iconId: 116 },
-    { keywords: ["trade","shop","sell","buy"], iconId: 1434 },
-    { keywords: ["surgery","medic","doctor"], iconId: 1210 },
-    { keywords: ["crime","police","jail"], iconId: 210 },
-    { keywords: ["startopia","space","star","cosmic"], iconId: 6746 },
-    { keywords: ["cook","chef","food"], iconId: 4620 },
-    { keywords: ["break","destroy","mine","demolition"], iconId: 98 },
-    { keywords: ["supporter"], iconId: 1458 },
-    { keywords: ["geiger","radiation","dust","sparkly"], iconId: 1274 },
-    { keywords: ["growmoji"], iconId: 7232 }
-];
-const ACH_DEFAULT_UNLOCKED = 1458;
-const ACH_DEFAULT_LOCKED = 202;
-
-function keywordIcon(name) {
-    if (!name) return null;
-    const lname = name.toLowerCase();
-    for (const group of ACH_KEYWORD_ICONS) {
-        for (const kw of group.keywords) {
-            if (lname.includes(kw)) return group.iconId;
-        }
-    }
-    return null;
-}
-
-function resolveAchIcon(achId, unlocked, name) {
-    if (achId && ACH_ICON_MAP[achId]) return ACH_ICON_MAP[achId];
-    const kw = keywordIcon(name);
-    if (kw) return kw;
-    return unlocked ? ACH_DEFAULT_UNLOCKED : ACH_DEFAULT_LOCKED;
-}
-
-/* ===== Master JSON cache ===== */
+/* ===== Master caches ===== */
 let achMasterCache = null;
 let achMasterPromise = null;
+
+let itemsMasterCache = null;
+let itemsMasterPromise = null;
+let itemsMapCache = null; // id -> name, built once
 
 async function getAchievementsMaster() {
     if (achMasterCache !== null) return achMasterCache;
     if (achMasterPromise) return achMasterPromise;
-
     achMasterPromise = (async () => {
         try {
             const res = await fetch(ACHIEVEMENTS_JSON_URL, { cache: "default", credentials: "same-origin" });
@@ -96,8 +54,39 @@ async function getAchievementsMaster() {
             throw e;
         }
     })();
-
     return achMasterPromise;
+}
+
+async function getItemsMaster() {
+    if (itemsMasterCache !== null) return itemsMasterCache;
+    if (itemsMasterPromise) return itemsMasterPromise;
+    itemsMasterPromise = (async () => {
+        try {
+            const res = await fetch(ITEMS_JSON_URL, { cache: "default", credentials: "same-origin" });
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            if (!Array.isArray(data)) throw new Error("Invalid format");
+            itemsMasterCache = data;
+            itemsMapCache = {};
+            data.forEach((it) => {
+                const id = Number(it.id) || 0;
+                if (id > 0) itemsMapCache[id] = String(it.name || "");
+            });
+            return data;
+        } catch (e) {
+            console.error("[GROWERA] Fetch items.json gagal:", e);
+            itemsMapCache = {};
+            itemsMasterPromise = null;
+            throw e;
+        }
+    })();
+    return itemsMasterPromise;
+}
+
+function resolveItemName(id) {
+    if (!itemsMapCache) return "Item #" + id;
+    const name = itemsMapCache[id];
+    return (name && name.trim()) ? name : ("Item #" + id);
 }
 
 /* ===== Helpers ===== */
@@ -313,6 +302,54 @@ function normalizePlayer(data) {
     };
 }
 
+/* ===== Full profile cache ===== */
+let fullProfileData = null; // { user, friends, guild, achievements, expiresAt }
+
+async function fetchFullProfile() {
+    const token = getToken();
+    if (!token) { const e = new Error("Sesi tidak ditemukan."); e.isAuthError = true; throw e; }
+    const result = await apiRequest("/me/full", {
+        method: "GET",
+        headers: { Authorization: "Bearer " + token }
+    });
+    fullProfileData = result;
+    return result;
+}
+
+function applyFullProfile(data) {
+    if (!data) return;
+    if (data.user) {
+        const normalized = normalizePlayer(data.user);
+        Object.assign(player, normalized);
+    }
+    isAuthenticated = true;
+
+    // Update stat cards immediately from /me/full response
+    if (data.achievements && Array.isArray(data.achievements.unlockedIds)) {
+        const el = $("#statAchValue");
+        if (el) {
+            const totalKnown = achMasterCache ? achMasterCache.length : null;
+            if (totalKnown !== null && totalKnown > 0) {
+                el.textContent = data.achievements.unlockedIds.length + "/" + totalKnown;
+            } else {
+                el.textContent = String(data.achievements.unlockedIds.length);
+            }
+        }
+    }
+    if (data.friends && Array.isArray(data.friends.list)) {
+        const el = $("#statFriendsValue");
+        if (el) el.textContent = String(data.friends.list.length);
+    }
+    if (data.guild) {
+        const el = $("#statGuildValue");
+        if (el) {
+            const g = data.guild;
+            if (!g.id || g.id <= 0) el.textContent = "None";
+            else el.textContent = g.title || ("#" + g.id);
+        }
+    }
+}
+
 /* ===== Render ===== */
 function setMetaValue(id, value, emptyText = "—") {
     const el = $(id);
@@ -416,9 +453,7 @@ function renderProfile() {
     renderDiscordState();
 }
 
-/* ===== Stat Cards Prefetch ===== */
-let cardPrefetched = false;
-
+/* ===== Stat Cards Reset ===== */
 function resetStatCardValues() {
     const ach = $("#statAchValue"), fr = $("#statFriendsValue"), gd = $("#statGuildValue");
     if (ach) ach.textContent = "—";
@@ -426,48 +461,26 @@ function resetStatCardValues() {
     if (gd) gd.textContent = "—";
 }
 
-async function prefetchCardStats() {
-    if (cardPrefetched) return;
-    const token = getToken();
-    if (!token) return;
-    cardPrefetched = true;
-    const headers = { Authorization: "Bearer " + token };
+/* ===== Bootstrap ===== */
+async function bootstrapProfile() {
+    // Fetch master JSON (cached) in parallel with /me/full
+    const masterPromise = getAchievementsMaster().catch((e) => {
+        console.warn("[GROWERA] achievements.json gagal load:", e);
+        return null;
+    });
+    const itemsPromise = getItemsMaster().catch((e) => {
+        console.warn("[GROWERA] items.json gagal load:", e);
+        return null;
+    });
 
-    // Fetch all in parallel. Achievements master is cached by browser after first load.
-    const [masterRes, achRes, frRes, gdRes] = await Promise.allSettled([
-        getAchievementsMaster(),
-        apiRequest("/achievements/unlocked", { method: "GET", headers }),
-        apiRequest("/friends", { method: "GET", headers }),
-        apiRequest("/guild", { method: "GET", headers })
-    ]);
+    const [full, , ] = await Promise.all([fetchFullProfile(), masterPromise, itemsPromise]);
+    applyFullProfile(full);
 
-    // Achievements card: unlocked/total
-    if (masterRes.status === "fulfilled" && achRes.status === "fulfilled") {
-        const master = masterRes.value || [];
-        const unlockedIds = achRes.value?.unlockedIds || [];
+    // Re-apply stat cards now that master is loaded (for total denominator)
+    if (achMasterCache && full?.achievements?.unlockedIds) {
         const el = $("#statAchValue");
-        if (el) el.textContent = unlockedIds.length + "/" + master.length;
-    } else {
-        if (masterRes.status === "rejected") console.warn("[GROWERA] Prefetch achievements master gagal:", masterRes.reason);
-        if (achRes.status === "rejected") console.warn("[GROWERA] Prefetch achievements gagal:", achRes.reason);
+        if (el) el.textContent = full.achievements.unlockedIds.length + "/" + achMasterCache.length;
     }
-
-    // Friends card
-    if (frRes.status === "fulfilled") {
-        const list = frRes.value?.friends || [];
-        const el = $("#statFriendsValue");
-        if (el) el.textContent = String(list.length);
-    } else console.warn("[GROWERA] Prefetch friends gagal:", frRes.reason);
-
-    // Guild card
-    if (gdRes.status === "fulfilled") {
-        const guild = gdRes.value?.guild || { id: 0 };
-        const el = $("#statGuildValue");
-        if (el) {
-            if (!guild.id || guild.id <= 0) el.textContent = "None";
-            else el.textContent = guild.title || ("#" + guild.id);
-        }
-    } else console.warn("[GROWERA] Prefetch guild gagal:", gdRes.reason);
 }
 
 /* ===== Country Auto-detect ===== */
@@ -514,13 +527,11 @@ async function handleLogin(event) {
         const result = await apiRequest("/login", { method: "POST", body: JSON.stringify({ username, password }) });
         const token = result?.token || result?.accessToken || result?.data?.token || result?.data?.accessToken;
         saveToken(token);
-        await loadCurrentPlayer();
+        await bootstrapProfile();
         if (passwordInput) passwordInput.value = "";
         setMessage("");
         setProfileVisible();
         toast("Selamat datang, " + player.username + "!", "success");
-        cardPrefetched = false;
-        prefetchCardStats();
         autoFillCountryIfEmpty();
     } catch (error) {
         clearToken(); setLoginVisible();
@@ -530,25 +541,13 @@ async function handleLogin(event) {
     } finally { setBusy(false); }
 }
 
-/* ===== Load ===== */
-async function loadCurrentPlayer() {
-    const token = getToken();
-    if (!token) { const e = new Error("Sesi tidak ditemukan."); e.isAuthError = true; throw e; }
-    const result = await apiRequest("/me", { method: "GET", headers: { Authorization: "Bearer " + token } });
-    const normalized = normalizePlayer(result);
-    Object.assign(player, normalized);
-    isAuthenticated = true;
-    return player;
-}
-
+/* ===== Refresh ===== */
 async function refreshProfile(silent = false) {
     if (isBusy) return;
     setProfileLoading(true);
     try {
-        await loadCurrentPlayer();
+        await bootstrapProfile();
         renderProfile();
-        cardPrefetched = false;
-        prefetchCardStats();
         if (!silent) toast("Profil diperbarui.", "info", 2200);
     } catch (error) {
         console.error("[GROWERA] Refresh gagal:", error);
@@ -561,9 +560,9 @@ async function refreshProfile(silent = false) {
 function forceLogout(message) {
     clearToken();
     isAuthenticated = false;
+    fullProfileData = null;
     closeEditDialog();
     closeAllInfoDialogs();
-    cardPrefetched = false;
     resetStatCardValues();
     if (passwordInput) passwordInput.value = "";
     setMessage("");
@@ -586,10 +585,8 @@ async function restoreSession() {
     if (!getToken()) { setLoginVisible(); return; }
     setBusy(true);
     try {
-        await loadCurrentPlayer();
+        await bootstrapProfile();
         setProfileVisible();
-        cardPrefetched = false;
-        prefetchCardStats();
         autoFillCountryIfEmpty();
     } catch (error) {
         console.warn("[GROWERA] Sesi tidak dapat dipulihkan:", error);
@@ -833,7 +830,11 @@ async function loadTabData(tabName) {
     if (loading) loading.hidden = false;
     try {
         if (tabName === "inventory") {
-            const result = await apiRequest("/inventory", { method: "GET", headers: { Authorization: "Bearer " + token } });
+            // Fetch items.json in parallel with inventory data
+            const [result] = await Promise.all([
+                apiRequest("/inventory", { method: "GET", headers: { Authorization: "Bearer " + token } }),
+                getItemsMaster().catch(() => null)
+            ]);
             renderInventoryTab(result);
             contentTabs.loaded.inventory = true;
         } else if (tabName === "worlds") {
@@ -859,26 +860,32 @@ function renderInventoryTab(result) {
         grid.hidden = false;
         grid.replaceChildren();
         items.forEach((item) => {
+            const resolvedName = resolveItemName(item.id);
             const card = document.createElement("div");
             card.className = "inv-item";
-            card.title = (item.name || "Item #" + item.id) + " · x" + item.count;
+            card.title = resolvedName + " · x" + item.count;
+
             const idBadge = document.createElement("div");
             idBadge.className = "inv-item-id";
             idBadge.textContent = "#" + item.id;
+
             const countBadge = document.createElement("div");
             countBadge.className = "inv-item-count";
             countBadge.textContent = "×" + fmt(item.count);
+
             const imgWrap = document.createElement("div");
             imgWrap.className = "inv-item-img";
             const img = document.createElement("img");
             img.src = avatarUrl(item.id);
-            img.alt = item.name || "Item";
+            img.alt = resolvedName;
             img.loading = "lazy";
             img.addEventListener("error", () => { imgWrap.textContent = "?"; imgWrap.style.color = "#4b5670"; imgWrap.style.fontSize = "14px"; });
             imgWrap.appendChild(img);
+
             const name = document.createElement("div");
             name.className = "inv-item-name";
-            name.textContent = item.name || ("Item #" + item.id);
+            name.textContent = resolvedName;
+
             card.appendChild(idBadge); card.appendChild(countBadge);
             card.appendChild(imgWrap); card.appendChild(name);
             grid.appendChild(card);
@@ -931,9 +938,9 @@ function openInfoDialog(name) {
     if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); }
     else dlg.setAttribute("open", "");
     const key = name.replace("dialog", "").toLowerCase();
-    if (key === "achievements" && !infoDialogLoaded.achievements) loadAchievementsDialog();
-    else if (key === "friends" && !infoDialogLoaded.friends) loadFriendsDialog();
-    else if (key === "guild" && !infoDialogLoaded.guild) loadGuildDialog();
+    if (key === "achievements") loadAchievementsDialog();
+    else if (key === "friends") loadFriendsDialog();
+    else if (key === "guild") loadGuildDialog();
     else if (key === "playtime" && !infoDialogLoaded.playtime) loadPlaytimeDialog();
 }
 
@@ -955,7 +962,7 @@ function closeAllInfoDialogs() {
     infoDialogLoaded.playtime = false;
 }
 
-/* ==== Achievements (NEW: merge JSON + unlocked IDs) ==== */
+/* ==== Achievements (iconId dari JSON, tanpa fallback logic) ==== */
 async function loadAchievementsDialog() {
     const token = getToken();
     if (!token) return;
@@ -966,18 +973,10 @@ async function loadAchievementsDialog() {
     if (empty) empty.hidden = true;
 
     try {
-    // Fetch separately so we can log which fails
-    let master, unlockRes;
-    try {
-        master = await getAchievementsMaster();
-    } catch (e) {
-        throw new Error("achievements.json gagal (" + e.message + "). Cek path file.");
-    }
-    try {
-        unlockRes = await apiRequest("/achievements/unlocked", { method: "GET", headers: { Authorization: "Bearer " + token } });
-    } catch (e) {
-        throw new Error("Endpoint /achievements/unlocked gagal (" + e.message + "). Deploy ulang Growerapanel.lua + restart GTPS.");
-    }
+        const [master, unlockRes] = await Promise.all([
+            getAchievementsMaster(),
+            apiRequest("/achievements/unlocked", { method: "GET", headers: { Authorization: "Bearer " + token } })
+        ]);
 
         const unlockedIds = Array.isArray(unlockRes?.unlockedIds) ? unlockRes.unlockedIds : [];
         const unlockedSet = new Set(unlockedIds.map((id) => Number(id)));
@@ -985,7 +984,6 @@ async function loadAchievementsDialog() {
         const total = master.length;
         const unlockedCount = unlockedIds.length;
 
-        // Update stat card too
         const statAch = $("#statAchValue");
         if (statAch) statAch.textContent = total > 0 ? (unlockedCount + "/" + total) : "0/0";
 
@@ -1005,8 +1003,6 @@ async function loadAchievementsDialog() {
 
         if (grid) {
             grid.replaceChildren();
-
-            // Sort: unlocked first, then by id
             const sorted = [...master].sort((a, b) => {
                 const ua = unlockedSet.has(Number(a.id));
                 const ub = unlockedSet.has(Number(b.id));
@@ -1019,7 +1015,7 @@ async function loadAchievementsDialog() {
                 const isUnlocked = unlockedSet.has(achId);
                 const achName = String(ach.name || "").trim() || ("Achievement #" + achId);
                 const achDesc = String(ach.description || "").trim();
-                const iconId = (Number(ach.iconId) > 0) ? Number(ach.iconId) : resolveAchIcon(achId, isUnlocked, achName);
+                const iconId = Number(ach.iconId) || 202; // pre-resolved di JSON
 
                 const card = document.createElement("div");
                 card.className = "ach-card" + (isUnlocked ? " unlocked" : "");
