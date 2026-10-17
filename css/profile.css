@@ -272,3 +272,28 @@
     .today-text strong{font-size:12px}
     .today-text span:not(.today-label){font-size:10.5px}
 }
+
+
+/* ===== Playtime Charts (Weekly + Monthly) — v2 ===== */
+.playtime-chart-section{margin-bottom:18px}
+.playtime-chart-section:last-child{margin-bottom:0}
+.playtime-chart-head strong{font-family:var(--display);font-size:13px;font-weight:600;color:#9cecff;letter-spacing:0;text-transform:none;line-height:1.4}
+
+/* Weekly: 7 bars, spread evenly, wider bars */
+#weeklyChart{justify-content:space-around;gap:4px}
+#weeklyChart .pt-bar-wrap{flex:1;max-width:48px;min-width:24px}
+
+/* Monthly: 30 bars, compact, scrollable if needed */
+#monthlyChart{gap:3px}
+#monthlyChart .pt-bar-wrap{min-width:11px}
+#monthlyChart .pt-bar{border-radius:3px 3px 1px 1px}
+#monthlyChart .pt-label{font-size:7px}
+
+/* Mobile tweaks */
+@media(max-width:520px){
+    .playtime-chart-section{margin-bottom:14px}
+    #weeklyChart .pt-bar-wrap{max-width:36px;min-width:20px}
+    #monthlyChart .pt-bar-wrap{min-width:9px}
+    #monthlyChart .pt-label{font-size:6.5px}
+    .playtime-chart-head strong{font-size:12px}
+}
