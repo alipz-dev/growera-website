@@ -10,9 +10,7 @@
     try {
         var hasToken = !!localStorage.getItem("growera_session_token") || !!sessionStorage.getItem("growera_session_token");
         document.documentElement.setAttribute("data-auth", hasToken ? "in" : "out");
-    } catch(e) {
-        document.documentElement.setAttribute("data-auth", "out");
-    }
+    } catch(e) { document.documentElement.setAttribute("data-auth", "out"); }
 })();
 </script>
 
@@ -121,7 +119,7 @@
 
     <div class="profile-grid">
 
-        <!-- ===== PLAYER CARD (with INVENTORY + WORLDS tabs) ===== -->
+        <!-- ===== PLAYER CARD ===== -->
         <article class="player-card glass">
             <div class="card-topline">
                 <span>PLAYER PROFILE</span>
@@ -141,7 +139,6 @@
 
             <div class="card-divider"></div>
 
-            <!-- ===== MINI STATS (icon only, no text labels) ===== -->
             <div class="mini-stats">
                 <div>
                     <img class="mini-stat-icon" src="https://api.gtps.cloud/api/item/texture/1791/1488/" alt="Level" width="30" height="30" loading="lazy" style="image-rendering:pixelated">
@@ -168,7 +165,6 @@
                 <span>EDIT PROFILE</span>
             </button>
 
-            <!-- ===== INVENTORY / WORLDS TABS (inside player card) ===== -->
             <div class="player-card-tabs">
                 <div class="tabs-header" role="tablist">
                     <button class="tab-btn active" data-tab="inventory" role="tab" aria-selected="true">
@@ -184,55 +180,37 @@
                 </div>
 
                 <div class="tabs-content">
-
-                    <!-- INVENTORY PANEL -->
                     <div class="tab-panel active" id="tabPanelInventory" role="tabpanel">
                         <div class="tab-loading" id="inventoryLoading">Memuat inventory...</div>
                         <div class="inventory-grid-content" id="inventoryGridContent" hidden></div>
                         <div class="tab-empty" id="inventoryEmpty" hidden>Inventory kosong.</div>
                     </div>
 
-                    <!-- WORLDS PANEL -->
                     <div class="tab-panel" id="tabPanelWorlds" role="tabpanel">
                         <div class="tab-loading" id="worldsLoading">Memuat world list...</div>
                         <div class="worlds-content" id="worldsContent" hidden>
                             <div class="world-group" data-cat="owned">
-                                <div class="world-group-head">
-                                    <span>OWNED</span>
-                                    <strong id="worldsOwnedCount">0</strong>
-                                </div>
+                                <div class="world-group-head"><span>OWNED</span><strong id="worldsOwnedCount">0</strong></div>
                                 <div class="world-chips" id="worldsOwnedList"></div>
                             </div>
                             <div class="world-group" data-cat="recent">
-                                <div class="world-group-head">
-                                    <span>RECENT</span>
-                                    <strong id="worldsRecentCount">0</strong>
-                                </div>
+                                <div class="world-group-head"><span>RECENT</span><strong id="worldsRecentCount">0</strong></div>
                                 <div class="world-chips" id="worldsRecentList"></div>
                             </div>
                             <div class="world-group" data-cat="access">
-                                <div class="world-group-head">
-                                    <span>ACCESS</span>
-                                    <strong id="worldsAccessCount">0</strong>
-                                </div>
+                                <div class="world-group-head"><span>ACCESS</span><strong id="worldsAccessCount">0</strong></div>
                                 <div class="world-chips" id="worldsAccessList"></div>
                             </div>
                             <div class="world-group" data-cat="locked">
-                                <div class="world-group-head">
-                                    <span>LOCKED</span>
-                                    <strong id="worldsLockedCount">0</strong>
-                                </div>
+                                <div class="world-group-head"><span>LOCKED</span><strong id="worldsLockedCount">0</strong></div>
                                 <div class="world-chips" id="worldsLockedList"></div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-            <!-- ===== /TABS ===== -->
 
         </article>
-        <!-- ===== /PLAYER CARD ===== -->
 
         <div class="side-column">
 
@@ -243,22 +221,10 @@
                 </div>
                 <p class="meta-bio" id="bioValue">Belum ada bio.</p>
                 <div class="meta-grid">
-                    <div class="meta-item" id="metaCountry">
-                        <span class="meta-label">COUNTRY</span>
-                        <strong id="countryValue">—</strong>
-                    </div>
-                    <div class="meta-item" id="metaBirthdate">
-                        <span class="meta-label">BIRTHDATE</span>
-                        <strong id="birthdateValue">—</strong>
-                    </div>
-                    <div class="meta-item" id="metaDiscord">
-                        <span class="meta-label">DISCORD</span>
-                        <strong id="discordValue">—</strong>
-                    </div>
-                    <div class="meta-item" id="metaMemberSince">
-                        <span class="meta-label">MEMBER SINCE</span>
-                        <strong id="memberSinceValue">—</strong>
-                    </div>
+                    <div class="meta-item" id="metaCountry"><span class="meta-label">COUNTRY</span><strong id="countryValue">—</strong></div>
+                    <div class="meta-item" id="metaBirthdate"><span class="meta-label">BIRTHDATE</span><strong id="birthdateValue">—</strong></div>
+                    <div class="meta-item" id="metaDiscord"><span class="meta-label">DISCORD</span><strong id="discordValue">—</strong></div>
+                    <div class="meta-item" id="metaMemberSince"><span class="meta-label">MEMBER SINCE</span><strong id="memberSinceValue">—</strong></div>
                 </div>
             </article>
 
@@ -273,40 +239,49 @@
                     <span class="tiny-badge">YOUR JOURNEY</span>
                     <h2>A new era<br>begins with you.</h2>
                     <p class="muted">Every crystal tells a story. Keep exploring, collect rewards, and build your legacy in GROWERA.</p>
+
+                    <div class="today-widget" id="todayWidget">
+                        <div class="today-row">
+                            <span class="today-emoji">📅</span>
+                            <div class="today-text">
+                                <span class="today-label">TODAY</span>
+                                <strong id="todayDate">—</strong>
+                            </div>
+                        </div>
+                        <div class="today-row">
+                            <span class="today-emoji">🎉</span>
+                            <div class="today-text">
+                                <span class="today-label">EVENTS</span>
+                                <span id="todayEvents">—</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <button class="text-button" id="exploreButton" type="button">EXPLORE YOUR PROFILE <span>→</span></button>
                 </div>
             </article>
 
-            <!-- ===== STAT CARDS (clickable → popup) ===== -->
             <div class="stat-grid">
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogAchievements" aria-label="Open achievements">
-                    <div class="stat-icon purple">
-                        <img src="https://api.gtps.cloud/api/item/texture/1791/1458/" alt="" width="20" height="20" style="image-rendering:pixelated">
-                    </div>
+                    <div class="stat-icon purple"><img src="https://api.gtps.cloud/api/item/texture/1791/1458/" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">ACHIEVEMENTS</span>
                     <strong id="statAchValue">—</strong>
                     <p>Milestones await</p>
                 </article>
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogFriends" aria-label="Open friends list">
-                    <div class="stat-icon cyan">
-                        <img src="https://api.gtps.cloud/api/item/texture/1791/980/" alt="" width="20" height="20" style="image-rendering:pixelated">
-                    </div>
+                    <div class="stat-icon cyan"><img src="https://api.gtps.cloud/api/item/texture/1791/980/" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">FRIENDS</span>
                     <strong id="statFriendsValue">—</strong>
                     <p>Your allies</p>
                 </article>
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogGuild" aria-label="Open guild info">
-                    <div class="stat-icon purple">
-                        <img src="https://api.gtps.cloud/api/item/texture/1791/1744/" alt="" width="20" height="20" style="image-rendering:pixelated">
-                    </div>
+                    <div class="stat-icon purple"><img src="https://api.gtps.cloud/api/item/texture/1791/1744/" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">GUILD</span>
                     <strong id="statGuildValue">—</strong>
                     <p>Team legacy</p>
                 </article>
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogPlaytime" aria-label="Open play time stats">
-                    <div class="stat-icon cyan">
-                        <img src="https://api.gtps.cloud/api/item/texture/1791/7162/" alt="" width="20" height="20" style="image-rendering:pixelated">
-                    </div>
+                    <div class="stat-icon cyan"><img src="https://api.gtps.cloud/api/item/texture/1791/7162/" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">PLAY TIME</span>
                     <strong id="playtimeValue">—</strong>
                     <p>Adventure history</p>
@@ -314,9 +289,7 @@
             </div>
 
             <article class="notice-panel">
-                <span class="notice-icon">
-                    <img src="https://api.gtps.cloud/api/item/texture/1791/660/" alt="" width="16" height="16" style="image-rendering:pixelated">
-                </span>
+                <span class="notice-icon"><img src="https://api.gtps.cloud/api/item/texture/1791/660/" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
                 <p><strong>Preview environment</strong><br>Data profil mengikuti server GROWERA secara langsung.</p>
             </article>
 
@@ -329,7 +302,7 @@
 </main>
 
 
-<!-- ============ EDIT DIALOG ============ -->
+<!-- EDIT DIALOG -->
 <dialog class="edit-dialog glass" id="editDialog">
     <form id="editForm" novalidate>
         <div class="dialog-heading">
@@ -341,7 +314,6 @@
         </div>
 
         <div class="edit-scroll">
-
             <div class="edit-label-row">
                 <label for="editBio">BIO</label>
                 <span class="edit-counter" id="bioCounter">0 / 200</span>
@@ -350,9 +322,7 @@
 
             <label for="editAvatarId">AVATAR ITEM ID</label>
             <div class="avatar-picker">
-                <div class="avatar-preview" id="avatarPreview">
-                    <span class="avatar-placeholder">?</span>
-                </div>
+                <div class="avatar-preview" id="avatarPreview"><span class="avatar-placeholder">?</span></div>
                 <div class="avatar-picker-input">
                     <input id="editAvatarId" type="number" min="0" max="999999" placeholder="contoh: 112" inputmode="numeric">
                     <p class="edit-hint">Kosongkan untuk pakai inisial nama.</p>
@@ -376,9 +346,7 @@
                 <label>DISCORD</label>
                 <div class="discord-bind" id="discordBind">
                     <div class="discord-status">
-                        <div class="discord-icon-wrap">
-                            <img src="https://api.gtps.cloud/api/item/texture/1791/278/" alt="" width="22" height="22" style="image-rendering:pixelated">
-                        </div>
+                        <div class="discord-icon-wrap"><img src="https://api.gtps.cloud/api/item/texture/1791/278/" alt="" width="22" height="22" style="image-rendering:pixelated"></div>
                         <div class="discord-info">
                             <strong id="discordName">Belum terhubung</strong>
                             <span id="discordHint">Hubungkan akun Discord untuk verifikasi</span>
@@ -392,20 +360,17 @@
             </div>
 
             <p class="edit-error" id="editError" role="alert"></p>
-
         </div>
 
         <div class="dialog-actions">
             <button class="button button-quiet" id="editCancelBtn" type="button">CANCEL</button>
-            <button class="button button-primary" id="editSaveBtn" type="submit">
-                <span class="btn-label">SAVE CHANGES</span>
-            </button>
+            <button class="button button-primary" id="editSaveBtn" type="submit"><span class="btn-label">SAVE CHANGES</span></button>
         </div>
     </form>
 </dialog>
 
 
-<!-- ============ INFO DIALOG: ACHIEVEMENTS ============ -->
+<!-- ACHIEVEMENTS DIALOG -->
 <dialog class="info-dialog glass" id="dialogAchievements">
     <div class="dialog-heading">
         <div>
@@ -417,18 +382,10 @@
     <div class="info-scroll">
         <div class="tab-loading" id="achievementsLoading">Memuat achievements...</div>
         <div class="ach-summary" id="achSummary" hidden>
-            <div class="ach-summary-box">
-                <span>UNLOCKED</span>
-                <strong id="achUnlockedCount">0</strong>
-            </div>
-            <div class="ach-summary-box">
-                <span>TOTAL</span>
-                <strong id="achTotalCount">0</strong>
-            </div>
+            <div class="ach-summary-box"><span>UNLOCKED</span><strong id="achUnlockedCount">0</strong></div>
+            <div class="ach-summary-box"><span>TOTAL</span><strong id="achTotalCount">0</strong></div>
             <div class="ach-progress-wrap">
-                <div class="ach-progress-bar">
-                    <div class="ach-progress-fill" id="achProgressFill"></div>
-                </div>
+                <div class="ach-progress-bar"><div class="ach-progress-fill" id="achProgressFill"></div></div>
                 <span class="ach-progress-text" id="achProgressText">0%</span>
             </div>
         </div>
@@ -438,7 +395,7 @@
 </dialog>
 
 
-<!-- ============ INFO DIALOG: FRIENDS ============ -->
+<!-- FRIENDS DIALOG -->
 <dialog class="info-dialog glass" id="dialogFriends">
     <div class="dialog-heading">
         <div>
@@ -455,7 +412,7 @@
 </dialog>
 
 
-<!-- ============ INFO DIALOG: GUILD ============ -->
+<!-- GUILD DIALOG (with members list) -->
 <dialog class="info-dialog glass" id="dialogGuild">
     <div class="dialog-heading">
         <div>
@@ -478,31 +435,24 @@
                     <span class="guild-level-chip" id="guildLevel">LV 0</span>
                 </div>
             </div>
+
             <div class="guild-stats-grid">
-                <div class="guild-stat">
-                    <span>GUILD ID</span>
-                    <strong id="guildId">—</strong>
+                <div class="guild-stat"><span>GUILD ID</span><strong id="guildId">—</strong></div>
+                <div class="guild-stat"><span>LEVEL</span><strong id="guildLevelValue">—</strong></div>
+                <div class="guild-stat"><span>XP</span><strong id="guildXp">—</strong></div>
+                <div class="guild-stat"><span>POINTS</span><strong id="guildPoints">—</strong></div>
+                <div class="guild-stat"><span>WORLD</span><strong id="guildWorld">—</strong></div>
+                <div class="guild-stat"><span>CREATED</span><strong id="guildCreated">—</strong></div>
+            </div>
+
+            <!-- MEMBERS SECTION -->
+            <div class="guild-members-section">
+                <div class="guild-members-head">
+                    <span>MEMBERS ONLINE</span>
+                    <strong id="guildMembersCount">0</strong>
                 </div>
-                <div class="guild-stat">
-                    <span>LEVEL</span>
-                    <strong id="guildLevelValue">—</strong>
-                </div>
-                <div class="guild-stat">
-                    <span>XP</span>
-                    <strong id="guildXp">—</strong>
-                </div>
-                <div class="guild-stat">
-                    <span>POINTS</span>
-                    <strong id="guildPoints">—</strong>
-                </div>
-                <div class="guild-stat">
-                    <span>WORLD</span>
-                    <strong id="guildWorld">—</strong>
-                </div>
-                <div class="guild-stat">
-                    <span>CREATED</span>
-                    <strong id="guildCreated">—</strong>
-                </div>
+                <div class="guild-members-grid" id="guildMembersList"></div>
+                <div class="guild-members-empty" id="guildMembersEmpty" hidden>No members online.</div>
             </div>
         </div>
         <div class="tab-empty" id="guildEmpty" hidden>Kamu belum bergabung dengan guild mana pun.</div>
@@ -510,7 +460,7 @@
 </dialog>
 
 
-<!-- ============ INFO DIALOG: PLAY TIME ============ -->
+<!-- PLAY TIME DIALOG -->
 <dialog class="info-dialog glass" id="dialogPlaytime">
     <div class="dialog-heading">
         <div>
