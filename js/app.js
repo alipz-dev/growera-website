@@ -5,6 +5,7 @@ const API_BASE_URL = "";
 const API_PREFIX = "/api/growera";
 const TOKEN_KEY = "growera_session_token";
 const GTPS_SERVER_ID = "1791";
+const ACHIEVEMENTS_JSON_URL = "data/achievements.json";
 
 const $ = (s) => document.querySelector(s);
 const loginView = $("#loginView");
@@ -27,6 +28,78 @@ const player = {
     birthdate: "", createdAt: 0, updatedAt: 0, todayDate: "", todayEvents: ""
 };
 
+/* ===== Icon Fallback (port dari Lua) ===== */
+const ACH_ICON_MAP = {
+    0:116,1:116,3:194,4:194,6:98,9:1274,10:112,11:112,15:856,
+    18:3494,19:3494,21:3142,22:6746,26:242,27:3142,28:7162,29:7162,
+    30:1458,34:660,35:242,36:242,38:868,77:1274,80:2204,96:3000,
+    147:7232,162:112,165:1458,207:242,229:3142
+};
+const ACH_KEYWORD_ICONS = [
+    { keywords: ["gem","rich","millionaire","hoarder","wealth"], iconId: 112 },
+    { keywords: ["level","strong","experienced","expert","master","veteran"], iconId: 3142 },
+    { keywords: ["world","lock","owner","top-10"], iconId: 242 },
+    { keywords: ["harvest","farm","plant","seed","splice","grow","tree","flower"], iconId: 194 },
+    { keywords: ["fish","sea","ocean","water"], iconId: 3000 },
+    { keywords: ["kill","pvp","combat","fight","sword"], iconId: 94 },
+    { keywords: ["build","block","place","architect"], iconId: 116 },
+    { keywords: ["trade","shop","sell","buy"], iconId: 1434 },
+    { keywords: ["surgery","medic","doctor"], iconId: 1210 },
+    { keywords: ["crime","police","jail"], iconId: 210 },
+    { keywords: ["startopia","space","star","cosmic"], iconId: 6746 },
+    { keywords: ["cook","chef","food"], iconId: 4620 },
+    { keywords: ["break","destroy","mine","demolition"], iconId: 98 },
+    { keywords: ["supporter"], iconId: 1458 },
+    { keywords: ["geiger","radiation","dust","sparkly"], iconId: 1274 },
+    { keywords: ["growmoji"], iconId: 7232 }
+];
+const ACH_DEFAULT_UNLOCKED = 1458;
+const ACH_DEFAULT_LOCKED = 202;
+
+function keywordIcon(name) {
+    if (!name) return null;
+    const lname = name.toLowerCase();
+    for (const group of ACH_KEYWORD_ICONS) {
+        for (const kw of group.keywords) {
+            if (lname.includes(kw)) return group.iconId;
+        }
+    }
+    return null;
+}
+
+function resolveAchIcon(achId, unlocked, name) {
+    if (achId && ACH_ICON_MAP[achId]) return ACH_ICON_MAP[achId];
+    const kw = keywordIcon(name);
+    if (kw) return kw;
+    return unlocked ? ACH_DEFAULT_UNLOCKED : ACH_DEFAULT_LOCKED;
+}
+
+/* ===== Master JSON cache ===== */
+let achMasterCache = null;
+let achMasterPromise = null;
+
+async function getAchievementsMaster() {
+    if (achMasterCache !== null) return achMasterCache;
+    if (achMasterPromise) return achMasterPromise;
+
+    achMasterPromise = (async () => {
+        try {
+            const res = await fetch(ACHIEVEMENTS_JSON_URL, { cache: "default", credentials: "same-origin" });
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            if (!Array.isArray(data)) throw new Error("Invalid format");
+            achMasterCache = data;
+            return data;
+        } catch (e) {
+            console.error("[GROWERA] Fetch achievements.json gagal:", e);
+            achMasterPromise = null;
+            throw e;
+        }
+    })();
+
+    return achMasterPromise;
+}
+
 /* ===== Helpers ===== */
 function safeName(v) { return String(v ?? "Player").trim().slice(0, 32) || "Player"; }
 function toNumber(v, f = 0) { const n = Number(v); return Number.isFinite(n) ? n : f; }
@@ -38,7 +111,6 @@ function fmtDateId(unixSec) {
     try { return new Date(n * 1000).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }); }
     catch { return "—"; }
 }
-
 function fmtBirthdate(str) {
     if (!str || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return str || "";
     try {
@@ -46,7 +118,6 @@ function fmtBirthdate(str) {
         return new Date(y, m - 1, d).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
     } catch { return str; }
 }
-
 function fmtPlaytime(seconds) {
     const s = Math.floor(toNumber(seconds));
     if (s <= 0) return "—";
@@ -57,15 +128,12 @@ function fmtPlaytime(seconds) {
     if (m > 0 && d === 0) parts.push(m + "m");
     return parts.length ? parts.join(" ") : "< 1m";
 }
-
 function avatarUrl(id) { return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id + "/"; }
 function flagUrl(code) { return (!code || code.length !== 2) ? "" : "https://flagcdn.com/w40/" + code.toLowerCase() + ".png"; }
 
-/* ===== Date helpers for playtime chart ===== */
 function dayKeyFromDate(d) {
     return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
 }
-
 function generateDayRange(daysBack) {
     const result = [];
     const today = new Date();
@@ -364,26 +432,34 @@ async function prefetchCardStats() {
     if (!token) return;
     cardPrefetched = true;
     const headers = { Authorization: "Bearer " + token };
-    const [achRes, frRes, gdRes] = await Promise.allSettled([
-        apiRequest("/achievements", { method: "GET", headers }),
+
+    // Fetch all in parallel. Achievements master is cached by browser after first load.
+    const [masterRes, achRes, frRes, gdRes] = await Promise.allSettled([
+        getAchievementsMaster(),
+        apiRequest("/achievements/unlocked", { method: "GET", headers }),
         apiRequest("/friends", { method: "GET", headers }),
         apiRequest("/guild", { method: "GET", headers })
     ]);
-    if (achRes.status === "fulfilled") {
-        const r = achRes.value;
-        const achievements = r?.achievements || [];
-        const total = r?.total || achievements.length;
-        const unlocked = r?.unlocked || achievements.filter((a) => a.unlocked).length;
-        const el = $("#statAchValue");
-        if (el) el.textContent = total > 0 ? (unlocked + "/" + total) : "0/0";
-    } else console.warn("[GROWERA] Prefetch achievements gagal:", achRes.reason);
 
+    // Achievements card: unlocked/total
+    if (masterRes.status === "fulfilled" && achRes.status === "fulfilled") {
+        const master = masterRes.value || [];
+        const unlockedIds = achRes.value?.unlockedIds || [];
+        const el = $("#statAchValue");
+        if (el) el.textContent = unlockedIds.length + "/" + master.length;
+    } else {
+        if (masterRes.status === "rejected") console.warn("[GROWERA] Prefetch achievements master gagal:", masterRes.reason);
+        if (achRes.status === "rejected") console.warn("[GROWERA] Prefetch achievements gagal:", achRes.reason);
+    }
+
+    // Friends card
     if (frRes.status === "fulfilled") {
         const list = frRes.value?.friends || [];
         const el = $("#statFriendsValue");
         if (el) el.textContent = String(list.length);
     } else console.warn("[GROWERA] Prefetch friends gagal:", frRes.reason);
 
+    // Guild card
     if (gdRes.status === "fulfilled") {
         const guild = gdRes.value?.guild || { id: 0 };
         const el = $("#statGuildValue");
@@ -879,7 +955,7 @@ function closeAllInfoDialogs() {
     infoDialogLoaded.playtime = false;
 }
 
-/* ==== Achievements ==== */
+/* ==== Achievements (NEW: merge JSON + unlocked IDs) ==== */
 async function loadAchievementsDialog() {
     const token = getToken();
     if (!token) return;
@@ -888,53 +964,97 @@ async function loadAchievementsDialog() {
     if (summary) summary.hidden = true;
     if (grid) grid.hidden = true;
     if (empty) empty.hidden = true;
+
     try {
-        const result = await apiRequest("/achievements", { method: "GET", headers: { Authorization: "Bearer " + token } });
-        const achievements = result?.achievements || [];
-        const total = result?.total || achievements.length;
-        const unlocked = result?.unlocked || achievements.filter((a) => a.unlocked).length;
+        // Fetch master (cached) + unlocked IDs in parallel
+        const [master, unlockRes] = await Promise.all([
+            getAchievementsMaster(),
+            apiRequest("/achievements/unlocked", { method: "GET", headers: { Authorization: "Bearer " + token } })
+        ]);
+
+        const unlockedIds = Array.isArray(unlockRes?.unlockedIds) ? unlockRes.unlockedIds : [];
+        const unlockedSet = new Set(unlockedIds.map((id) => Number(id)));
+
+        const total = master.length;
+        const unlockedCount = unlockedIds.length;
+
+        // Update stat card too
         const statAch = $("#statAchValue");
-        if (statAch) statAch.textContent = total > 0 ? (unlocked + "/" + total) : "0/0";
-        if (!achievements.length) { if (empty) empty.hidden = false; infoDialogLoaded.achievements = true; return; }
+        if (statAch) statAch.textContent = total > 0 ? (unlockedCount + "/" + total) : "0/0";
+
+        if (total === 0) {
+            if (empty) { empty.textContent = "Belum ada achievement terdaftar."; empty.hidden = false; }
+            infoDialogLoaded.achievements = true;
+            return;
+        }
+
         if (summary) summary.hidden = false;
         if (grid) grid.hidden = false;
-        if ($("#achUnlockedCount")) $("#achUnlockedCount").textContent = String(unlocked);
+        if ($("#achUnlockedCount")) $("#achUnlockedCount").textContent = String(unlockedCount);
         if ($("#achTotalCount")) $("#achTotalCount").textContent = String(total);
-        const percent = total > 0 ? Math.round((unlocked / total) * 100) : 0;
+        const percent = total > 0 ? Math.round((unlockedCount / total) * 100) : 0;
         if ($("#achProgressFill")) $("#achProgressFill").style.width = percent + "%";
         if ($("#achProgressText")) $("#achProgressText").textContent = percent + "%";
+
         if (grid) {
             grid.replaceChildren();
-            achievements.forEach((ach) => {
+
+            // Sort: unlocked first, then by id
+            const sorted = [...master].sort((a, b) => {
+                const ua = unlockedSet.has(Number(a.id));
+                const ub = unlockedSet.has(Number(b.id));
+                if (ua !== ub) return ua ? -1 : 1;
+                return (Number(a.id) || 0) - (Number(b.id) || 0);
+            });
+
+            sorted.forEach((ach) => {
+                const achId = Number(ach.id) || 0;
+                const isUnlocked = unlockedSet.has(achId);
+                const achName = String(ach.name || "").trim() || ("Achievement #" + achId);
+                const achDesc = String(ach.description || "").trim();
+                const iconId = (Number(ach.iconId) > 0) ? Number(ach.iconId) : resolveAchIcon(achId, isUnlocked, achName);
+
                 const card = document.createElement("div");
-                card.className = "ach-card" + (ach.unlocked ? " unlocked" : "");
+                card.className = "ach-card" + (isUnlocked ? " unlocked" : "");
+
                 const icon = document.createElement("div");
                 icon.className = "ach-icon";
                 const img = document.createElement("img");
-                const iconId = ach.iconId || (ach.unlocked ? 1458 : 202);
                 img.src = avatarUrl(iconId);
                 img.alt = "";
-                img.addEventListener("error", () => { icon.textContent = ach.unlocked ? "★" : "○"; icon.style.color = ach.unlocked ? "#f8d58c" : "#4b5670"; icon.style.fontSize = "20px"; });
+                img.loading = "lazy";
+                img.addEventListener("error", () => {
+                    icon.textContent = isUnlocked ? "★" : "○";
+                    icon.style.color = isUnlocked ? "#f8d58c" : "#4b5670";
+                    icon.style.fontSize = "20px";
+                });
                 icon.appendChild(img);
+
                 const info = document.createElement("div");
                 info.className = "ach-info";
+
                 const name = document.createElement("div");
                 name.className = "ach-name";
-                name.textContent = ach.name || ("Achievement #" + ach.id);
+                name.textContent = achName;
+
                 const desc = document.createElement("div");
                 desc.className = "ach-desc";
-                desc.textContent = ach.description || "—";
+                desc.textContent = achDesc || "—";
+
                 const badge = document.createElement("span");
                 badge.className = "ach-badge";
-                badge.textContent = ach.unlocked ? "UNLOCKED" : "LOCKED";
+                badge.textContent = isUnlocked ? "UNLOCKED" : "LOCKED";
+
                 info.appendChild(name);
-                if (ach.description) info.appendChild(desc);
+                if (achDesc) info.appendChild(desc);
                 info.appendChild(badge);
+
                 card.appendChild(icon);
                 card.appendChild(info);
                 grid.appendChild(card);
             });
         }
+
         infoDialogLoaded.achievements = true;
     } catch (error) {
         console.error("[GROWERA] Load achievements gagal:", error);
@@ -1061,7 +1181,6 @@ async function loadGuildDialog() {
                 bg.style.backgroundImage = "url('" + avatarUrl(guild.mascotBg) + "')";
                 mascotWrap.insertBefore(bg, mascotWrap.firstChild);
             }
-
             const fgId = (guild.mascotFg > 0) ? guild.mascotFg : (guild.mascotDisplay > 0 ? guild.mascotDisplay : 0);
             if (fgId > 0 && mascotImg) {
                 mascotImg.src = avatarUrl(fgId);
@@ -1076,7 +1195,6 @@ async function loadGuildDialog() {
                 if (mascotImg) mascotImg.style.display = "none";
                 if (mascotFallback) mascotFallback.style.display = "";
             }
-
             renderGuildMembers(guild);
         }
         infoDialogLoaded.guild = true;
@@ -1086,15 +1204,13 @@ async function loadGuildDialog() {
     } finally { if (loading && infoDialogLoaded.guild) loading.hidden = true; }
 }
 
-/* ===== PLAYTIME CHARTS (weekly + monthly, delta-based) ===== */
-
+/* ==== Playtime Charts ==== */
 function renderPlaytimeBars(chartEl, range, valueMap, opts = {}) {
     if (!chartEl) return 0;
     chartEl.replaceChildren();
     const monthly = opts.monthly === true;
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    let sum = 0;
-    let max = 1;
+    let sum = 0, max = 1;
     range.forEach(({ dayKey }) => {
         const v = valueMap[dayKey] || 0;
         sum += v;
@@ -1107,26 +1223,18 @@ function renderPlaytimeBars(chartEl, range, valueMap, opts = {}) {
         const wrap = document.createElement("div");
         wrap.className = "pt-bar-wrap";
         if (dayKey === todayKey) wrap.classList.add("is-today");
-
         const pct = val > 0 ? Math.max(4, Math.round((val / max) * 100)) : 0;
         const bar = document.createElement("div");
         bar.className = "pt-bar";
         bar.style.height = pct + "%";
         bar.title = fmtPlaytime(val) + " · " + date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "short" });
-
         const label = document.createElement("span");
         label.className = "pt-label";
-        if (monthly) {
-            label.textContent = String(date.getDate());
-        } else {
-            label.textContent = dayNames[date.getDay()];
-        }
-
+        label.textContent = monthly ? String(date.getDate()) : dayNames[date.getDay()];
         wrap.appendChild(bar);
         wrap.appendChild(label);
         chartEl.appendChild(wrap);
     });
-
     return sum;
 }
 
@@ -1141,25 +1249,19 @@ async function loadPlaytimeDialog() {
         const result = await apiRequest("/playtime", { method: "GET", headers: { Authorization: "Bearer " + token } });
         const total = result?.totalPlaytime || 0;
         const daily = Array.isArray(result?.daily) ? result.daily : [];
-
         const valueMap = {};
         daily.forEach((d) => {
             const k = Number(d.dayKey) || 0;
             const v = Number(d.seconds) || 0;
             if (k > 0 && v > 0) valueMap[k] = v;
         });
-
         if (totalEl) totalEl.textContent = fmtPlaytime(total);
-
         const weeklyRange = generateDayRange(7);
         const monthlyRange = generateDayRange(30);
-
         const weeklySum = renderPlaytimeBars($("#weeklyChart"), weeklyRange, valueMap, { monthly: false });
         const monthlySum = renderPlaytimeBars($("#monthlyChart"), monthlyRange, valueMap, { monthly: true });
-
         if ($("#weeklySum")) $("#weeklySum").textContent = fmtPlaytime(weeklySum);
         if ($("#monthlySum")) $("#monthlySum").textContent = fmtPlaytime(monthlySum);
-
         if (content) content.hidden = false;
         infoDialogLoaded.playtime = true;
     } catch (error) {
@@ -1172,7 +1274,6 @@ async function loadPlaytimeDialog() {
 document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
-
 document.querySelectorAll("[data-open-dialog]").forEach((el) => {
     const handler = () => openInfoDialog(el.dataset.openDialog);
     el.addEventListener("click", handler);
@@ -1180,11 +1281,9 @@ document.querySelectorAll("[data-open-dialog]").forEach((el) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handler(); }
     });
 });
-
 document.querySelectorAll("[data-close-dialog]").forEach((btn) => {
     btn.addEventListener("click", () => closeInfoDialog(btn.dataset.closeDialog));
 });
-
 ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime"].forEach((id) => {
     const dlg = document.getElementById(id);
     if (!dlg) return;
