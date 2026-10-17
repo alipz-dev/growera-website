@@ -966,11 +966,18 @@ async function loadAchievementsDialog() {
     if (empty) empty.hidden = true;
 
     try {
-        // Fetch master (cached) + unlocked IDs in parallel
-        const [master, unlockRes] = await Promise.all([
-            getAchievementsMaster(),
-            apiRequest("/achievements/unlocked", { method: "GET", headers: { Authorization: "Bearer " + token } })
-        ]);
+    // Fetch separately so we can log which fails
+    let master, unlockRes;
+    try {
+        master = await getAchievementsMaster();
+    } catch (e) {
+        throw new Error("achievements.json gagal (" + e.message + "). Cek path file.");
+    }
+    try {
+        unlockRes = await apiRequest("/achievements/unlocked", { method: "GET", headers: { Authorization: "Bearer " + token } });
+    } catch (e) {
+        throw new Error("Endpoint /achievements/unlocked gagal (" + e.message + "). Deploy ulang Growerapanel.lua + restart GTPS.");
+    }
 
         const unlockedIds = Array.isArray(unlockRes?.unlockedIds) ? unlockRes.unlockedIds : [];
         const unlockedSet = new Set(unlockedIds.map((id) => Number(id)));
