@@ -1,6 +1,7 @@
 // js/profile.js
 // Logic untuk profile page (profile.html)
-// v3: item images pakai local-first (Vercel CDN) → GTPS fallback
+// v4: item images 100% LOCAL dari Vercel CDN (no GTPS fallback)
+// + logger untuk item yang hilang → cek di console: __growera_missing_items()
 
 import {
     apiRequest,
@@ -10,7 +11,7 @@ import {
     safeName, toNumber, fmt,
     fmtDateId, fmtBirthdate, fmtPlaytime,
     flagUrl,
-    itemImageUrl, gptsItemUrl,
+    itemImageUrl,
     generateDayRange,
     getAchievementsMaster,
     getItemsMaster,
@@ -31,7 +32,33 @@ const player = {
     birthdate: "", createdAt: 0, updatedAt: 0, todayDate: "", todayEvents: ""
 };
 
-/* ===== Item Image Loader (local → GTPS fallback) ===== */
+/* ===== Item Image Loader (LOCAL ONLY) ===== */
+const missingItemIds = new Set();
+
+// Debug helper — buka F12 Console, ketik: __growera_missing_items()
+window.__growera_missing_items = () => {
+    const list = Array.from(missingItemIds).sort((a, b) => a - b);
+    console.log("[GROWERA] Missing item IDs (" + list.length + "):", list);
+    return list;
+};
+
+// Debug helper — print ke console sebagai list siap download
+window.__growera_missing_report = () => {
+    const list = Array.from(missingItemIds).sort((a, b) => a - b);
+    if (!list.length) {
+        console.log("[GROWERA] Tidak ada item yang hilang ✅");
+        return [];
+    }
+    console.group("[GROWERA] Missing items — " + list.length + " total");
+    console.log("Download URL template:");
+    console.log("https://api.gtps.cloud/api/item/texture/1791/{id}/");
+    console.log("");
+    console.log("Item IDs:");
+    list.forEach((id) => console.log("  " + id + "  →  " + id + ".png"));
+    console.groupEnd();
+    return list;
+};
+
 function loadItemImage(img, itemId, onFail) {
     if (!img) return;
     const n = Number(itemId) || 0;
@@ -39,19 +66,18 @@ function loadItemImage(img, itemId, onFail) {
         if (typeof onFail === "function") onFail();
         return;
     }
+
     const local = itemImageUrl(n);
-    const remote = gptsItemUrl(n);
-    let triedRemote = false;
+    if (!local) {
+        if (typeof onFail === "function") onFail();
+        return;
+    }
 
     img.src = local;
     img.addEventListener("error", () => {
-        if (!triedRemote && remote) {
-            triedRemote = true;
-            img.src = remote;
-        } else if (typeof onFail === "function") {
-            onFail();
-        }
-    });
+        missingItemIds.add(n);
+        if (typeof onFail === "function") onFail();
+    }, { once: true });
 }
 
 /* ===== Normalize ===== */
@@ -788,7 +814,7 @@ async function loadAchievementsDialog() {
     } finally { if (loading && infoDialogLoaded.achievements) loading.hidden = true; }
 }
 
-/* ==== FRIENDS (v2: with avatar, level, online, sort, search, detail) ==== */
+/* ==== FRIENDS ==== */
 
 let friendsCache = [];
 
@@ -1092,21 +1118,25 @@ async function loadGuildDialog() {
 
             const mascotWrap = $("#guildMascotWrap"), mascotImg = $("#guildMascotImg"), mascotFallback = $("#guildMascotFallback");
             if (mascotWrap) mascotWrap.querySelectorAll(".guild-mascot-bg").forEach((el) => el.remove());
+
+            // Mascot BG — LOCAL ONLY with logger
             if (guild.mascotBg > 0 && mascotWrap) {
                 const bg = document.createElement("div");
                 bg.className = "guild-mascot-bg";
-                // Local-first for BG: try local, fallback to remote
-                const bgLocal = itemImageUrl(guild.mascotBg);
-                const bgRemote = gptsItemUrl(guild.mascotBg);
-                bg.style.backgroundImage = "url('" + (bgLocal || bgRemote) + "')";
-                // Verify local exists; if not, swap to remote via Image preload
-                if (bgLocal && bgRemote) {
+                const bgUrl = itemImageUrl(guild.mascotBg);
+                if (bgUrl) {
                     const test = new Image();
-                    test.onerror = () => { bg.style.backgroundImage = "url('" + bgRemote + "')"; };
-                    test.src = bgLocal;
+                    test.onerror = () => {
+                        missingItemIds.add(Number(guild.mascotBg));
+                        bg.remove();
+                    };
+                    test.src = bgUrl;
+                    bg.style.backgroundImage = "url('" + bgUrl + "')";
                 }
                 mascotWrap.insertBefore(bg, mascotWrap.firstChild);
             }
+
+            // Mascot FG — LOCAL ONLY
             const fgId = (guild.mascotFg > 0) ? guild.mascotFg : (guild.mascotDisplay > 0 ? guild.mascotDisplay : 0);
             if (fgId > 0 && mascotImg) {
                 mascotImg.style.display = "block";
