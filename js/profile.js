@@ -1,5 +1,6 @@
 // js/profile.js
 // Logic untuk profile page (profile.html)
+// v2: friends enriched with avatar, level, online, sort, search, detail dialog
 
 import {
     apiRequest,
@@ -56,7 +57,21 @@ function normalizePlayer(data) {
     };
 }
 
-/* ===== Render ===== */
+/* ===== Last Seen Formatter ===== */
+function formatLastSeen(lastSeenUnix) {
+    const n = Number(lastSeenUnix) || 0;
+    if (n <= 0) return "Never online";
+    const nowSec = Math.floor(Date.now() / 1000);
+    const diff = Math.max(0, nowSec - n);
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+    if (diff < 86400 * 30) return Math.floor(diff / 86400) + "d ago";
+    if (diff < 86400 * 365) return Math.floor(diff / (86400 * 30)) + "mo ago";
+    return Math.floor(diff / (86400 * 365)) + "y ago";
+}
+
+/* ===== Render Profile ===== */
 function setMetaValue(id, value, emptyText = "—") {
     const el = $(id);
     const item = el?.closest(".meta-item");
@@ -220,7 +235,6 @@ async function bootstrapProfile() {
     const [full] = await Promise.all([fetchFullProfile(), masterPromise, itemsPromise]);
     applyFullProfile(full);
 
-    // Update achievement denominator setelah master loaded
     try {
         const master = await getAchievementsMaster();
         if (master && full?.achievements?.unlockedIds) {
@@ -290,7 +304,6 @@ function forceLogout(message) {
     closeAllInfoDialogs();
     resetStatCardValues();
     if (message) toast(message, "info");
-    // Redirect ke login
     window.location.replace("/");
 }
 
@@ -629,7 +642,7 @@ function closeInfoDialog(name) {
 }
 
 function closeAllInfoDialogs() {
-    ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime"].forEach((id) => {
+    ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime", "dialogFriendDetail"].forEach((id) => {
         const dlg = document.getElementById(id);
         if (dlg && dlg.open && typeof dlg.close === "function") dlg.close();
     });
@@ -637,6 +650,7 @@ function closeAllInfoDialogs() {
     infoDialogLoaded.friends = false;
     infoDialogLoaded.guild = false;
     infoDialogLoaded.playtime = false;
+    friendsCache = [];
 }
 
 /* ==== Achievements ==== */
@@ -735,50 +749,244 @@ async function loadAchievementsDialog() {
     } finally { if (loading && infoDialogLoaded.achievements) loading.hidden = true; }
 }
 
-/* ==== Friends ==== */
+/* ==== FRIENDS (v2: with avatar, level, online, sort, search, detail) ==== */
+
+let friendsCache = [];
+
+function createFriendCard(friend) {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "friend-card" + (friend.online ? " is-online" : " is-offline");
+    card.setAttribute("aria-label", "View " + (friend.username || "friend") + " details");
+
+    const avatarWrap = document.createElement("div");
+    avatarWrap.className = "friend-avatar-wrap";
+
+    const avatar = document.createElement("div");
+    avatar.className = "friend-avatar";
+    if (friend.avatarItemId > 0) {
+        const img = document.createElement("img");
+        img.src = avatarUrl(friend.avatarItemId);
+        img.alt = friend.username || "Friend";
+        img.loading = "lazy";
+        img.addEventListener("error", () => {
+            avatar.replaceChildren();
+            avatar.textContent = (friend.username || "?").charAt(0).toUpperCase();
+        }, { once: true });
+        avatar.appendChild(img);
+    } else {
+        avatar.textContent = (friend.username || "?").charAt(0).toUpperCase();
+    }
+
+    const dot = document.createElement("span");
+    dot.className = "friend-online-dot";
+
+    avatarWrap.appendChild(avatar);
+    avatarWrap.appendChild(dot);
+
+    const info = document.createElement("div");
+    info.className = "friend-info";
+
+    const name = document.createElement("div");
+    name.className = "friend-name";
+    name.textContent = friend.username || "(unknown)";
+
+    const meta = document.createElement("div");
+    meta.className = "friend-meta";
+
+    const levelSpan = document.createElement("span");
+    levelSpan.className = "friend-level";
+    levelSpan.textContent = "LV " + (Number(friend.level) || 1);
+
+    meta.appendChild(levelSpan);
+
+    if (friend.userID > 0) {
+        const sep = document.createElement("span");
+        sep.className = "friend-meta-sep";
+        sep.textContent = "•";
+        const idSpan = document.createElement("span");
+        idSpan.textContent = "#" + friend.userID;
+        meta.appendChild(sep);
+        meta.appendChild(idSpan);
+    }
+
+    const lastSeen = document.createElement("div");
+    lastSeen.className = "friend-last-seen";
+    lastSeen.textContent = friend.online ? "Online now" : formatLastSeen(friend.lastSeen);
+
+    info.appendChild(name);
+    info.appendChild(meta);
+    info.appendChild(lastSeen);
+
+    card.appendChild(avatarWrap);
+    card.appendChild(info);
+
+    card.addEventListener("click", () => openFriendDetail(friend));
+    return card;
+}
+
+function renderFriendsList(query) {
+    const grid = $("#friendsGridContent");
+    const empty = $("#friendsEmpty");
+    const emptySearch = $("#friendsEmptySearch");
+    const countEl = $("#friendsSearchCount");
+
+    if (!grid) return;
+
+    const q = String(query || "").trim().toLowerCase();
+
+    let list = friendsCache.slice();
+    if (q) {
+        list = list.filter((f) => String(f.username || "").toLowerCase().includes(q));
+    }
+
+    // Sort: online first, then level desc, then name asc
+    list.sort((a, b) => {
+        if (Boolean(a.online) !== Boolean(b.online)) return a.online ? -1 : 1;
+        const la = Number(a.level) || 0;
+        const lb = Number(b.level) || 0;
+        if (la !== lb) return lb - la;
+        return String(a.username || "").localeCompare(String(b.username || ""));
+    });
+
+    if (countEl) {
+        if (q && friendsCache.length > 0) {
+            countEl.textContent = list.length + "/" + friendsCache.length;
+            countEl.hidden = false;
+        } else {
+            countEl.hidden = true;
+        }
+    }
+
+    if (friendsCache.length === 0) {
+        if (empty) empty.hidden = false;
+        if (emptySearch) emptySearch.hidden = true;
+        grid.hidden = true;
+        return;
+    }
+
+    if (list.length === 0) {
+        if (empty) empty.hidden = true;
+        if (emptySearch) emptySearch.hidden = false;
+        grid.hidden = true;
+        return;
+    }
+
+    if (empty) empty.hidden = true;
+    if (emptySearch) emptySearch.hidden = true;
+    grid.hidden = false;
+    grid.replaceChildren();
+    list.forEach((f) => grid.appendChild(createFriendCard(f)));
+}
+
+function openFriendDetail(friend) {
+    const dlg = $("#dialogFriendDetail");
+    if (!dlg) return;
+
+    if ($("#friendDetailName")) {
+        $("#friendDetailName").textContent = friend.username || "(unknown)";
+    }
+
+    const avatarEl = $("#friendDetailAvatar");
+    if (avatarEl) {
+        avatarEl.replaceChildren();
+        if (friend.avatarItemId > 0) {
+            const img = document.createElement("img");
+            img.src = avatarUrl(friend.avatarItemId);
+            img.alt = friend.username || "Friend";
+            img.addEventListener("error", () => {
+                avatarEl.replaceChildren();
+                avatarEl.textContent = (friend.username || "?").charAt(0).toUpperCase();
+            }, { once: true });
+            avatarEl.appendChild(img);
+        } else {
+            avatarEl.textContent = (friend.username || "?").charAt(0).toUpperCase();
+        }
+    }
+
+    const statusEl = $("#friendDetailStatus");
+    if (statusEl) {
+        statusEl.textContent = friend.online ? "Online" : "Offline";
+        statusEl.classList.toggle("is-online", Boolean(friend.online));
+    }
+
+    if ($("#friendDetailId")) {
+        $("#friendDetailId").textContent = friend.userID > 0 ? "#" + friend.userID : "#—";
+    }
+    if ($("#friendDetailLevel")) $("#friendDetailLevel").textContent = String(Number(friend.level) || 1);
+    if ($("#friendDetailGems")) $("#friendDetailGems").textContent = fmt(Number(friend.gems) || 0);
+
+    const countryEl = $("#friendDetailCountry");
+    if (countryEl) {
+        countryEl.replaceChildren();
+        const code = String(friend.country || "").toUpperCase();
+        if (/^[A-Z]{2}$/.test(code)) {
+            const flagImg = document.createElement("img");
+            flagImg.src = flagUrl(code);
+            flagImg.alt = code;
+            flagImg.loading = "lazy";
+            flagImg.style.cssText = "display:inline-block;vertical-align:-2px;margin-right:6px;border-radius:3px;width:16px;height:auto";
+            flagImg.addEventListener("error", () => flagImg.remove(), { once: true });
+            countryEl.appendChild(flagImg);
+            countryEl.appendChild(document.createTextNode(code));
+        } else {
+            countryEl.textContent = "—";
+        }
+    }
+
+    if ($("#friendDetailLastSeen")) {
+        $("#friendDetailLastSeen").textContent = friend.online ? "Online now" : formatLastSeen(friend.lastSeen);
+    }
+
+    const bioEl = $("#friendDetailBio");
+    if (bioEl) {
+        if (friend.bio) {
+            bioEl.textContent = friend.bio;
+            bioEl.classList.remove("is-empty");
+        } else {
+            bioEl.textContent = "Belum ada bio.";
+            bioEl.classList.add("is-empty");
+        }
+    }
+
+    if (typeof dlg.showModal === "function") {
+        if (!dlg.open) dlg.showModal();
+    } else {
+        dlg.setAttribute("open", "");
+    }
+}
+
 async function loadFriendsDialog() {
     const token = getToken();
     if (!token) return;
-    const loading = $("#friendsLoading"), grid = $("#friendsGridContent"), empty = $("#friendsEmpty");
+    const loading = $("#friendsLoading"), grid = $("#friendsGridContent");
+    const empty = $("#friendsEmpty"), emptySearch = $("#friendsEmptySearch");
+    const countEl = $("#friendsSearchCount");
+
     if (loading) { loading.hidden = false; loading.textContent = "Memuat daftar teman..."; }
     if (grid) grid.hidden = true;
     if (empty) empty.hidden = true;
+    if (emptySearch) emptySearch.hidden = true;
+    if (countEl) countEl.hidden = true;
+
     try {
         const result = await apiRequest("/friends", { method: "GET", headers: { Authorization: "Bearer " + token } });
         const list = result?.friends || [];
+        friendsCache = list;
+
         const statFriends = $("#statFriendsValue");
         if (statFriends) statFriends.textContent = String(list.length);
-        if (!list.length) { if (empty) empty.hidden = false; infoDialogLoaded.friends = true; return; }
-        if (grid) {
-            grid.hidden = false;
-            grid.replaceChildren();
-            list.forEach((friend) => {
-                const card = document.createElement("div");
-                card.className = "friend-card";
-                const avatar = document.createElement("div");
-                avatar.className = "friend-avatar";
-                const fname = friend.username || "?";
-                avatar.textContent = fname.charAt(0).toUpperCase();
-                const info = document.createElement("div");
-                info.className = "friend-info";
-                const name = document.createElement("div");
-                name.className = "friend-name";
-                name.textContent = fname || "(unknown)";
-                const id = document.createElement("div");
-                id.className = "friend-id";
-                id.textContent = friend.userID > 0 ? "#" + friend.userID : "";
-                info.appendChild(name);
-                if (friend.userID > 0) info.appendChild(id);
-                card.appendChild(avatar);
-                card.appendChild(info);
-                grid.appendChild(card);
-            });
-        }
+
+        const searchInput = $("#friendsSearch");
+        if (searchInput) searchInput.value = "";
+
+        if (loading) loading.hidden = true;
+        renderFriendsList("");
         infoDialogLoaded.friends = true;
     } catch (error) {
         console.error("[GROWERA] Load friends gagal:", error);
         if (loading) { loading.textContent = "Gagal memuat: " + error.message; loading.hidden = false; }
-    } finally { if (loading && infoDialogLoaded.friends) loading.hidden = true; }
+    }
 }
 
 /* ==== Guild ==== */
@@ -982,10 +1190,15 @@ function wireEvents() {
     });
 
     // Info dialog backdrop click
-    ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime"].forEach((id) => {
+    ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime", "dialogFriendDetail"].forEach((id) => {
         const dlg = document.getElementById(id);
         if (!dlg) return;
         dlg.addEventListener("click", (e) => { if (e.target === dlg) closeInfoDialog(id); });
+    });
+
+    // Friends search
+    $("#friendsSearch")?.addEventListener("input", (e) => {
+        renderFriendsList(e.target.value);
     });
 }
 
