@@ -116,7 +116,27 @@ export function fmtPlaytime(seconds) {
     return parts.length ? parts.join(" ") : "< 1m";
 }
 
-export function avatarUrl(id) { return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id + "/"; }
+/* ===== Item image URLs ===== */
+
+// GTPS CDN — dipakai untuk fallback
+export function avatarUrl(id) {
+    return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + id + "/";
+}
+
+// Local (Vercel CDN) — fast, dipakai dulu
+export function itemImageUrl(id) {
+    const n = Number(id);
+    if (!n || n <= 0) return "";
+    return "assets/itemimage/" + n + ".png";
+}
+
+// Remote GTPS CDN — fallback kalau local 404
+export function gptsItemUrl(id) {
+    const n = Number(id);
+    if (!n || n <= 0) return "";
+    return "https://api.gtps.cloud/api/item/texture/" + GTPS_SERVER_ID + "/" + n + "/";
+}
+
 export function flagUrl(code) { return (!code || code.length !== 2) ? "" : "https://flagcdn.com/w40/" + code.toLowerCase() + ".png"; }
 
 export function dayKeyFromDate(d) { return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
@@ -133,7 +153,7 @@ export function generateDayRange(daysBack) {
     return result;
 }
 
-/* ===== Master Data Cache (achievements.json + items.json) ===== */
+/* ===== Master Data Cache ===== */
 let achMasterCache = null;
 let achMasterPromise = null;
 let itemsMasterCache = null;
