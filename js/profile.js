@@ -1,6 +1,6 @@
 // js/profile.js
 // Logic untuk profile page (profile.html)
-// v2: friends enriched with avatar, level, online, sort, search, detail dialog
+// v3: item images pakai local-first (Vercel CDN) → GTPS fallback
 
 import {
     apiRequest,
@@ -9,7 +9,8 @@ import {
     toast,
     safeName, toNumber, fmt,
     fmtDateId, fmtBirthdate, fmtPlaytime,
-    avatarUrl, flagUrl,
+    flagUrl,
+    itemImageUrl, gptsItemUrl,
     generateDayRange,
     getAchievementsMaster,
     getItemsMaster,
@@ -29,6 +30,29 @@ const player = {
     bio: "", avatarItemId: 0, country: "", discordId: "", discordUsername: "",
     birthdate: "", createdAt: 0, updatedAt: 0, todayDate: "", todayEvents: ""
 };
+
+/* ===== Item Image Loader (local → GTPS fallback) ===== */
+function loadItemImage(img, itemId, onFail) {
+    if (!img) return;
+    const n = Number(itemId) || 0;
+    if (n <= 0) {
+        if (typeof onFail === "function") onFail();
+        return;
+    }
+    const local = itemImageUrl(n);
+    const remote = gptsItemUrl(n);
+    let triedRemote = false;
+
+    img.src = local;
+    img.addEventListener("error", () => {
+        if (!triedRemote && remote) {
+            triedRemote = true;
+            img.src = remote;
+        } else if (typeof onFail === "function") {
+            onFail();
+        }
+    });
+}
 
 /* ===== Normalize ===== */
 function normalizePlayer(data) {
@@ -118,9 +142,11 @@ function renderProfile() {
         avatarEl.replaceChildren();
         if (player.avatarItemId > 0) {
             const img = document.createElement("img");
-            img.src = avatarUrl(player.avatarItemId);
             img.alt = name;
-            img.addEventListener("error", () => { avatarEl.textContent = name.charAt(0).toUpperCase(); });
+            loadItemImage(img, player.avatarItemId, () => {
+                avatarEl.replaceChildren();
+                avatarEl.textContent = name.charAt(0).toUpperCase();
+            });
             avatarEl.appendChild(img);
         } else {
             avatarEl.textContent = name.charAt(0).toUpperCase();
@@ -332,10 +358,14 @@ function buildAvatarPresets() {
         btn.dataset.avatarId = String(id);
         btn.title = "Item #" + id;
         const img = document.createElement("img");
-        img.src = avatarUrl(id);
         img.width = 24; img.height = 24;
         img.alt = "Item " + id;
         img.style.cssText = "image-rendering:pixelated";
+        loadItemImage(img, id, () => {
+            btn.textContent = "?";
+            btn.style.color = "#4b5670";
+            btn.style.fontSize = "12px";
+        });
         btn.appendChild(img);
         btn.addEventListener("click", () => {
             const input = $("#editAvatarId");
@@ -359,9 +389,8 @@ function updateAvatarPreview() {
         preview.appendChild(ph);
     } else {
         const img = document.createElement("img");
-        img.src = avatarUrl(id);
         img.alt = "Avatar";
-        img.addEventListener("error", () => {
+        loadItemImage(img, id, () => {
             preview.replaceChildren();
             const ph = document.createElement("span");
             ph.className = "avatar-placeholder";
@@ -559,25 +588,36 @@ function renderInventoryTab(result) {
             const card = document.createElement("div");
             card.className = "inv-item";
             card.title = resolvedName + " · x" + item.count;
+
             const idBadge = document.createElement("div");
             idBadge.className = "inv-item-id";
             idBadge.textContent = "#" + item.id;
+
             const countBadge = document.createElement("div");
             countBadge.className = "inv-item-count";
             countBadge.textContent = "×" + fmt(item.count);
+
             const imgWrap = document.createElement("div");
             imgWrap.className = "inv-item-img";
+
             const img = document.createElement("img");
-            img.src = avatarUrl(item.id);
             img.alt = resolvedName;
             img.loading = "lazy";
-            img.addEventListener("error", () => { imgWrap.textContent = "?"; imgWrap.style.color = "#4b5670"; imgWrap.style.fontSize = "14px"; });
+            loadItemImage(img, item.id, () => {
+                imgWrap.textContent = "?";
+                imgWrap.style.color = "#4b5670";
+                imgWrap.style.fontSize = "14px";
+            });
             imgWrap.appendChild(img);
+
             const name = document.createElement("div");
             name.className = "inv-item-name";
             name.textContent = resolvedName;
-            card.appendChild(idBadge); card.appendChild(countBadge);
-            card.appendChild(imgWrap); card.appendChild(name);
+
+            card.appendChild(idBadge);
+            card.appendChild(countBadge);
+            card.appendChild(imgWrap);
+            card.appendChild(name);
             grid.appendChild(card);
         });
     }
@@ -713,10 +753,9 @@ async function loadAchievementsDialog() {
                 const icon = document.createElement("div");
                 icon.className = "ach-icon";
                 const img = document.createElement("img");
-                img.src = avatarUrl(iconId);
                 img.alt = "";
                 img.loading = "lazy";
-                img.addEventListener("error", () => {
+                loadItemImage(img, iconId, () => {
                     icon.textContent = isUnlocked ? "★" : "○";
                     icon.style.color = isUnlocked ? "#f8d58c" : "#4b5670";
                     icon.style.fontSize = "20px";
@@ -766,13 +805,12 @@ function createFriendCard(friend) {
     avatar.className = "friend-avatar";
     if (friend.avatarItemId > 0) {
         const img = document.createElement("img");
-        img.src = avatarUrl(friend.avatarItemId);
         img.alt = friend.username || "Friend";
         img.loading = "lazy";
-        img.addEventListener("error", () => {
+        loadItemImage(img, friend.avatarItemId, () => {
             avatar.replaceChildren();
             avatar.textContent = (friend.username || "?").charAt(0).toUpperCase();
-        }, { once: true });
+        });
         avatar.appendChild(img);
     } else {
         avatar.textContent = (friend.username || "?").charAt(0).toUpperCase();
@@ -840,7 +878,6 @@ function renderFriendsList(query) {
         list = list.filter((f) => String(f.username || "").toLowerCase().includes(q));
     }
 
-    // Sort: online first, then level desc, then name asc
     list.sort((a, b) => {
         if (Boolean(a.online) !== Boolean(b.online)) return a.online ? -1 : 1;
         const la = Number(a.level) || 0;
@@ -892,12 +929,11 @@ function openFriendDetail(friend) {
         avatarEl.replaceChildren();
         if (friend.avatarItemId > 0) {
             const img = document.createElement("img");
-            img.src = avatarUrl(friend.avatarItemId);
             img.alt = friend.username || "Friend";
-            img.addEventListener("error", () => {
+            loadItemImage(img, friend.avatarItemId, () => {
                 avatarEl.replaceChildren();
                 avatarEl.textContent = (friend.username || "?").charAt(0).toUpperCase();
-            }, { once: true });
+            });
             avatarEl.appendChild(img);
         } else {
             avatarEl.textContent = (friend.username || "?").charAt(0).toUpperCase();
@@ -1059,18 +1095,26 @@ async function loadGuildDialog() {
             if (guild.mascotBg > 0 && mascotWrap) {
                 const bg = document.createElement("div");
                 bg.className = "guild-mascot-bg";
-                bg.style.backgroundImage = "url('" + avatarUrl(guild.mascotBg) + "')";
+                // Local-first for BG: try local, fallback to remote
+                const bgLocal = itemImageUrl(guild.mascotBg);
+                const bgRemote = gptsItemUrl(guild.mascotBg);
+                bg.style.backgroundImage = "url('" + (bgLocal || bgRemote) + "')";
+                // Verify local exists; if not, swap to remote via Image preload
+                if (bgLocal && bgRemote) {
+                    const test = new Image();
+                    test.onerror = () => { bg.style.backgroundImage = "url('" + bgRemote + "')"; };
+                    test.src = bgLocal;
+                }
                 mascotWrap.insertBefore(bg, mascotWrap.firstChild);
             }
             const fgId = (guild.mascotFg > 0) ? guild.mascotFg : (guild.mascotDisplay > 0 ? guild.mascotDisplay : 0);
             if (fgId > 0 && mascotImg) {
-                mascotImg.src = avatarUrl(fgId);
                 mascotImg.style.display = "block";
                 mascotImg.className = "guild-mascot-fg";
-                mascotImg.addEventListener("error", function () {
+                loadItemImage(mascotImg, fgId, () => {
                     mascotImg.style.display = "none";
                     if (mascotFallback) mascotFallback.style.display = "";
-                }, { once: true });
+                });
                 if (mascotFallback) mascotFallback.style.display = "none";
             } else {
                 if (mascotImg) mascotImg.style.display = "none";
@@ -1170,12 +1214,10 @@ function wireEvents() {
         if (e.key === "Escape" && editDialog?.open) closeEditDialog();
     });
 
-    // Tabs
     document.querySelectorAll(".tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => switchTab(btn.dataset.tab));
     });
 
-    // Info dialogs open
     document.querySelectorAll("[data-open-dialog]").forEach((el) => {
         const handler = () => openInfoDialog(el.dataset.openDialog);
         el.addEventListener("click", handler);
@@ -1184,19 +1226,16 @@ function wireEvents() {
         });
     });
 
-    // Info dialogs close
     document.querySelectorAll("[data-close-dialog]").forEach((btn) => {
         btn.addEventListener("click", () => closeInfoDialog(btn.dataset.closeDialog));
     });
 
-    // Info dialog backdrop click
     ["dialogAchievements", "dialogFriends", "dialogGuild", "dialogPlaytime", "dialogFriendDetail"].forEach((id) => {
         const dlg = document.getElementById(id);
         if (!dlg) return;
         dlg.addEventListener("click", (e) => { if (e.target === dlg) closeInfoDialog(id); });
     });
 
-    // Friends search
     $("#friendsSearch")?.addEventListener("input", (e) => {
         renderFriendsList(e.target.value);
     });
