@@ -1,6 +1,7 @@
 // js/profile.js
 // Logic untuk profile page (profile.html)
-// v5: UX Tier 1 (skeleton, copy, last updated, sticky, XP animation)
+// v6: hash handler (#inventory, #worlds, #achievements, #friends, #guild, #playtime)
+// + UX Tier 1 + friends v2 + local item images
 
 import {
     apiRequest,
@@ -24,10 +25,9 @@ let isAuthenticated = false;
 let isBusy = false;
 let isSavingEdit = false;
 
-// UX state
-let lastRefreshAt = 0;       // timestamp ms terakhir data berhasil di-render
-let lastUpdatedTimerId = 0;  // setInterval id untuk update text "Updated Xs ago"
-let previousXp = 0;          // XP terakhir yang ditampilkan (untuk animasi)
+let lastRefreshAt = 0;
+let lastUpdatedTimerId = 0;
+let previousXp = 0;
 
 const player = {
     username: "Player", displayName: "Player", role: "player",
@@ -52,10 +52,6 @@ window.__growera_missing_report = () => {
         return [];
     }
     console.group("[GROWERA] Missing items — " + list.length + " total");
-    console.log("Download URL template:");
-    console.log("https://api.gtps.cloud/api/item/texture/1791/{id}/");
-    console.log("");
-    console.log("Item IDs:");
     list.forEach((id) => console.log("  " + id + "  →  " + id + ".png"));
     console.groupEnd();
     return list;
@@ -64,15 +60,9 @@ window.__growera_missing_report = () => {
 function loadItemImage(img, itemId, onFail) {
     if (!img) return;
     const n = Number(itemId) || 0;
-    if (n <= 0) {
-        if (typeof onFail === "function") onFail();
-        return;
-    }
+    if (n <= 0) { if (typeof onFail === "function") onFail(); return; }
     const local = itemImageUrl(n);
-    if (!local) {
-        if (typeof onFail === "function") onFail();
-        return;
-    }
+    if (!local) { if (typeof onFail === "function") onFail(); return; }
     img.src = local;
     img.addEventListener("error", () => {
         missingItemIds.add(n);
@@ -80,12 +70,12 @@ function loadItemImage(img, itemId, onFail) {
     }, { once: true });
 }
 
-/* ===== Skeleton Loading Toggle ===== */
+/* ===== Skeleton ===== */
 function setSkeletonLoading(loading) {
     document.body.classList.toggle("is-loading", Boolean(loading));
 }
 
-/* ===== Last Updated Timer ===== */
+/* ===== Last Updated ===== */
 function startLastUpdatedTimer() {
     if (lastUpdatedTimerId) clearInterval(lastUpdatedTimerId);
     lastUpdatedTimerId = setInterval(updateLastUpdatedText, 1000);
@@ -95,16 +85,13 @@ function startLastUpdatedTimer() {
 function updateLastUpdatedText() {
     const el = $("#lastUpdated");
     if (!el) return;
-
     if (!lastRefreshAt) {
         el.textContent = "Loading...";
         el.classList.remove("is-fresh", "is-stale");
         return;
     }
-
     const seconds = Math.max(0, Math.floor((Date.now() - lastRefreshAt) / 1000));
     el.classList.remove("is-fresh", "is-stale");
-
     if (seconds < 5) {
         el.textContent = "Updated just now";
         el.classList.add("is-fresh");
@@ -112,11 +99,9 @@ function updateLastUpdatedText() {
         el.textContent = "Updated " + seconds + "s ago";
         if (seconds < 30) el.classList.add("is-fresh");
     } else if (seconds < 3600) {
-        const m = Math.floor(seconds / 60);
-        el.textContent = "Updated " + m + "m ago";
+        el.textContent = "Updated " + Math.floor(seconds / 60) + "m ago";
     } else {
-        const h = Math.floor(seconds / 3600);
-        el.textContent = "Updated " + h + "h ago";
+        el.textContent = "Updated " + Math.floor(seconds / 3600) + "h ago";
         el.classList.add("is-stale");
     }
 }
@@ -140,33 +125,25 @@ async function copyText(text) {
             await navigator.clipboard.writeText(String(text));
             return true;
         }
-    } catch (e) {
-        console.warn("[GROWERA] clipboard API gagal:", e);
-    }
-    // Fallback (Android lama / non-secure context)
+    } catch (e) { console.warn("[GROWERA] clipboard gagal:", e); }
     try {
         const ta = document.createElement("textarea");
         ta.value = String(text);
         ta.setAttribute("readonly", "");
-        ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0;";
+        ta.style.cssText = "position:fixed;top:-9999px;opacity:0;";
         document.body.appendChild(ta);
         ta.select();
         ta.setSelectionRange(0, ta.value.length);
         const ok = document.execCommand("copy");
         document.body.removeChild(ta);
         return ok;
-    } catch (e) {
-        console.warn("[GROWERA] execCommand copy gagal:", e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 function getCopyValue(el) {
     if (!el) return "";
     const raw = el.dataset.copyValue;
-    if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
-        return String(raw);
-    }
+    if (raw !== undefined && raw !== null && String(raw).trim() !== "") return String(raw);
     return String(el.textContent || "").trim();
 }
 
@@ -175,10 +152,8 @@ function wireCopyHandlers() {
         const target = e.target.closest("[data-copy]");
         if (!target) return;
         if (document.body.classList.contains("is-loading")) return;
-
         const value = getCopyValue(target);
         if (!value || value === "—" || value === "#—" || value === "@player") return;
-
         const ok = await copyText(value);
         if (ok) {
             showCopyFeedback(target);
@@ -198,7 +173,6 @@ function animateXPBar(fromXp, toXp, targetXp) {
 
     const next = Math.max(1, toNumber(targetXp, 1));
 
-    // Respect reduced motion
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         const pct = Math.min(100, Math.round((toXp / next) * 100));
         fill.style.width = pct + "%";
@@ -208,28 +182,21 @@ function animateXPBar(fromXp, toXp, targetXp) {
         return;
     }
 
-    // Reset ke posisi lama (animasi dari 0 kalau previousXp belum ada)
     const startPct = Math.min(100, Math.round((fromXp / next) * 100));
     fill.style.transition = "none";
     fill.style.width = startPct + "%";
-
-    // Force reflow supaya browser acknowledge perubahan
     void fill.offsetWidth;
-
-    // Aktifkan transition dan set target
     fill.style.transition = "";
-    const endPct = Math.min(100, Math.round((toXp / next) * 100));
-    requestAnimationFrame(() => {
-        fill.style.width = endPct + "%";
-    });
 
-    // Counter animate (angka & percent ikut naik)
+    const endPct = Math.min(100, Math.round((toXp / next) * 100));
+    requestAnimationFrame(() => { fill.style.width = endPct + "%"; });
+
     if (currentEl || percentEl) {
         const duration = 800;
         const start = performance.now();
         function tick(now) {
             const t = Math.min(1, (now - start) / duration);
-            const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+            const eased = 1 - Math.pow(1 - t, 3);
             const cur = Math.round(fromXp + (toXp - fromXp) * eased);
             const pct = Math.min(100, Math.round((cur / next) * 100));
             if (currentEl) currentEl.textContent = fmt(cur) + " XP";
@@ -242,7 +209,6 @@ function animateXPBar(fromXp, toXp, targetXp) {
         }
         requestAnimationFrame(tick);
     }
-
     previousXp = toXp;
 }
 
@@ -250,19 +216,15 @@ function animateXPBar(fromXp, toXp, targetXp) {
 function wireStickyTopbar() {
     const topbar = $("#topbar");
     if (!topbar) return;
-
     let ticking = false;
-
     function onScroll() {
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(() => {
-            const scrolled = window.scrollY > 8;
-            topbar.classList.toggle("is-scrolled", scrolled);
+            topbar.classList.toggle("is-scrolled", window.scrollY > 8);
             ticking = false;
         });
     }
-
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 }
@@ -270,7 +232,7 @@ function wireStickyTopbar() {
 /* ===== Normalize ===== */
 function normalizePlayer(data) {
     const source = data?.player || data?.data?.player || data?.data?.user || data?.user || data?.data || data;
-    if (!source || typeof source !== "object") throw new Error("Data pemain dari server tidak valid.");
+    if (!source || typeof source !== "object") throw new Error("Data pemain tidak valid.");
     const username = safeName(source.username || source.name);
     return {
         username, displayName: username,
@@ -386,7 +348,6 @@ function renderProfile() {
         $("#gemsValue").dataset.copyValue = String(player.gems);
     }
 
-    // XP — animate kalau data berubah
     const xp = Math.max(0, toNumber(player.xp));
     const next = Math.max(1, toNumber(player.nextLevelXp, 1));
     if ($("#xpNext")) $("#xpNext").textContent = fmt(next) + " XP";
@@ -484,14 +445,8 @@ async function fetchFullProfile() {
 }
 
 async function bootstrapProfile() {
-    const masterPromise = getAchievementsMaster().catch((e) => {
-        console.warn("[GROWERA] achievements.json gagal load:", e);
-        return null;
-    });
-    const itemsPromise = getItemsMaster().catch((e) => {
-        console.warn("[GROWERA] items.json gagal load:", e);
-        return null;
-    });
+    const masterPromise = getAchievementsMaster().catch(() => null);
+    const itemsPromise = getItemsMaster().catch(() => null);
 
     const [full] = await Promise.all([fetchFullProfile(), masterPromise, itemsPromise]);
     applyFullProfile(full);
@@ -532,7 +487,6 @@ async function autoFillCountryIfEmpty() {
         const updated = normalizePlayer(result);
         Object.assign(player, updated);
         renderProfile();
-        console.log("[GROWERA] Country auto-set to " + detected);
     } catch (e) { console.warn("[GROWERA] Auto country failed:", e); }
 }
 
@@ -571,10 +525,7 @@ function forceLogout(message) {
     closeEditDialog();
     closeAllInfoDialogs();
     resetStatCardValues();
-    if (lastUpdatedTimerId) {
-        clearInterval(lastUpdatedTimerId);
-        lastUpdatedTimerId = 0;
-    }
+    if (lastUpdatedTimerId) { clearInterval(lastUpdatedTimerId); lastUpdatedTimerId = 0; }
     if (message) toast(message, "info");
     window.location.replace("/");
 }
@@ -835,18 +786,14 @@ function renderInventoryTab(result) {
             const card = document.createElement("div");
             card.className = "inv-item";
             card.title = resolvedName + " · x" + item.count;
-
             const idBadge = document.createElement("div");
             idBadge.className = "inv-item-id";
             idBadge.textContent = "#" + item.id;
-
             const countBadge = document.createElement("div");
             countBadge.className = "inv-item-count";
             countBadge.textContent = "×" + fmt(item.count);
-
             const imgWrap = document.createElement("div");
             imgWrap.className = "inv-item-img";
-
             const img = document.createElement("img");
             img.alt = resolvedName;
             img.loading = "lazy";
@@ -856,11 +803,9 @@ function renderInventoryTab(result) {
                 imgWrap.style.fontSize = "14px";
             });
             imgWrap.appendChild(img);
-
             const name = document.createElement("div");
             name.className = "inv-item-name";
             name.textContent = resolvedName;
-
             card.appendChild(idBadge);
             card.appendChild(countBadge);
             card.appendChild(imgWrap);
@@ -1036,7 +981,6 @@ async function loadAchievementsDialog() {
 }
 
 /* ==== FRIENDS ==== */
-
 let friendsCache = [];
 
 function createFriendCard(friend) {
@@ -1071,20 +1015,16 @@ function createFriendCard(friend) {
 
     const info = document.createElement("div");
     info.className = "friend-info";
-
     const name = document.createElement("div");
     name.className = "friend-name";
     name.textContent = friend.username || "(unknown)";
 
     const meta = document.createElement("div");
     meta.className = "friend-meta";
-
     const levelSpan = document.createElement("span");
     levelSpan.className = "friend-level";
     levelSpan.textContent = "LV " + (Number(friend.level) || 1);
-
     meta.appendChild(levelSpan);
-
     if (friend.userID > 0) {
         const sep = document.createElement("span");
         sep.className = "friend-meta-sep";
@@ -1105,7 +1045,6 @@ function createFriendCard(friend) {
 
     card.appendChild(avatarWrap);
     card.appendChild(info);
-
     card.addEventListener("click", () => openFriendDetail(friend));
     return card;
 }
@@ -1115,15 +1054,11 @@ function renderFriendsList(query) {
     const empty = $("#friendsEmpty");
     const emptySearch = $("#friendsEmptySearch");
     const countEl = $("#friendsSearchCount");
-
     if (!grid) return;
 
     const q = String(query || "").trim().toLowerCase();
-
     let list = friendsCache.slice();
-    if (q) {
-        list = list.filter((f) => String(f.username || "").toLowerCase().includes(q));
-    }
+    if (q) list = list.filter((f) => String(f.username || "").toLowerCase().includes(q));
 
     list.sort((a, b) => {
         if (Boolean(a.online) !== Boolean(b.online)) return a.online ? -1 : 1;
@@ -1137,9 +1072,7 @@ function renderFriendsList(query) {
         if (q && friendsCache.length > 0) {
             countEl.textContent = list.length + "/" + friendsCache.length;
             countEl.hidden = false;
-        } else {
-            countEl.hidden = true;
-        }
+        } else countEl.hidden = true;
     }
 
     if (friendsCache.length === 0) {
@@ -1148,7 +1081,6 @@ function renderFriendsList(query) {
         grid.hidden = true;
         return;
     }
-
     if (list.length === 0) {
         if (empty) empty.hidden = true;
         if (emptySearch) emptySearch.hidden = false;
@@ -1167,9 +1099,7 @@ function openFriendDetail(friend) {
     const dlg = $("#dialogFriendDetail");
     if (!dlg) return;
 
-    if ($("#friendDetailName")) {
-        $("#friendDetailName").textContent = friend.username || "(unknown)";
-    }
+    if ($("#friendDetailName")) $("#friendDetailName").textContent = friend.username || "(unknown)";
 
     const avatarEl = $("#friendDetailAvatar");
     if (avatarEl) {
@@ -1214,9 +1144,7 @@ function openFriendDetail(friend) {
             flagImg.addEventListener("error", () => flagImg.remove(), { once: true });
             countryEl.appendChild(flagImg);
             countryEl.appendChild(document.createTextNode(code));
-        } else {
-            countryEl.textContent = "—";
-        }
+        } else countryEl.textContent = "—";
     }
 
     if ($("#friendDetailLastSeen")) {
@@ -1225,20 +1153,12 @@ function openFriendDetail(friend) {
 
     const bioEl = $("#friendDetailBio");
     if (bioEl) {
-        if (friend.bio) {
-            bioEl.textContent = friend.bio;
-            bioEl.classList.remove("is-empty");
-        } else {
-            bioEl.textContent = "Belum ada bio.";
-            bioEl.classList.add("is-empty");
-        }
+        if (friend.bio) { bioEl.textContent = friend.bio; bioEl.classList.remove("is-empty"); }
+        else { bioEl.textContent = "Belum ada bio."; bioEl.classList.add("is-empty"); }
     }
 
-    if (typeof dlg.showModal === "function") {
-        if (!dlg.open) dlg.showModal();
-    } else {
-        dlg.setAttribute("open", "");
-    }
+    if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); }
+    else dlg.setAttribute("open", "");
 }
 
 async function loadFriendsDialog() {
@@ -1340,31 +1260,25 @@ async function loadGuildDialog() {
             if ($("#guildXp")) $("#guildXp").textContent = fmt(guild.xp || 0);
             if ($("#guildPoints")) $("#guildPoints").textContent = fmt(guild.points || 0);
             if ($("#guildWorld")) {
-                const worldText = guild.worldID > 0 ? ("#" + guild.worldID) : "—";
-                $("#guildWorld").textContent = worldText;
+                $("#guildWorld").textContent = guild.worldID > 0 ? ("#" + guild.worldID) : "—";
                 $("#guildWorld").dataset.copyValue = guild.worldID > 0 ? String(guild.worldID) : "";
             }
             if ($("#guildCreated")) $("#guildCreated").textContent = fmtGuildDate(guild.created);
 
             const mascotWrap = $("#guildMascotWrap"), mascotImg = $("#guildMascotImg"), mascotFallback = $("#guildMascotFallback");
             if (mascotWrap) mascotWrap.querySelectorAll(".guild-mascot-bg").forEach((el) => el.remove());
-
             if (guild.mascotBg > 0 && mascotWrap) {
                 const bg = document.createElement("div");
                 bg.className = "guild-mascot-bg";
                 const bgUrl = itemImageUrl(guild.mascotBg);
                 if (bgUrl) {
                     const test = new Image();
-                    test.onerror = () => {
-                        missingItemIds.add(Number(guild.mascotBg));
-                        bg.remove();
-                    };
+                    test.onerror = () => { missingItemIds.add(Number(guild.mascotBg)); bg.remove(); };
                     test.src = bgUrl;
                     bg.style.backgroundImage = "url('" + bgUrl + "')";
                 }
                 mascotWrap.insertBefore(bg, mascotWrap.firstChild);
             }
-
             const fgId = (guild.mascotFg > 0) ? guild.mascotFg : (guild.mascotDisplay > 0 ? guild.mascotDisplay : 0);
             if (fgId > 0 && mascotImg) {
                 mascotImg.style.display = "block";
@@ -1453,6 +1367,60 @@ async function loadPlaytimeDialog() {
     } finally { if (loading && infoDialogLoaded.playtime) loading.hidden = true; }
 }
 
+/* ============================================================
+   HASH HANDLER — auto-open tab/dialog dari URL
+   #inventory / #worlds / #achievements / #friends / #guild / #playtime
+   ============================================================ */
+
+function handleHashNavigation() {
+    const hash = String(location.hash || "").replace(/^#/, "").toLowerCase().trim();
+    if (!hash) {
+        // Default: no hash, tetap di inventory tab (sudah default)
+        return;
+    }
+
+    const tabHashes = ["inventory", "worlds"];
+    const dialogHashes = {
+        achievements: "dialogAchievements",
+        friends: "dialogFriends",
+        guild: "dialogGuild",
+        playtime: "dialogPlaytime"
+    };
+
+    // Tab
+    if (tabHashes.includes(hash)) {
+        switchTab(hash);
+        // Scroll ke player card tabs
+        setTimeout(() => {
+            document.querySelector(".player-card-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+        return;
+    }
+
+    // Dialog
+    if (dialogHashes[hash]) {
+        // Scroll ke stat card dulu, lalu buka dialog
+        const statCardMap = {
+            achievements: "dialogAchievements",
+            friends: "dialogFriends",
+            guild: "dialogGuild",
+            playtime: "dialogPlaytime"
+        };
+        const targetCard = document.querySelector('[data-open-dialog="' + statCardMap[hash] + '"]');
+        if (targetCard) {
+            targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        setTimeout(() => {
+            openInfoDialog(dialogHashes[hash]);
+        }, 350);
+        return;
+    }
+}
+
+function wireHashNavigation() {
+    window.addEventListener("hashchange", handleHashNavigation);
+}
+
 /* ===== Wire Events ===== */
 function wireEvents() {
     $("#logoutButton")?.addEventListener("click", handleLogout);
@@ -1498,15 +1466,14 @@ function wireEvents() {
         renderFriendsList(e.target.value);
     });
 
-    // UX Tier 1
     wireCopyHandlers();
     wireStickyTopbar();
+    wireHashNavigation();
 }
 
 /* ===== Footer Year ===== */
 function updateFooterYear() {
-    const year = String(new Date().getFullYear());
-    if ($("#yearProfile")) $("#yearProfile").textContent = year;
+    if ($("#yearProfile")) $("#yearProfile").textContent = String(new Date().getFullYear());
 }
 
 /* ===== Init ===== */
@@ -1526,6 +1493,9 @@ async function init() {
         renderProfile();
         markRefreshed();
         autoFillCountryIfEmpty();
+
+        // Setelah data ready, handle hash (buka tab/dialog)
+        setTimeout(handleHashNavigation, 200);
     } catch (error) {
         console.error("[GROWERA] Init gagal:", error);
         if (error.isAuthError) {
