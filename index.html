@@ -35,53 +35,57 @@
         </div>
     </div>
 
-    <div class="login-card glass">
-        <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER PORTAL</div>
-        <h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1>
-        <p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
+    <!-- WRAPPER: fade-in animation applied here -->
+    <div class="login-card-wrap">
+        <!-- INNER: shake animation applied here -->
+        <div class="login-card glass">
+            <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER PORTAL</div>
+            <h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1>
+            <p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
 
-        <!-- Continue As -->
-        <div class="continue-as-wrap" id="continueAsWrap" hidden>
-            <div class="continue-as-label">CONTINUE AS</div>
-            <button type="button" class="continue-as-btn" id="continueAsBtn" aria-label="Continue as last username">
-                <div class="continue-as-avatar" id="continueAsAvatar">S</div>
-                <div class="continue-as-info">
-                    <strong id="continueAsUsername">@username</strong>
-                    <span>Tap to fill username</span>
-                </div>
-                <span class="continue-as-arrow">→</span>
-            </button>
-            <div class="continue-as-divider">OR</div>
-        </div>
-
-        <form id="loginForm" novalidate>
-            <label for="username">USERNAME</label>
-            <div class="input-wrap">
-                <span class="input-icon"><img src="assets/itemimage/980.png" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
-                <input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="64" spellcheck="false" autocapitalize="off">
-            </div>
-
-            <label for="password">PASSWORD</label>
-            <div class="input-wrap">
-                <span class="input-icon"><img src="assets/itemimage/202.png" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
-                <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required maxlength="256">
-                <button class="password-toggle" id="passwordToggle" type="button" aria-label="Show password" aria-pressed="false">
-                    <img class="eye-open" src="assets/itemimage/1226.png" alt="Show password" width="20" height="20" style="image-rendering:pixelated">
-                    <img class="eye-closed hidden" src="assets/itemimage/290.png" alt="Hide password" width="20" height="20" style="image-rendering:pixelated">
+            <!-- Continue As -->
+            <div class="continue-as-wrap" id="continueAsWrap" hidden>
+                <div class="continue-as-label">CONTINUE AS</div>
+                <button type="button" class="continue-as-btn" id="continueAsBtn" aria-label="Continue as last username">
+                    <div class="continue-as-avatar" id="continueAsAvatar">S</div>
+                    <div class="continue-as-info">
+                        <strong id="continueAsUsername">@username</strong>
+                        <span>Tap to fill username</span>
+                    </div>
+                    <span class="continue-as-arrow">→</span>
                 </button>
+                <div class="continue-as-divider">OR</div>
             </div>
-            <p class="caps-warning" id="capsLockWarning"><img src="assets/itemimage/1182.png" alt="" width="14" height="14" style="image-rendering:pixelated;vertical-align:-2px"> CAPS LOCK AKTIF</p>
 
-            <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+            <form id="loginForm" novalidate>
+                <label for="username">USERNAME</label>
+                <div class="input-wrap">
+                    <span class="input-icon"><img src="assets/itemimage/980.png" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
+                    <input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="64" spellcheck="false" autocapitalize="off">
+                </div>
 
-            <button class="button button-primary button-wide" id="loginButton" type="submit">
-                <span class="btn-label">SIGN IN</span>
-                <span>↗</span>
-            </button>
-        </form>
+                <label for="password">PASSWORD</label>
+                <div class="input-wrap">
+                    <span class="input-icon"><img src="assets/itemimage/202.png" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
+                    <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required maxlength="256">
+                    <button class="password-toggle" id="passwordToggle" type="button" aria-label="Show password" aria-pressed="false">
+                        <img class="eye-open" src="assets/itemimage/1226.png" alt="Show password" width="20" height="20" style="image-rendering:pixelated">
+                        <img class="eye-closed hidden" src="assets/itemimage/290.png" alt="Hide password" width="20" height="20" style="image-rendering:pixelated">
+                    </button>
+                </div>
+                <p class="caps-warning" id="capsLockWarning"><img src="assets/itemimage/1182.png" alt="" width="14" height="14" style="image-rendering:pixelated;vertical-align:-2px"> CAPS LOCK AKTIF</p>
 
-        <div class="demo-note">
-            <span class="status-dot"></span> LIVE MODE <span class="demo-divider">•</span> GROWERA Player Server
+                <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+
+                <button class="button button-primary button-wide" id="loginButton" type="submit">
+                    <span class="btn-label">SIGN IN</span>
+                    <span>↗</span>
+                </button>
+            </form>
+
+            <div class="demo-note">
+                <span class="status-dot"></span> LIVE MODE <span class="demo-divider">•</span> GROWERA Player Server
+            </div>
         </div>
     </div>
 
