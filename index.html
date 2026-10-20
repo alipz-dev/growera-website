@@ -5,7 +5,6 @@
 <meta name="theme-color" content="#080d19"><meta name="description" content="Sign in to GROWERA Crystal Era">
 <title>Sign In | GROWERA Crystal Era</title>
 
-<!-- AUTH GUARD: redirect jika sudah login -->
 <script>
 (function(){
     try {
@@ -28,7 +27,7 @@
 <section class="login-view" id="loginView" aria-labelledby="loginTitle">
     <div class="login-brand">
         <div class="brand-gem">
-            <img src="https://api.gtps.cloud/api/item/texture/1791/112/" alt="" width="22" height="22" style="image-rendering:pixelated">
+            <img src="assets/itemimage/112.png" alt="" width="22" height="22" style="image-rendering:pixelated">
         </div>
         <div>
             <span class="brand-name">GROWERA</span>
@@ -41,23 +40,37 @@
         <h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1>
         <p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
 
+        <!-- Continue As -->
+        <div class="continue-as-wrap" id="continueAsWrap" hidden>
+            <div class="continue-as-label">CONTINUE AS</div>
+            <button type="button" class="continue-as-btn" id="continueAsBtn" aria-label="Continue as last username">
+                <div class="continue-as-avatar" id="continueAsAvatar">S</div>
+                <div class="continue-as-info">
+                    <strong id="continueAsUsername">@username</strong>
+                    <span>Tap to fill username</span>
+                </div>
+                <span class="continue-as-arrow">→</span>
+            </button>
+            <div class="continue-as-divider">OR</div>
+        </div>
+
         <form id="loginForm" novalidate>
             <label for="username">USERNAME</label>
             <div class="input-wrap">
-                <span class="input-icon"><img src="https://api.gtps.cloud/api/item/texture/1791/980/" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
+                <span class="input-icon"><img src="assets/itemimage/980.png" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
                 <input id="username" name="username" autocomplete="username" placeholder="Enter your username" required maxlength="64" spellcheck="false" autocapitalize="off">
             </div>
 
             <label for="password">PASSWORD</label>
             <div class="input-wrap">
-                <span class="input-icon"><img src="https://api.gtps.cloud/api/item/texture/1791/202/" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
+                <span class="input-icon"><img src="assets/itemimage/202.png" alt="" width="16" height="16" style="image-rendering:pixelated"></span>
                 <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required maxlength="256">
                 <button class="password-toggle" id="passwordToggle" type="button" aria-label="Show password" aria-pressed="false">
-                    <img class="eye-open" src="https://api.gtps.cloud/api/item/texture/1791/1226/" alt="Show password" width="20" height="20" style="image-rendering:pixelated">
-                    <img class="eye-closed hidden" src="https://api.gtps.cloud/api/item/texture/1791/290/" alt="Hide password" width="20" height="20" style="image-rendering:pixelated">
+                    <img class="eye-open" src="assets/itemimage/1226.png" alt="Show password" width="20" height="20" style="image-rendering:pixelated">
+                    <img class="eye-closed hidden" src="assets/itemimage/290.png" alt="Hide password" width="20" height="20" style="image-rendering:pixelated">
                 </button>
             </div>
-            <p class="caps-warning" id="capsLockWarning"><img src="https://api.gtps.cloud/api/item/texture/1791/1182/" alt="" width="14" height="14" style="image-rendering:pixelated;vertical-align:-2px"> CAPS LOCK AKTIF</p>
+            <p class="caps-warning" id="capsLockWarning"><img src="assets/itemimage/1182.png" alt="" width="14" height="14" style="image-rendering:pixelated;vertical-align:-2px"> CAPS LOCK AKTIF</p>
 
             <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
 
