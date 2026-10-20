@@ -9,7 +9,8 @@ import {
     toast,
     safeName, toNumber, fmt,
     itemImageUrl,
-    getAchievementsMaster
+    getAchievementsMaster,
+    getItemsMaster
 } from "./core.js";
 
 import { renderMarkdown, stripMarkdown } from "./markdown.js";
