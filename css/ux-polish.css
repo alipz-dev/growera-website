@@ -174,3 +174,58 @@ body.is-loading [data-copy] {
     body.is-loading #xpFill { animation: none !important; }
     .topbar { transition: none !important; }
 }
+
+/* ===== Brand Home Link (back to home) ===== */
+.brand-home-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    position: relative;
+    padding-left: 22px;
+    transition: padding-left .15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.brand-home-link::before {
+    content: "←";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #667392;
+    font-size: 16px;
+    opacity: 0.65;
+    transition: color .15s, transform .15s, opacity .15s;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.brand-home-link:hover::before {
+    color: #8ce8ff;
+    opacity: 1;
+    transform: translateY(-50%) translateX(-2px);
+}
+
+.brand-home-link:hover {
+    padding-left: 24px;
+}
+
+.brand-home-link:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+    .brand-home-link {
+        padding-left: 18px;
+    }
+    .brand-home-link::before {
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brand-home-link { transition: none !important; }
+    .brand-home-link::before { transition: none !important; }
+    .brand-home-link:hover { padding-left: 22px !important; }
+    .brand-home-link:active { transform: none !important; }
+}
