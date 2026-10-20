@@ -346,13 +346,13 @@
 }
 
 /* ==================================================================
-   NEWS DETAIL DIALOG — Premium Animation
-   Opens with float-up + scale-in + backdrop blur fade
-   Closes with quick float-down + backdrop blur fade out
+   NEWS DETAIL DIALOG — Smooth animation, anti-glitch
+   Open  : opacity fade + float up (translateY), NO scale (anti text-reflow)
+   Close : JS-driven (add .is-closing → wait 220ms → dlg.close())
    ================================================================== */
 
 .news-detail-dialog {
-    /* Base structural (self-contained) */
+    /* Structural */
     width: min(600px, calc(100% - 28px));
     padding: 0;
     border-radius: 20px;
@@ -360,38 +360,46 @@
     max-height: min(88vh, 720px);
     overflow: hidden;
 
-    /* ===== CLOSE STATE (base) ===== */
+    /* Defensive: isolate layout so child content tidak reflow */
+    contain: layout;
+
+    /* Default state (hidden) */
     opacity: 0;
-    transform: translateY(16px) scale(0.94);
+    transform: translateY(20px);
     transition:
-        opacity 0.22s cubic-bezier(0.4, 0, 1, 1),
-        transform 0.22s cubic-bezier(0.4, 0, 1, 1),
-        display 0.22s allow-discrete,
-        overlay 0.22s allow-discrete;
+        opacity 0.22s ease-in,
+        transform 0.22s ease-in;
 }
 
-/* ===== OPEN STATE ===== */
+/* Open state */
 .news-detail-dialog[open] {
     display: flex;
     flex-direction: column;
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     transition:
         opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-        display 0.42s allow-discrete,
-        overlay 0.42s allow-discrete;
+        transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ===== STARTING POINT for open animation ===== */
+/* Starting point untuk open animation */
 @starting-style {
     .news-detail-dialog[open] {
         opacity: 0;
-        transform: translateY(16px) scale(0.94);
+        transform: translateY(20px);
     }
 }
 
-/* ===== BACKDROP (base = closed) ===== */
+/* Closing state — triggered via JS class */
+.news-detail-dialog.is-closing {
+    opacity: 0 !important;
+    transform: translateY(20px) !important;
+    transition:
+        opacity 0.22s ease-in,
+        transform 0.22s ease-in;
+}
+
+/* ===== Backdrop (open/close via [open] + .is-closing) ===== */
 .news-detail-dialog::backdrop {
     background-color: rgba(2, 5, 12, 0);
     backdrop-filter: blur(0px);
@@ -402,7 +410,6 @@
         -webkit-backdrop-filter 0.22s ease-in;
 }
 
-/* ===== BACKDROP (open) ===== */
 .news-detail-dialog[open]::backdrop {
     background-color: rgba(2, 5, 12, 0.78);
     backdrop-filter: blur(14px);
@@ -421,21 +428,19 @@
     }
 }
 
+.news-detail-dialog.is-closing::backdrop {
+    background-color: rgba(2, 5, 12, 0) !important;
+    backdrop-filter: blur(0px) !important;
+    -webkit-backdrop-filter: blur(0px) !important;
+}
+
 /* ===== Dialog internal structure ===== */
 .news-detail-dialog .dialog-heading {
     padding: 22px 26px 16px;
     margin: 0;
     border-bottom: 1px solid var(--line);
     flex-shrink: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.news-detail-dialog .dialog-heading > div {
-    flex: 1;
-    min-width: 0;
+    display: block;
 }
 
 .news-detail-dialog .dialog-heading h2 {
@@ -507,9 +512,9 @@
     line-height: inherit;
 }
 
-/* ===== Subtle hint at bottom (optional visual cue) ===== */
+/* ===== Subtle hint ===== */
 .news-detail-dialog::after {
-    content: "Tap outside to close";
+    content: "Tap outside or press Esc to close";
     position: absolute;
     bottom: 10px;
     left: 50%;
@@ -521,6 +526,7 @@
     pointer-events: none;
     opacity: 0.55;
     transition: opacity 0.2s;
+    white-space: nowrap;
 }
 
 .news-detail-dialog[open]:hover::after {
@@ -533,7 +539,7 @@
     }
 }
 
-/* ===== Post News Form (legacy — sekarang di admin.html) ===== */
+/* ===== Legacy post news form (tidak dipakai — ada di admin.html) ===== */
 #dialogPostNews {
     width: min(560px, calc(100% - 28px));
 }
@@ -716,7 +722,7 @@
     }
 }
 
-/* ===== Reduced Motion — disable all animations ===== */
+/* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {
     .news-card:hover { transform: none !important; }
     .news-new-dot { animation: none !important; }
@@ -724,10 +730,13 @@
 
     .news-detail-dialog,
     .news-detail-dialog[open],
-    .news-detail-dialog::backdrop,
-    .news-detail-dialog[open]::backdrop {
+    .news-detail-dialog.is-closing {
         transition: none !important;
-        opacity: 1;
-        transform: none;
+    }
+
+    .news-detail-dialog::backdrop,
+    .news-detail-dialog[open]::backdrop,
+    .news-detail-dialog.is-closing::backdrop {
+        transition: none !important;
     }
 }
