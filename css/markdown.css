@@ -182,3 +182,68 @@
         transition: none !important;
     }
 }
+
+/* ===== Compact Preview (for news card) ===== */
+.md-content.is-compact {
+    font-size: 12px;
+    line-height: 1.55;
+    color: #a7b4d0;
+}
+
+.md-content.is-compact p {
+    margin: 0 0 4px 0;
+}
+
+.md-content.is-compact p:last-child {
+    margin-bottom: 0;
+}
+
+.md-content.is-compact ul {
+    margin: 3px 0;
+    padding-left: 14px;
+}
+
+.md-content.is-compact li {
+    margin: 1px 0;
+}
+
+.md-content.is-compact li::before {
+    left: -11px;
+    font-size: 0.85em;
+}
+
+.md-content.is-compact strong {
+    color: #e8f0ff;
+}
+
+.md-content.is-compact em {
+    color: #cbd5ee;
+}
+
+.md-content.is-compact code {
+    font-size: 0.85em;
+    padding: 0 4px;
+}
+
+.md-content.is-compact .md-item {
+    padding: 1px 6px 1px 3px;
+    font-size: 0.9em;
+    gap: 4px;
+}
+
+.md-content.is-compact .md-item-img {
+    width: 14px;
+    height: 14px;
+}
+
+.md-content.is-compact .md-item-name {
+    max-width: 100px;
+    font-size: 0.95em;
+}
+
+/* Disable pointer events on links in compact preview (card button click) */
+.md-content.is-compact a {
+    pointer-events: none;
+    text-decoration: none;
+    color: #8ce8ff;
+}
