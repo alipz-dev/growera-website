@@ -16,7 +16,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/home.css"><link rel="stylesheet" href="css/news.css">
 </head>
 <body>
 
@@ -62,7 +62,6 @@
         </div>
     </div>
 
-    <!-- Player Summary + Today -->
     <div class="home-summary-row">
 
         <article class="player-mini glass">
@@ -111,7 +110,6 @@
 
     </div>
 
-    <!-- Quick Access -->
     <section class="home-section">
         <div class="home-section-head">
             <h2>QUICK ACCESS</h2>
@@ -163,7 +161,26 @@
         </div>
     </section>
 
-    <!-- Leaderboard (placeholder) -->
+    <!-- ===== LATEST NEWS ===== -->
+    <section class="home-section">
+        <div class="home-section-head">
+            <div class="home-section-head-left">
+                <h2>LATEST UPDATES</h2>
+                <p class="muted">What's new in Crystal Era</p>
+            </div>
+            <button class="admin-post-btn" id="adminPostNewsBtn" type="button" hidden>
+                <span>+ Post News</span>
+            </button>
+        </div>
+        <div class="news-loading" id="newsLoading">Memuat news...</div>
+        <div class="news-list" id="newsList" hidden></div>
+        <div class="news-empty" id="newsEmpty" hidden>
+            <div class="news-empty-icon">📭</div>
+            <strong>Belum ada news</strong>
+            <p class="muted">Update dan pengumuman akan muncul di sini.</p>
+        </div>
+    </section>
+
     <section class="home-section">
         <div class="home-section-head">
             <h2>LEADERBOARD</h2>
@@ -176,7 +193,6 @@
         </div>
     </section>
 
-    <!-- Shop (placeholder) -->
     <section class="home-section">
         <div class="home-section-head">
             <h2>ITEM SHOP</h2>
@@ -193,6 +209,72 @@
 </section>
 
 </main>
+
+<!-- ===== DIALOG: News Detail ===== -->
+<dialog class="info-dialog glass news-detail-dialog" id="dialogNewsDetail">
+    <div class="dialog-heading">
+        <div>
+            <div class="eyebrow" id="newsDetailEyebrow">NEWS</div>
+            <h2 id="newsDetailTitle">—</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-dialog="dialogNewsDetail" aria-label="Close">×</button>
+    </div>
+    <div class="info-scroll">
+        <div class="news-detail-meta">
+            <span class="news-tag" id="newsDetailTag">UPDATE</span>
+            <span class="news-detail-date" id="newsDetailDate">—</span>
+            <span class="news-detail-author" id="newsDetailAuthor">—</span>
+        </div>
+        <p class="news-detail-body" id="newsDetailBody">—</p>
+    </div>
+</dialog>
+
+<!-- ===== DIALOG: Admin Post News ===== -->
+<dialog class="edit-dialog glass" id="dialogPostNews">
+    <form id="postNewsForm" novalidate>
+        <div class="dialog-heading">
+            <div>
+                <div class="eyebrow">ADMIN ONLY</div>
+                <h2>Post News</h2>
+            </div>
+            <button class="icon-button" id="postNewsCloseBtn" type="button" aria-label="Close">×</button>
+        </div>
+
+        <div class="edit-scroll">
+            <label for="postNewsTitle">TITLE</label>
+            <div class="edit-label-row">
+                <span></span>
+                <span class="edit-counter" id="postNewsTitleCounter">0 / 100</span>
+            </div>
+            <input id="postNewsTitle" type="text" maxlength="100" placeholder="Judul news singkat" autocomplete="off">
+
+            <label for="postNewsTag">TAG</label>
+            <select id="postNewsTag" class="edit-select">
+                <option value="UPDATE">✨ UPDATE — Fitur baru</option>
+                <option value="FIX">🔧 FIX — Bug fix</option>
+                <option value="EVENT">🎉 EVENT — Event terbatas</option>
+                <option value="MAINTENANCE">🛠️ MAINTENANCE — Server maintenance</option>
+                <option value="INFO">📢 INFO — Pengumuman umum</option>
+            </select>
+
+            <label for="postNewsBody">BODY</label>
+            <div class="edit-label-row">
+                <span></span>
+                <span class="edit-counter" id="postNewsBodyCounter">0 / 2000</span>
+            </div>
+            <textarea id="postNewsBody" maxlength="2000" rows="6" placeholder="Detail news..."></textarea>
+
+            <p class="edit-error" id="postNewsError" role="alert"></p>
+        </div>
+
+        <div class="dialog-actions">
+            <button class="button button-quiet" id="postNewsCancelBtn" type="button">CANCEL</button>
+            <button class="button button-primary" id="postNewsSubmitBtn" type="submit">
+                <span class="btn-label">POST NEWS</span>
+            </button>
+        </div>
+    </form>
+</dialog>
 
 <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
