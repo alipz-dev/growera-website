@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d19"><meta name="description" content="GROWERA Admin Panel">
+<title>Admin Panel | GROWERA Crystal Era</title>
+
+<script>
+(function(){
+    try {
+        var token = localStorage.getItem("growera_session_token") || sessionStorage.getItem("growera_session_token");
+        if (!token) { window.location.replace("/"); }
+    } catch(e) { window.location.replace("/"); }
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/news.css"><link rel="stylesheet" href="css/markdown.css">
+</head>
+<body>
+
+<div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+
+<main class="app-shell">
+
+<section class="admin-view" id="adminView">
+
+    <header class="topbar" id="topbar">
+        <a href="/home.html" class="login-brand compact brand-home-link" aria-label="Back to home">
+            <div class="brand-gem">
+                <img src="assets/itemimage/112.png" alt="" width="18" height="18" style="image-rendering:pixelated">
+            </div>
+            <div>
+                <span class="brand-name">GROWERA</span>
+                <span class="brand-subtitle">ADMIN PANEL</span>
+            </div>
+        </a>
+        <div class="topbar-actions">
+            <a href="/home.html" class="button button-quiet" style="text-decoration:none;">
+                <img src="assets/itemimage/242.png" alt="" width="14" height="14" style="image-rendering:pixelated">
+                <span>HOME</span>
+            </a>
+            <button class="button button-quiet" id="logoutButton" type="button">
+                <img src="assets/itemimage/6.png" alt="" width="14" height="14" style="image-rendering:pixelated">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="dashboard-heading">
+        <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> ADMIN</div>
+            <h1>News <span>Management</span>.</h1>
+            <p class="muted">Create, edit, delete, and pin news posts.</p>
+        </div>
+        <div class="admin-badge-wrap">
+            <span class="admin-badge">
+                <span class="status-dot"></span>
+                <span id="adminName">ADMIN</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Access denied overlay -->
+    <div class="admin-denied" id="adminDenied" hidden>
+        <div class="admin-denied-card glass">
+            <div class="admin-denied-icon">🔒</div>
+            <h2>Admin Access Required</h2>
+            <p class="muted">Akun kamu belum terdaftar sebagai admin. Hubungi administrator server untuk mendapat akses.</p>
+            <a href="/home.html" class="button button-primary">
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin content -->
+    <div class="admin-content" id="adminContent" hidden>
+
+        <!-- Toolbar -->
+        <div class="admin-toolbar">
+            <div class="admin-toolbar-left">
+                <span class="admin-stat">
+                    <span class="admin-stat-label">TOTAL</span>
+                    <strong id="statTotalNews">0</strong>
+                </span>
+                <span class="admin-stat">
+                    <span class="admin-stat-label">PINNED</span>
+                    <strong id="statPinnedNews">0</strong>
+                </span>
+            </div>
+            <button class="button button-primary" id="btnCreateNews" type="button">
+                <span>+ New News</span>
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div class="admin-loading" id="adminLoading">Memuat news...</div>
+
+        <!-- Empty -->
+        <div class="admin-empty" id="adminEmpty" hidden>
+            <div class="admin-empty-icon">📝</div>
+            <strong>Belum ada news</strong>
+            <p class="muted">Klik "+ New News" untuk membuat news pertama.</p>
+        </div>
+
+        <!-- News list -->
+        <div class="admin-news-list" id="adminNewsList" hidden></div>
+
+    </div>
+
+    <footer class="site-footer">GROWERA © <span id="year"></span> CRYSTAL ERA <span class="footer-separator">•</span> ADMIN PANEL</footer>
+</section>
+
+</main>
+
+<!-- ===== Dialog: Create / Edit News ===== -->
+<dialog class="edit-dialog glass admin-editor-dialog" id="dialogEditor">
+    <form id="editorForm" novalidate>
+        <div class="dialog-heading">
+            <div>
+                <div class="eyebrow" id="editorEyebrow">NEW NEWS</div>
+                <h2 id="editorTitle">Create News</h2>
+            </div>
+            <button class="icon-button" id="editorCloseBtn" type="button" aria-label="Close">×</button>
+        </div>
+
+        <div class="edit-scroll">
+
+            <div class="editor-grid">
+                <div>
+                    <label for="editorNewsTitle">TITLE</label>
+                    <div class="edit-label-row">
+                        <span></span>
+                        <span class="edit-counter" id="editorTitleCounter">0 / 100</span>
+                    </div>
+                    <input id="editorNewsTitle" type="text" maxlength="100" placeholder="Judul news singkat" autocomplete="off">
+                </div>
+                <div>
+                    <label for="editorNewsTag">TAG</label>
+                    <select id="editorNewsTag" class="edit-select">
+                        <option value="UPDATE">✨ UPDATE — Fitur baru</option>
+                        <option value="FIX">🔧 FIX — Bug fix</option>
+                        <option value="EVENT">🎉 EVENT — Event terbatas</option>
+                        <option value="MAINTENANCE">🛠️ MAINTENANCE — Server maintenance</option>
+                        <option value="INFO">📢 INFO — Pengumuman umum</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="editor-body-wrap">
+                <div class="editor-body-col">
+                    <label for="editorNewsBody">BODY</label>
+                    <div class="edit-label-row">
+                        <span></span>
+                        <span class="edit-counter" id="editorBodyCounter">0 / 2000</span>
+                    </div>
+                    <textarea id="editorNewsBody" maxlength="2000" rows="14" placeholder="Detail news...&#10;&#10;Support markdown:&#10;**bold**  *italic*  `code`&#10;[link](https://example.com)&#10;[item:242]&#10;- bullet list&#10;- bullet kedua"></textarea>
+
+                    <div class="md-format-help">
+                        <strong>Format support:</strong> <code>**bold**</code> <code>*italic*</code> <code>`code`</code> <code>[link](url)</code> <code>[item:242]</code> <code>- bullet</code>
+                    </div>
+                </div>
+                <div class="editor-preview-col">
+                    <label>PREVIEW</label>
+                    <div class="editor-preview" id="editorPreview">
+                        <p style="color:#4b5670;font-style:italic;">Preview muncul di sini...</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="edit-error" id="editorError" role="alert"></p>
+        </div>
+
+        <div class="dialog-actions">
+            <button class="button button-quiet" id="editorCancelBtn" type="button">CANCEL</button>
+            <button class="button button-primary" id="editorSaveBtn" type="submit">
+                <span class="btn-label">SAVE</span>
+            </button>
+        </div>
+    </form>
+</dialog>
+
+<!-- ===== Dialog: Delete Confirmation ===== -->
+<dialog class="edit-dialog glass admin-confirm-dialog" id="dialogConfirm">
+    <form id="confirmForm" novalidate>
+        <div class="dialog-heading">
+            <div>
+                <div class="eyebrow">CONFIRM DELETE</div>
+                <h2>Delete this news?</h2>
+            </div>
+            <button class="icon-button" id="confirmCloseBtn" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="edit-scroll">
+            <p class="confirm-text" id="confirmMessage">News akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.</p>
+            <div class="confirm-preview" id="confirmPreview"></div>
+            <p class="edit-error" id="confirmError" role="alert"></p>
+        </div>
+        <div class="dialog-actions">
+            <button class="button button-quiet" id="confirmCancelBtn" type="button">CANCEL</button>
+            <button class="button button-danger" id="confirmDeleteBtn" type="submit">
+                <span class="btn-label">DELETE</span>
+            </button>
+        </div>
+    </form>
+</dialog>
+
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
