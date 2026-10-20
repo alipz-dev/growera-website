@@ -1,5 +1,6 @@
 // js/home.js
-// Home page logic (dashboard hub + news)
+// Home page logic (dashboard hub + news display only)
+// Post/edit/delete/pin news dilakukan di /admin.html
 
 import {
     apiRequest,
@@ -10,6 +11,8 @@ import {
     itemImageUrl,
     getAchievementsMaster
 } from "./core.js";
+
+import { renderMarkdown, stripMarkdown } from "./markdown.js";
 
 const $ = (s) => document.querySelector(s);
 
@@ -248,14 +251,12 @@ async function fetchHomeData() {
 }
 
 /* ============================================================
-   NEWS — Fetch, Render, Detail, Admin Post
+   NEWS — Display only (read-only di home page)
    ============================================================ */
 
 let newsCache = [];
 let isNewsBusy = false;
-let isPostingNews = false;
 
-/* ===== Fetch ===== */
 async function fetchLatestNews(limit = 5) {
     try {
         const result = await apiRequest("/news/latest?limit=" + limit, { method: "GET" });
@@ -323,13 +324,7 @@ function isNewNews(unixSec) {
     const n = Number(unixSec) || 0;
     if (n <= 0) return false;
     const nowSec = Math.floor(Date.now() / 1000);
-    return (nowSec - n) < (86400 * 3); // < 3 hari
-}
-
-function truncatePreview(body, maxLen = 140) {
-    const s = String(body || "").trim().replace(/\s+/g, " ");
-    if (s.length <= maxLen) return s;
-    return s.slice(0, maxLen).trim() + "…";
+    return (nowSec - n) < (86400 * 3);
 }
 
 /* ===== Render News Card ===== */
@@ -337,7 +332,17 @@ function createNewsCard(news) {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "news-card";
+    if (news.pinned === 1) card.classList.add("is-pinned");
     card.setAttribute("aria-label", "Read news: " + (news.title || ""));
+
+    // Pin badge (kalau pinned)
+    if (news.pinned === 1) {
+        const pinBadge = document.createElement("span");
+        pinBadge.className = "news-pin-badge";
+        pinBadge.textContent = "📌";
+        pinBadge.title = "Pinned";
+        card.appendChild(pinBadge);
+    }
 
     const head = document.createElement("div");
     head.className = "news-card-head";
@@ -366,9 +371,10 @@ function createNewsCard(news) {
     title.textContent = news.title || "(Tanpa judul)";
     card.appendChild(title);
 
+    // Preview pakai stripMarkdown — text polos dengan item refs jadi "[Item #X]"
     const preview = document.createElement("p");
     preview.className = "news-card-preview";
-    preview.textContent = truncatePreview(news.body, 140);
+    preview.textContent = stripMarkdown(news.body, 140);
     card.appendChild(preview);
 
     const foot = document.createElement("div");
@@ -428,7 +434,6 @@ async function loadNews() {
     try {
         const news = await fetchLatestNews(5);
         if (news === null) {
-            // Fetch error
             if (loading) { loading.textContent = "Gagal memuat news."; loading.hidden = false; }
             return;
         }
@@ -460,7 +465,19 @@ function openNewsDetail(news) {
     }
     if ($("#newsDetailDate")) $("#newsDetailDate").textContent = formatNewsDateFull(news.createdAt);
     if ($("#newsDetailAuthor")) $("#newsDetailAuthor").textContent = "@" + (news.author || "admin");
-    if ($("#newsDetailBody")) $("#newsDetailBody").textContent = news.body || "(Tanpa konten)";
+
+    // Render markdown untuk body
+    const bodyEl = $("#newsDetailBody");
+    if (bodyEl) {
+        bodyEl.replaceChildren();
+        try {
+            const rendered = renderMarkdown(news.body);
+            bodyEl.appendChild(rendered);
+        } catch (e) {
+            console.warn("[GROWERA] Markdown render gagal:", e);
+            bodyEl.textContent = news.body || "(Tanpa konten)";
+        }
+    }
 
     if (typeof dlg.showModal === "function") {
         if (!dlg.open) dlg.showModal();
@@ -469,160 +486,9 @@ function openNewsDetail(news) {
     }
 }
 
-/* ===== Admin Post News ===== */
-function updateNewsCounters() {
-    const titleEl = $("#postNewsTitle");
-    const bodyEl = $("#postNewsBody");
-    const titleCounter = $("#postNewsTitleCounter");
-    const bodyCounter = $("#postNewsBodyCounter");
-
-    if (titleEl && titleCounter) {
-        titleCounter.textContent = titleEl.value.length + " / 100";
-    }
-    if (bodyEl && bodyCounter) {
-        bodyCounter.textContent = bodyEl.value.length + " / 2000";
-    }
-}
-
-function setPostNewsError(msg) {
-    const el = $("#postNewsError");
-    if (!el) return;
-    if (msg) { el.textContent = msg; el.classList.add("show"); }
-    else { el.textContent = ""; el.classList.remove("show"); }
-}
-
-function setPostingNews(saving) {
-    isPostingNews = Boolean(saving);
-    const btn = $("#postNewsSubmitBtn");
-    if (!btn) return;
-    btn.disabled = isPostingNews;
-    btn.setAttribute("aria-busy", String(isPostingNews));
-    const label = btn.querySelector(".btn-label");
-    if (label) label.textContent = isPostingNews ? "POSTING..." : "POST NEWS";
-    const cancel = $("#postNewsCancelBtn");
-    if (cancel) cancel.disabled = isPostingNews;
-    const closeBtn = $("#postNewsCloseBtn");
-    if (closeBtn) closeBtn.disabled = isPostingNews;
-}
-
-function openPostNewsDialog() {
-    const dlg = $("#dialogPostNews");
-    if (!dlg) return;
-
-    // Reset form
-    if ($("#postNewsTitle")) $("#postNewsTitle").value = "";
-    if ($("#postNewsTag")) $("#postNewsTag").value = "UPDATE";
-    if ($("#postNewsBody")) $("#postNewsBody").value = "";
-    updateNewsCounters();
-    setPostNewsError("");
-    setPostingNews(false);
-
-    if (typeof dlg.showModal === "function") {
-        if (!dlg.open) dlg.showModal();
-    } else {
-        dlg.setAttribute("open", "");
-    }
-
-    setTimeout(() => $("#postNewsTitle")?.focus(), 120);
-}
-
-function closePostNewsDialog() {
-    const dlg = $("#dialogPostNews");
-    if (!dlg) return;
-    if (dlg.open && typeof dlg.close === "function") dlg.close();
-    else dlg.removeAttribute("open");
-}
-
-async function handlePostNews(event) {
-    event.preventDefault();
-    if (isPostingNews) return;
-    setPostNewsError("");
-
-    const title = ($("#postNewsTitle")?.value || "").trim();
-    const body = ($("#postNewsBody")?.value || "").trim();
-    const tag = ($("#postNewsTag")?.value || "UPDATE").toUpperCase();
-
-    if (title.length < 3) {
-        setPostNewsError("Title minimal 3 karakter.");
-        $("#postNewsTitle")?.focus();
-        return;
-    }
-    if (title.length > 100) {
-        setPostNewsError("Title maksimal 100 karakter.");
-        return;
-    }
-    if (body.length < 10) {
-        setPostNewsError("Body minimal 10 karakter.");
-        $("#postNewsBody")?.focus();
-        return;
-    }
-    if (body.length > 2000) {
-        setPostNewsError("Body maksimal 2000 karakter.");
-        return;
-    }
-
-    const token = getToken();
-    if (!token) {
-        setPostNewsError("Sesi tidak ditemukan. Silakan login kembali.");
-        return;
-    }
-
-    setPostingNews(true);
-
-    try {
-        const result = await apiRequest("/admin/news", {
-            method: "POST",
-            headers: { Authorization: "Bearer " + token },
-            body: JSON.stringify({ title, body, tag })
-        });
-
-        if (!result?.success) {
-            throw new Error(result?.message || "Gagal posting news");
-        }
-
-        toast("News berhasil diposting!", "success");
-        closePostNewsDialog();
-
-        // Refresh news list
-        await loadNews();
-        markRefreshed();
-    } catch (error) {
-        console.error("[GROWERA] Post news gagal:", error);
-        if (error.isAuthError) {
-            setPostNewsError("Sesi berakhir. Silakan login kembali.");
-            setTimeout(() => {
-                closePostNewsDialog();
-                clearToken();
-                window.location.replace("/");
-            }, 1200);
-            return;
-        }
-        if (error.status === 403) {
-            setPostNewsError("Akses admin diperlukan. Hubungi admin untuk dapatkan akses.");
-            return;
-        }
-        setPostNewsError(error.message || "Gagal posting news.");
-    } finally {
-        setPostingNews(false);
-    }
-}
-
-/* ===== Admin UI Wire ===== */
-function updateAdminUI() {
-    const btn = $("#adminPostNewsBtn");
-    if (!btn) return;
-    if (player.role === "admin") btn.hidden = false;
-    else btn.hidden = true;
-}
-
-/* ===== Wire News Events ===== */
+/* ===== Wire News Detail Dialog Close ===== */
 function wireNewsEvents() {
-    // Admin post button
-    $("#adminPostNewsBtn")?.addEventListener("click", openPostNewsDialog);
-
-    // Dialog close
     const dlgDetail = $("#dialogNewsDetail");
-    const dlgPost = $("#dialogPostNews");
 
     document.querySelectorAll('[data-close-dialog="dialogNewsDetail"]').forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -640,33 +506,20 @@ function wireNewsEvents() {
         });
     }
 
-    if (dlgPost) {
-        dlgPost.addEventListener("click", (e) => {
-            if (e.target === dlgPost && !isPostingNews) {
-                if (typeof dlgPost.close === "function") dlgPost.close();
-                else dlgPost.removeAttribute("open");
-            }
-        });
-    }
-
-    // Post form
-    $("#postNewsForm")?.addEventListener("submit", handlePostNews);
-    $("#postNewsCloseBtn")?.addEventListener("click", closePostNewsDialog);
-    $("#postNewsCancelBtn")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (!isPostingNews) closePostNewsDialog();
-    });
-
-    // Counters
-    $("#postNewsTitle")?.addEventListener("input", updateNewsCounters);
-    $("#postNewsBody")?.addEventListener("input", updateNewsCounters);
-
-    // ESC to close
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            if (dlgPost?.open && !isPostingNews) closePostNewsDialog();
+        if (e.key === "Escape" && dlgDetail?.open) {
+            if (typeof dlgDetail.close === "function") dlgDetail.close();
+            else dlgDetail.removeAttribute("open");
         }
     });
+}
+
+/* ===== Admin Button Visibility ===== */
+function updateAdminUI() {
+    const btn = $("#adminPostNewsBtn");
+    if (!btn) return;
+    if (player.role === "admin") btn.hidden = false;
+    else btn.hidden = true;
 }
 
 /* ============================================================
@@ -692,9 +545,7 @@ async function loadHome() {
             if (achEl) achEl.textContent = full.achievements.unlockedIds.length + "/" + master.length;
         }
 
-        // Load news parallel (fire and forget, tidak block render)
         loadNews();
-
         markRefreshed();
     } catch (error) {
         console.error("[GROWERA] Load home gagal:", error);
