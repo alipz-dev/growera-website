@@ -22,6 +22,9 @@ let isBusy = false;
 let lastRefreshAt = 0;
 let lastUpdatedTimerId = 0;
 
+// Debounce close state
+let newsCloseTimer = 0;
+
 const player = {
     username: "Player",
     role: "player",
@@ -252,7 +255,7 @@ async function fetchHomeData() {
 }
 
 /* ============================================================
-   NEWS — Display only (read-only di home page)
+   NEWS — Display only
    ============================================================ */
 
 let newsCache = [];
@@ -336,7 +339,6 @@ function createNewsCard(news) {
     if (news.pinned === 1) card.classList.add("is-pinned");
     card.setAttribute("aria-label", "Read news: " + (news.title || ""));
 
-    // Pin badge
     if (news.pinned === 1) {
         const pinBadge = document.createElement("span");
         pinBadge.className = "news-pin-badge";
@@ -372,7 +374,6 @@ function createNewsCard(news) {
     title.textContent = news.title || "(Tanpa judul)";
     card.appendChild(title);
 
-    // Preview pakai renderMarkdown (compact mode)
     const previewWrap = document.createElement("div");
     previewWrap.className = "news-card-preview";
     try {
@@ -455,12 +456,16 @@ async function loadNews() {
     }
 }
 
-/* ===== Open News Detail Dialog ===== */
+/* ============================================================
+   NEWS DETAIL DIALOG — open & close with custom animation
+   ============================================================ */
+
 function openNewsDetail(news) {
     if (!news) return;
     const dlg = $("#dialogNewsDetail");
     if (!dlg) return;
 
+    // Populate content
     if ($("#newsDetailEyebrow")) {
         $("#newsDetailEyebrow").textContent = "NEWS · " + (news.tag || "UPDATE");
     }
@@ -474,7 +479,6 @@ function openNewsDetail(news) {
     if ($("#newsDetailDate")) $("#newsDetailDate").textContent = formatNewsDateFull(news.createdAt);
     if ($("#newsDetailAuthor")) $("#newsDetailAuthor").textContent = "@" + (news.author || "admin");
 
-    // Render markdown untuk body
     const bodyEl = $("#newsDetailBody");
     if (bodyEl) {
         bodyEl.replaceChildren();
@@ -487,37 +491,69 @@ function openNewsDetail(news) {
         }
     }
 
+    // Reset state
+    dlg.classList.remove("is-closing");
+
+    // Open
     if (typeof dlg.showModal === "function") {
         if (!dlg.open) dlg.showModal();
     } else {
         dlg.setAttribute("open", "");
     }
+
+    // Force reflow untuk trigger @starting-style
+    void dlg.offsetHeight;
 }
 
-/* ===== Wire News Detail Dialog Close ===== */
-function wireNewsEvents() {
-    const dlgDetail = $("#dialogNewsDetail");
+function closeNewsDetail() {
+    const dlg = $("#dialogNewsDetail");
+    if (!dlg || !dlg.open) return;
+    if (dlg.classList.contains("is-closing")) return;
 
-    document.querySelectorAll('[data-close-dialog="dialogNewsDetail"]').forEach((btn) => {
-        btn.addEventListener("click", () => {
-            if (dlgDetail?.open && typeof dlgDetail.close === "function") dlgDetail.close();
-            else dlgDetail?.removeAttribute("open");
-        });
-    });
-
-    if (dlgDetail) {
-        dlgDetail.addEventListener("click", (e) => {
-            if (e.target === dlgDetail) {
-                if (typeof dlgDetail.close === "function") dlgDetail.close();
-                else dlgDetail.removeAttribute("open");
-            }
-        });
+    // Prevent double-close
+    if (newsCloseTimer) {
+        clearTimeout(newsCloseTimer);
+        newsCloseTimer = 0;
     }
 
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && dlgDetail?.open) {
-            if (typeof dlgDetail.close === "function") dlgDetail.close();
-            else dlgDetail.removeAttribute("open");
+    dlg.classList.add("is-closing");
+
+    newsCloseTimer = setTimeout(() => {
+        // Instant close (dialog display:none)
+        if (typeof dlg.close === "function") dlg.close();
+        else dlg.removeAttribute("open");
+
+        // Remove class setelah dialog closed
+        dlg.classList.remove("is-closing");
+        newsCloseTimer = 0;
+    }, 240); // ~sama dengan durasi close transition (220ms) + buffer
+}
+
+/* ===== Wire News Detail Dialog ===== */
+function wireNewsEvents() {
+    const dlg = $("#dialogNewsDetail");
+    if (!dlg) return;
+
+    // Klik backdrop (luar dialog content) → close
+    dlg.addEventListener("click", (e) => {
+        if (e.target === dlg) {
+            closeNewsDetail();
+        }
+    });
+
+    // ESC key → intercept native close, play custom animation
+    dlg.addEventListener("cancel", (e) => {
+        e.preventDefault();
+        closeNewsDetail();
+    });
+
+    // Cleanup: kalau dialog ditutup oleh jalan lain (form submit, dll),
+    // pastikan class is-closing dihapus
+    dlg.addEventListener("close", () => {
+        dlg.classList.remove("is-closing");
+        if (newsCloseTimer) {
+            clearTimeout(newsCloseTimer);
+            newsCloseTimer = 0;
         }
     });
 }
@@ -544,13 +580,11 @@ async function loadHome() {
 
     try {
         const masterPromise = getAchievementsMaster().catch(() => null);
-        // ▼ Preload items master supaya nama item muncul di markdown ▼
         const itemsPromise = getItemsMaster().catch(() => null);
 
         const full = await fetchHomeData();
         applyFullData(full);
 
-        // Tunggu master achievements + items selesai load
         const [master] = await Promise.all([masterPromise, itemsPromise]);
 
         if (master && full?.achievements?.unlockedIds) {
