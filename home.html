@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d19"><meta name="description" content="GROWERA Crystal Era — Player Home">
+<title>Home | GROWERA Crystal Era</title>
+
+<script>
+(function(){
+    try {
+        var token = localStorage.getItem("growera_session_token") || sessionStorage.getItem("growera_session_token");
+        if (!token) { window.location.replace("/"); }
+    } catch(e) { window.location.replace("/"); }
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+
+<div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+
+<main class="app-shell">
+
+<section class="home-view" id="homeView">
+
+    <header class="topbar" id="topbar">
+        <div class="login-brand compact">
+            <div class="brand-gem">
+                <img src="assets/itemimage/112.png" alt="" width="18" height="18" style="image-rendering:pixelated">
+            </div>
+            <div>
+                <span class="brand-name">GROWERA</span>
+                <span class="brand-subtitle">CRYSTAL ERA</span>
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <button class="refresh-button" id="refreshButton" type="button" aria-label="Refresh" title="Refresh">
+                <img src="assets/itemimage/1274.png" alt="" width="20" height="20" style="image-rendering:pixelated">
+            </button>
+            <button class="button button-quiet" id="logoutButton" type="button">
+                <img src="assets/itemimage/6.png" alt="" width="14" height="14" style="image-rendering:pixelated">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="dashboard-heading">
+        <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER HOME</div>
+            <h1>Welcome back, <span id="welcomeName" data-skel>Player</span>.</h1>
+            <p class="muted">Here's what's happening in Crystal Era today.</p>
+        </div>
+        <div class="dashboard-meta-right">
+            <div class="online-pill" id="onlinePill">
+                <span class="status-dot"></span>
+                <span id="onlineText">OFFLINE</span>
+            </div>
+            <span class="last-updated" id="lastUpdated">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Player Summary + Today -->
+    <div class="home-summary-row">
+
+        <article class="player-mini glass">
+            <div class="mini-avatar" id="miniAvatar">P</div>
+            <div class="mini-info">
+                <h3 id="miniName" data-skel>Player</h3>
+                <p class="mini-handle" id="miniHandle" data-skel>@player</p>
+                <div class="mini-stats-row">
+                    <span class="mini-stat">
+                        <img src="assets/itemimage/1488.png" alt="Level" width="18" height="18" style="image-rendering:pixelated">
+                        <strong id="miniLevel" data-skel>—</strong>
+                    </span>
+                    <span class="mini-stat">
+                        <img src="assets/itemimage/9438.png" alt="Gems" width="18" height="18" style="image-rendering:pixelated">
+                        <strong id="miniGems" data-skel>—</strong>
+                    </span>
+                </div>
+            </div>
+            <a href="/profile.html" class="mini-profile-btn">
+                <span>View Profile</span>
+                <span>→</span>
+            </a>
+        </article>
+
+        <article class="today-card glass">
+            <div class="today-head">
+                <span class="tiny-badge">TODAY</span>
+            </div>
+            <div class="today-rows">
+                <div class="today-row-main">
+                    <span class="today-emoji">📅</span>
+                    <div class="today-text">
+                        <span class="today-label">DATE</span>
+                        <strong id="todayDate" data-skel>—</strong>
+                    </div>
+                </div>
+                <div class="today-row-main">
+                    <span class="today-emoji">🎉</span>
+                    <div class="today-text">
+                        <span class="today-label">EVENTS</span>
+                        <span id="todayEvents" data-skel>—</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+    </div>
+
+    <!-- Quick Access -->
+    <section class="home-section">
+        <div class="home-section-head">
+            <h2>QUICK ACCESS</h2>
+            <p class="muted">Jump to any feature</p>
+        </div>
+        <div class="quick-nav-grid">
+            <a href="/profile.html#inventory" class="quick-nav-card">
+                <div class="quick-nav-icon purple">
+                    <img src="assets/itemimage/448.png" alt="" width="22" height="22" style="image-rendering:pixelated">
+                </div>
+                <span class="quick-nav-label">INVENTORY</span>
+                <strong class="quick-nav-value" id="navCountInventory" data-skel>—</strong>
+            </a>
+            <a href="/profile.html#worlds" class="quick-nav-card">
+                <div class="quick-nav-icon cyan">
+                    <img src="assets/itemimage/242.png" alt="" width="22" height="22" style="image-rendering:pixelated">
+                </div>
+                <span class="quick-nav-label">WORLDS</span>
+                <strong class="quick-nav-value" id="navCountWorlds" data-skel>—</strong>
+            </a>
+            <a href="/profile.html#achievements" class="quick-nav-card">
+                <div class="quick-nav-icon gold">
+                    <img src="assets/itemimage/1458.png" alt="" width="22" height="22" style="image-rendering:pixelated">
+                </div>
+                <span class="quick-nav-label">ACHIEVEMENTS</span>
+                <strong class="quick-nav-value" id="navCountAch" data-skel>—</strong>
+            </a>
+            <a href="/profile.html#friends" class="quick-nav-card">
+                <div class="quick-nav-icon cyan">
+                    <img src="assets/itemimage/980.png" alt="" width="22" height="22" style="image-rendering:pixelated">
+                </div>
+                <span class="quick-nav-label">FRIENDS</span>
+                <strong class="quick-nav-value" id="navCountFriends" data-skel>—</strong>
+            </a>
+            <a href="/profile.html#guild" class="quick-nav-card">
+                <div class="quick-nav-icon purple">
+                    <img src="assets/itemimage/1744.png" alt="" width="22" height="22" style="image-rendering:pixelated">
+                </div>
+                <span class="quick-nav-label">GUILD</span>
+                <strong class="quick-nav-value" id="navCountGuild" data-skel>—</strong>
+            </a>
+            <a href="/profile.html#playtime" class="quick-nav-card">
+                <div class="quick-nav-icon cyan">
+                    <img src="assets/itemimage/7162.png" alt="" width="22" height="22" style="image-rendering:pixelated">
+                </div>
+                <span class="quick-nav-label">PLAY TIME</span>
+                <strong class="quick-nav-value" id="navCountPlaytime" data-skel>—</strong>
+            </a>
+        </div>
+    </section>
+
+    <!-- Leaderboard (placeholder) -->
+    <section class="home-section">
+        <div class="home-section-head">
+            <h2>LEADERBOARD</h2>
+            <p class="muted">Top players of the server</p>
+        </div>
+        <div class="coming-soon-card glass">
+            <div class="coming-soon-icon">🏆</div>
+            <strong>Leaderboard Coming Soon</strong>
+            <p class="muted">Top level, top gems, dan top playtime segera hadir di sini.</p>
+        </div>
+    </section>
+
+    <!-- Shop (placeholder) -->
+    <section class="home-section">
+        <div class="home-section-head">
+            <h2>ITEM SHOP</h2>
+            <p class="muted">Exclusive items and deals</p>
+        </div>
+        <div class="coming-soon-card glass">
+            <div class="coming-soon-icon">🛒</div>
+            <strong>Shop Opening Soon</strong>
+            <p class="muted">Item baru, diskon, dan penawaran spesial akan tersedia di sini.</p>
+        </div>
+    </section>
+
+    <footer class="site-footer">GROWERA © <span id="year"></span> CRYSTAL ERA <span class="footer-separator">•</span> BUILT FOR EXPLORERS</footer>
+</section>
+
+</main>
+
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<script type="module" src="js/home.js"></script>
+</body>
+</html>
