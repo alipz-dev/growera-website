@@ -336,7 +336,7 @@ function createNewsCard(news) {
     if (news.pinned === 1) card.classList.add("is-pinned");
     card.setAttribute("aria-label", "Read news: " + (news.title || ""));
 
-    // Pin badge (kalau pinned)
+    // Pin badge
     if (news.pinned === 1) {
         const pinBadge = document.createElement("span");
         pinBadge.className = "news-pin-badge";
@@ -372,11 +372,18 @@ function createNewsCard(news) {
     title.textContent = news.title || "(Tanpa judul)";
     card.appendChild(title);
 
-    // Preview pakai stripMarkdown — text polos dengan item refs jadi "[Item #X]"
-    const preview = document.createElement("p");
-    preview.className = "news-card-preview";
-    preview.textContent = stripMarkdown(news.body, 140);
-    card.appendChild(preview);
+    // Preview pakai renderMarkdown (compact mode)
+    const previewWrap = document.createElement("div");
+    previewWrap.className = "news-card-preview";
+    try {
+        const rendered = renderMarkdown(news.body);
+        rendered.classList.add("is-compact");
+        previewWrap.appendChild(rendered);
+    } catch (e) {
+        console.warn("[GROWERA] Preview markdown gagal, fallback text:", e);
+        previewWrap.textContent = stripMarkdown(news.body, 140);
+    }
+    card.appendChild(previewWrap);
 
     const foot = document.createElement("div");
     foot.className = "news-card-foot";
@@ -537,10 +544,15 @@ async function loadHome() {
 
     try {
         const masterPromise = getAchievementsMaster().catch(() => null);
+        // ▼ Preload items master supaya nama item muncul di markdown ▼
+        const itemsPromise = getItemsMaster().catch(() => null);
+
         const full = await fetchHomeData();
         applyFullData(full);
 
-        const master = await masterPromise;
+        // Tunggu master achievements + items selesai load
+        const [master] = await Promise.all([masterPromise, itemsPromise]);
+
         if (master && full?.achievements?.unlockedIds) {
             const achEl = $("#navCountAch");
             if (achEl) achEl.textContent = full.achievements.unlockedIds.length + "/" + master.length;
