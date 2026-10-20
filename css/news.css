@@ -575,3 +575,65 @@
     .news-new-dot { animation: none !important; }
     .admin-post-btn:active { transform: none !important; }
 }
+
+/* ===== Preview Card Container (replace text-clamp) ===== */
+.news-card-preview {
+    position: relative;
+    max-height: 44px;
+    overflow: hidden;
+    margin: 0;
+}
+
+.news-card-preview .md-content {
+    margin: 0;
+}
+
+/* ===== Back Button (ganti × di news detail dialog) ===== */
+.news-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: transparent;
+    color: #cbd5ee;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, color .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+}
+
+.news-back-btn:hover {
+    border-color: #8ce8ff40;
+    background: #8ce8ff08;
+    color: #9cecff;
+}
+
+.news-back-btn:active {
+    transform: scale(0.97);
+}
+
+.news-back-btn span[aria-hidden="true"] {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .news-back-btn {
+        padding: 7px 11px;
+        font-size: 10.5px;
+        gap: 5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .news-back-btn {
+        transition: none !important;
+    }
+}
