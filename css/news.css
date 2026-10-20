@@ -1,6 +1,6 @@
-/* css/news.css — Latest Updates section + dialogs */
+/* css/news.css — Latest Updates + dialogs + pin + admin actions */
 
-/* ===== Section Head Layout ===== */
+/* ===== Section Head ===== */
 .home-section-head-left {
     display: flex;
     flex-direction: column;
@@ -23,6 +23,7 @@
     cursor: pointer;
     transition: border-color .15s, background .15s, transform .1s;
     -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
 }
 
 .admin-post-btn:hover {
@@ -124,6 +125,37 @@
 .news-card:focus-visible {
     outline: 2px solid #8ce8ff;
     outline-offset: 2px;
+}
+
+/* Pinned variant */
+.news-card.is-pinned {
+    border-color: #f8d58c4d;
+    background: linear-gradient(145deg, rgba(30, 24, 16, .85), rgba(12, 19, 35, .89));
+}
+
+.news-card.is-pinned:hover {
+    border-color: #f8d58c80;
+    background: #f8d58c06;
+    box-shadow: 0 8px 24px #f8d58c1a;
+}
+
+/* Pin badge — top right */
+.news-pin-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f8d58c, #e5a646);
+    color: #1a1206;
+    font-size: 12px;
+    box-shadow: 0 2px 10px #f8d58c4d;
+    transform: rotate(15deg);
+    z-index: 2;
 }
 
 /* ===== News Card Head ===== */
@@ -242,6 +274,7 @@
     color: #667392;
     font-size: 10px;
     font-family: monospace;
+    gap: 8px;
 }
 
 .news-author {
@@ -255,6 +288,63 @@
     font-weight: 600;
     flex-shrink: 0;
     font-family: inherit;
+}
+
+/* ===== Admin Card Actions (edit / delete / pin) ===== */
+.news-card-actions {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    flex-wrap: wrap;
+}
+
+.news-card.is-admin .news-card-actions {
+    display: flex;
+}
+
+.news-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: transparent;
+    color: #8190b0;
+    font-family: inherit;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, color .15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.news-action-btn:hover {
+    color: #e8f0ff;
+    border-color: #8ce8ff40;
+    background: #8ce8ff10;
+}
+
+.news-action-btn.is-danger:hover {
+    color: #fca5a5;
+    border-color: #f8717155;
+    background: #f8717110;
+}
+
+.news-action-btn.is-pinned {
+    color: #f8d58c;
+    border-color: #f8d58c40;
+    background: #f8d58c10;
+}
+
+.news-action-btn.is-pinned:hover {
+    color: #ffe4a8;
+    border-color: #f8d58c80;
+    background: #f8d58c1a;
 }
 
 /* ===== News Detail Dialog ===== */
@@ -290,8 +380,13 @@
     color: #cbd5ee;
     font-size: 13.5px;
     line-height: 1.7;
-    white-space: pre-wrap;
     word-break: break-word;
+}
+
+.news-detail-body .md-content {
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
 }
 
 /* ===== Post News Form ===== */
@@ -361,7 +456,7 @@
     outline: none;
     box-sizing: border-box;
     resize: vertical;
-    min-height: 120px;
+    min-height: 140px;
     line-height: 1.55;
     transition: border-color .15s, box-shadow .15s;
 }
@@ -387,6 +482,33 @@
     margin-left: auto;
 }
 
+/* ===== Format help ===== */
+.md-format-help {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border: 1px dashed #8ce8ff1a;
+    border-radius: 10px;
+    background: #8ce8ff08;
+    color: #667392;
+    font-size: 10.5px;
+    line-height: 1.65;
+    font-family: inherit;
+}
+
+.md-format-help strong {
+    color: #8ce8ff;
+    font-weight: 700;
+}
+
+.md-format-help code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #040913;
+    color: #f8d58c;
+    font-family: monospace;
+    font-size: 10px;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 760px) {
     .news-card {
@@ -404,6 +526,10 @@
     }
     .home-section-head {
         gap: 10px;
+    }
+    .news-action-btn {
+        padding: 4px 8px;
+        font-size: 9px;
     }
 }
 
@@ -432,7 +558,14 @@
         width: calc(100% - 28px);
     }
     #postNewsBody {
-        min-height: 100px;
+        min-height: 120px;
+    }
+    .news-pin-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        top: -4px;
+        right: -4px;
     }
 }
 
