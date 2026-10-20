@@ -1,11 +1,10 @@
 // js/login.js
 // Login page logic + UX Tier 1
-// Wrapper-based fade-in (CSS) → no JS timer for animation class
+// Redirect target: /home.html (bukan /profile.html)
 
 import { apiRequest, saveToken, clearToken } from "./core.js";
 
 const $ = (s) => document.querySelector(s);
-
 const REMEMBER_KEY = "growera_last_username";
 
 const loginForm = $("#loginForm");
@@ -13,7 +12,7 @@ const formMessage = $("#formMessage");
 const loginButton = $("#loginButton");
 const usernameInput = $("#username");
 const passwordInput = $("#password");
-const loginCard = document.querySelector(".login-card");  // inner card untuk shake
+const loginCard = document.querySelector(".login-card");
 const continueAsWrap = $("#continueAsWrap");
 const continueAsBtn = $("#continueAsBtn");
 const continueAsAvatar = $("#continueAsAvatar");
@@ -23,7 +22,6 @@ let isBusy = false;
 let submitTimerId = 0;
 let submitStartAt = 0;
 
-/* ===== Message ===== */
 function setMessage(message, type = "error") {
     if (!formMessage) return;
     formMessage.textContent = message || "";
@@ -31,7 +29,6 @@ function setMessage(message, type = "error") {
     else delete formMessage.dataset.type;
 }
 
-/* ===== Remember Username ===== */
 function saveLastUsername(username) {
     try {
         const clean = String(username || "").trim();
@@ -40,12 +37,10 @@ function saveLastUsername(username) {
 }
 
 function getLastUsername() {
-    try {
-        return String(localStorage.getItem(REMEMBER_KEY) || "").trim();
-    } catch { return ""; }
+    try { return String(localStorage.getItem(REMEMBER_KEY) || "").trim(); }
+    catch { return ""; }
 }
 
-/* ===== Continue As ===== */
 function showContinueAs(username) {
     if (!continueAsWrap || !username) return;
     const name = String(username).trim();
@@ -63,11 +58,8 @@ function updateContinueAsVisibility() {
     const last = getLastUsername();
     if (!last) { hideContinueAs(); return; }
     const current = (usernameInput?.value || "").trim();
-    if (current === "" || current === last) {
-        showContinueAs(last);
-    } else {
-        hideContinueAs();
-    }
+    if (current === "" || current === last) showContinueAs(last);
+    else hideContinueAs();
 }
 
 function handleContinueAsClick() {
@@ -79,18 +71,14 @@ function handleContinueAsClick() {
     setTimeout(() => passwordInput?.focus(), 50);
 }
 
-/* ===== Shake Animation ===== */
 function triggerShake() {
     if (!loginCard) return;
     loginCard.classList.remove("is-shaking");
     void loginCard.offsetWidth;
     loginCard.classList.add("is-shaking");
-    setTimeout(() => {
-        loginCard.classList.remove("is-shaking");
-    }, 500);
+    setTimeout(() => loginCard.classList.remove("is-shaking"), 500);
 }
 
-/* ===== Submit Timer ===== */
 function formatSubmitLabel(seconds) {
     if (seconds < 0.5) return "SIGNING IN";
     return "SIGNING IN (" + seconds.toFixed(1) + "s)";
@@ -107,13 +95,9 @@ function startSubmitTimer() {
 }
 
 function stopSubmitTimer() {
-    if (submitTimerId) {
-        clearInterval(submitTimerId);
-        submitTimerId = 0;
-    }
+    if (submitTimerId) { clearInterval(submitTimerId); submitTimerId = 0; }
 }
 
-/* ===== Busy ===== */
 function setBusy(busy) {
     isBusy = Boolean(busy);
     if (loginButton) {
@@ -123,12 +107,10 @@ function setBusy(busy) {
         if (label) label.textContent = isBusy ? "SIGNING IN" : "SIGN IN";
     }
     if (loginForm) loginForm.setAttribute("aria-busy", String(isBusy));
-
     if (isBusy) startSubmitTimer();
     else stopSubmitTimer();
 }
 
-/* ===== Smart Refocus ===== */
 function smartRefocusAfterError() {
     const username = usernameInput?.value.trim() || "";
     const password = passwordInput?.value || "";
@@ -140,29 +122,21 @@ function smartRefocusAfterError() {
     }
 }
 
-/* ===== Clear Error on Typing ===== */
 function wireInputClearOnType() {
-    const handler = () => {
-        if (formMessage?.textContent) setMessage("");
-    };
+    const handler = () => { if (formMessage?.textContent) setMessage(""); };
     usernameInput?.addEventListener("input", handler);
     passwordInput?.addEventListener("input", handler);
 }
 
-/* ===== Smart Initial Focus ===== */
 function smartInitialFocus() {
     if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
     setTimeout(() => {
         const userFilled = usernameInput?.value.trim() !== "";
-        if (userFilled && passwordInput) {
-            passwordInput.focus();
-        } else {
-            usernameInput?.focus();
-        }
+        if (userFilled && passwordInput) passwordInput.focus();
+        else usernameInput?.focus();
     }, 200);
 }
 
-/* ===== Login Handler ===== */
 async function handleLogin(event) {
     event.preventDefault();
     if (isBusy) return;
@@ -190,7 +164,9 @@ async function handleLogin(event) {
         const token = result?.token || result?.accessToken || result?.data?.token || result?.data?.accessToken;
         saveToken(token);
         saveLastUsername(username);
-        window.location.replace("/profile.html");
+
+        // ▼▼▼ INI PERUBAHANNYA — ke /home.html ▼▼▼
+        window.location.replace("/home.html");
     } catch (error) {
         clearToken();
         console.error("[GROWERA] Login gagal:", error);
@@ -205,7 +181,6 @@ async function handleLogin(event) {
     }
 }
 
-/* ===== Password Toggle ===== */
 function wirePasswordToggle() {
     const btn = $("#passwordToggle");
     if (!btn || !passwordInput) return;
@@ -222,7 +197,6 @@ function wirePasswordToggle() {
     });
 }
 
-/* ===== Caps Lock Warning ===== */
 function wireCapsLock() {
     const warn = $("#capsLockWarning");
     if (!warn) return;
@@ -234,35 +208,22 @@ function wireCapsLock() {
     document.addEventListener("keyup", check);
 }
 
-/* ===== Footer Year ===== */
 function updateFooterYear() {
-    const year = String(new Date().getFullYear());
-    if ($("#year")) $("#year").textContent = year;
+    if ($("#year")) $("#year").textContent = String(new Date().getFullYear());
 }
 
-/* ===== Init ===== */
 function init() {
-    // Prefill username + tampilkan Continue As kalau ada last username
     const last = getLastUsername();
     if (last && usernameInput) {
         usernameInput.value = last;
         showContinueAs(last);
     }
-
-    // Visibility listener (hide kalau user ketik username berbeda)
     usernameInput?.addEventListener("input", updateContinueAsVisibility);
-
-    // Continue As click
     continueAsBtn?.addEventListener("click", handleContinueAsClick);
-
-    // Clear error saat user ketik ulang
     wireInputClearOnType();
-
-    // Focus pintar (skip username kalau sudah prefilled)
     smartInitialFocus();
 }
 
-/* ===== Bootstrap ===== */
 loginForm?.addEventListener("submit", handleLogin);
 wirePasswordToggle();
 wireCapsLock();
