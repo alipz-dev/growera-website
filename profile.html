@@ -27,7 +27,8 @@
 <section class="profile-view" id="profileView" aria-labelledby="profileTitle">
 
     <header class="topbar" id="topbar">
-        <div class="login-brand compact">
+        <!-- CHANGED: brand jadi anchor ke home -->
+        <a href="/home.html" class="login-brand compact brand-home-link" aria-label="Back to home">
             <div class="brand-gem">
                 <img src="assets/itemimage/112.png" alt="" width="18" height="18" style="image-rendering:pixelated">
             </div>
@@ -35,7 +36,7 @@
                 <span class="brand-name">GROWERA</span>
                 <span class="brand-subtitle">CRYSTAL ERA</span>
             </div>
-        </div>
+        </a>
         <div class="topbar-actions">
             <button class="refresh-button" id="refreshButton" type="button" aria-label="Refresh profile" title="Refresh profile">
                 <img src="assets/itemimage/1274.png" alt="" width="20" height="20" style="image-rendering:pixelated">
@@ -245,7 +246,6 @@
 
 </main>
 
-
 <!-- EDIT DIALOG -->
 <dialog class="edit-dialog glass" id="editDialog">
     <form id="editForm" novalidate>
@@ -256,14 +256,12 @@
             </div>
             <button class="icon-button" id="editCloseBtn" type="button" aria-label="Close">×</button>
         </div>
-
         <div class="edit-scroll">
             <div class="edit-label-row">
                 <label for="editBio">BIO</label>
                 <span class="edit-counter" id="bioCounter">0 / 200</span>
             </div>
             <textarea id="editBio" maxlength="200" rows="3" placeholder="Ceritakan singkat tentang dirimu..." class="edit-textarea"></textarea>
-
             <label for="editAvatarId">AVATAR ITEM ID</label>
             <div class="avatar-picker">
                 <div class="avatar-preview" id="avatarPreview"><span class="avatar-placeholder">?</span></div>
@@ -273,7 +271,6 @@
                 </div>
             </div>
             <div class="avatar-presets" id="avatarPresets"></div>
-
             <div class="edit-row">
                 <div>
                     <label>COUNTRY</label>
@@ -285,7 +282,6 @@
                     <input id="editBirthdate" type="date">
                 </div>
             </div>
-
             <div class="edit-discord-section">
                 <label>DISCORD</label>
                 <div class="discord-bind" id="discordBind">
@@ -302,17 +298,14 @@
                     </button>
                 </div>
             </div>
-
             <p class="edit-error" id="editError" role="alert"></p>
         </div>
-
         <div class="dialog-actions">
             <button class="button button-quiet" id="editCancelBtn" type="button">CANCEL</button>
             <button class="button button-primary" id="editSaveBtn" type="submit"><span class="btn-label">SAVE CHANGES</span></button>
         </div>
     </form>
 </dialog>
-
 
 <!-- ACHIEVEMENTS DIALOG -->
 <dialog class="info-dialog glass" id="dialogAchievements">
@@ -338,7 +331,6 @@
     </div>
 </dialog>
 
-
 <!-- FRIENDS DIALOG -->
 <dialog class="info-dialog glass" id="dialogFriends">
     <div class="dialog-heading">
@@ -360,7 +352,6 @@
     </div>
 </dialog>
 
-
 <!-- FRIEND DETAIL DIALOG -->
 <dialog class="info-dialog glass friend-detail-dialog" id="dialogFriendDetail">
     <div class="dialog-heading">
@@ -379,28 +370,15 @@
             </div>
         </div>
         <div class="friend-detail-grid">
-            <div class="friend-detail-item">
-                <span>LEVEL</span>
-                <strong id="friendDetailLevel">—</strong>
-            </div>
-            <div class="friend-detail-item">
-                <span>GEMS</span>
-                <strong id="friendDetailGems">—</strong>
-            </div>
-            <div class="friend-detail-item">
-                <span>COUNTRY</span>
-                <strong id="friendDetailCountry">—</strong>
-            </div>
-            <div class="friend-detail-item">
-                <span>LAST SEEN</span>
-                <strong id="friendDetailLastSeen">—</strong>
-            </div>
+            <div class="friend-detail-item"><span>LEVEL</span><strong id="friendDetailLevel">—</strong></div>
+            <div class="friend-detail-item"><span>GEMS</span><strong id="friendDetailGems">—</strong></div>
+            <div class="friend-detail-item"><span>COUNTRY</span><strong id="friendDetailCountry">—</strong></div>
+            <div class="friend-detail-item"><span>LAST SEEN</span><strong id="friendDetailLastSeen">—</strong></div>
         </div>
         <div class="friend-detail-bio-label">BIO</div>
         <p class="friend-detail-bio" id="friendDetailBio">—</p>
     </div>
 </dialog>
-
 
 <!-- GUILD DIALOG -->
 <dialog class="info-dialog glass" id="dialogGuild">
@@ -425,7 +403,6 @@
                     <span class="guild-level-chip" id="guildLevel">LV 0</span>
                 </div>
             </div>
-
             <div class="guild-stats-grid">
                 <div class="guild-stat"><span>GUILD ID</span><strong id="guildId" data-copy>—</strong></div>
                 <div class="guild-stat"><span>LEVEL</span><strong id="guildLevelValue">—</strong></div>
@@ -434,7 +411,6 @@
                 <div class="guild-stat"><span>WORLD</span><strong id="guildWorld" data-copy>—</strong></div>
                 <div class="guild-stat"><span>CREATED</span><strong id="guildCreated">—</strong></div>
             </div>
-
             <div class="guild-members-section">
                 <div class="guild-members-head">
                     <span>MEMBERS ONLINE</span>
@@ -447,7 +423,6 @@
         <div class="tab-empty" id="guildEmpty" hidden>Kamu belum bergabung dengan guild mana pun.</div>
     </div>
 </dialog>
-
 
 <!-- PLAY TIME DIALOG -->
 <dialog class="info-dialog glass" id="dialogPlaytime">
@@ -465,7 +440,6 @@
                 <span>TOTAL PLAY TIME</span>
                 <strong id="playtimeTotal">—</strong>
             </div>
-
             <div class="playtime-chart-section">
                 <div class="playtime-chart-head">
                     <span>THIS WEEK</span>
@@ -473,7 +447,6 @@
                 </div>
                 <div class="playtime-chart" id="weeklyChart"></div>
             </div>
-
             <div class="playtime-chart-section">
                 <div class="playtime-chart-head">
                     <span>THIS MONTH</span>
