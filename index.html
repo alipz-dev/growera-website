@@ -9,7 +9,7 @@
 (function(){
     try {
         var token = localStorage.getItem("growera_session_token") || sessionStorage.getItem("growera_session_token");
-        if (token) { window.location.replace("/profile.html"); }
+        if (token) { window.location.replace("/home.html"); }  <!-- CHANGED: /profile.html → /home.html -->
     } catch(e) {}
 })();
 </script>
@@ -35,15 +35,12 @@
         </div>
     </div>
 
-    <!-- WRAPPER: fade-in animation applied here -->
     <div class="login-card-wrap">
-        <!-- INNER: shake animation applied here -->
         <div class="login-card glass">
             <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER PORTAL</div>
             <h1 id="loginTitle">Enter the<br><span>Crystal Era.</span></h1>
             <p class="muted intro">Your adventure continues here. Sign in to preview your player profile.</p>
 
-            <!-- Continue As -->
             <div class="continue-as-wrap" id="continueAsWrap" hidden>
                 <div class="continue-as-label">CONTINUE AS</div>
                 <button type="button" class="continue-as-btn" id="continueAsBtn" aria-label="Continue as last username">
