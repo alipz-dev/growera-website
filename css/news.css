@@ -345,47 +345,130 @@
     background: #f8d58c1a;
 }
 
-/* ===== News Detail Dialog ===== */
+/* ==================================================================
+   NEWS DETAIL DIALOG — Premium Animation
+   Opens with float-up + scale-in + backdrop blur fade
+   Closes with quick float-down + backdrop blur fade out
+   ================================================================== */
+
 .news-detail-dialog {
+    /* Base structural (self-contained) */
     width: min(600px, calc(100% - 28px));
+    padding: 0;
+    border-radius: 20px;
+    color: var(--text);
+    max-height: min(88vh, 720px);
+    overflow: hidden;
+
+    /* ===== CLOSE STATE (base) ===== */
+    opacity: 0;
+    transform: translateY(16px) scale(0.94);
+    transition:
+        opacity 0.22s cubic-bezier(0.4, 0, 1, 1),
+        transform 0.22s cubic-bezier(0.4, 0, 1, 1),
+        display 0.22s allow-discrete,
+        overlay 0.22s allow-discrete;
 }
 
-/* Back button — position di flex .dialog-heading (top-right otomatis) */
-.news-back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: transparent;
-    color: #cbd5ee;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    transition: border-color .15s, background .15s, color .15s, transform .1s;
-    -webkit-tap-highlight-color: transparent;
+/* ===== OPEN STATE ===== */
+.news-detail-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+        opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+        display 0.42s allow-discrete,
+        overlay 0.42s allow-discrete;
+}
+
+/* ===== STARTING POINT for open animation ===== */
+@starting-style {
+    .news-detail-dialog[open] {
+        opacity: 0;
+        transform: translateY(16px) scale(0.94);
+    }
+}
+
+/* ===== BACKDROP (base = closed) ===== */
+.news-detail-dialog::backdrop {
+    background-color: rgba(2, 5, 12, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition:
+        background-color 0.22s ease-in,
+        backdrop-filter 0.22s ease-in,
+        -webkit-backdrop-filter 0.22s ease-in;
+}
+
+/* ===== BACKDROP (open) ===== */
+.news-detail-dialog[open]::backdrop {
+    background-color: rgba(2, 5, 12, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition:
+        background-color 0.42s ease-out,
+        backdrop-filter 0.42s ease-out,
+        -webkit-backdrop-filter 0.42s ease-out;
+}
+
+@starting-style {
+    .news-detail-dialog[open]::backdrop {
+        background-color: rgba(2, 5, 12, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+}
+
+/* ===== Dialog internal structure ===== */
+.news-detail-dialog .dialog-heading {
+    padding: 22px 26px 16px;
+    margin: 0;
+    border-bottom: 1px solid var(--line);
     flex-shrink: 0;
-    align-self: flex-start;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
 }
 
-.news-back-btn:hover {
-    border-color: #8ce8ff40;
-    background: #8ce8ff08;
-    color: #9cecff;
+.news-detail-dialog .dialog-heading > div {
+    flex: 1;
+    min-width: 0;
 }
 
-.news-back-btn:active {
-    transform: scale(0.97);
+.news-detail-dialog .dialog-heading h2 {
+    margin: 9px 0 0;
+    font-family: var(--display);
+    font-size: 24px;
+    color: var(--text);
+    line-height: 1.3;
+    word-break: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
-.news-back-btn span[aria-hidden="true"] {
-    font-size: 13px;
-    line-height: 1;
+.news-detail-dialog .info-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 22px 22px;
+    scrollbar-width: thin;
+    scrollbar-color: #8ce8ff33 transparent;
 }
 
+.news-detail-dialog .info-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.news-detail-dialog .info-scroll::-webkit-scrollbar-thumb {
+    background: #8ce8ff26;
+    border-radius: 4px;
+}
+
+/* ===== Meta bar ===== */
 .news-detail-meta {
     display: flex;
     align-items: center;
@@ -409,6 +492,7 @@
     color: #667392;
 }
 
+/* ===== Body ===== */
 .news-detail-body {
     margin: 0;
     color: #cbd5ee;
@@ -421,6 +505,32 @@
     color: inherit;
     font-size: inherit;
     line-height: inherit;
+}
+
+/* ===== Subtle hint at bottom (optional visual cue) ===== */
+.news-detail-dialog::after {
+    content: "Tap outside to close";
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: monospace;
+    font-size: 9px;
+    color: #4b5670;
+    letter-spacing: 0.06em;
+    pointer-events: none;
+    opacity: 0.55;
+    transition: opacity 0.2s;
+}
+
+.news-detail-dialog[open]:hover::after {
+    opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+    .news-detail-dialog::after {
+        display: none;
+    }
 }
 
 /* ===== Post News Form (legacy — sekarang di admin.html) ===== */
@@ -562,9 +672,14 @@
         padding: 4px 8px;
         font-size: 9px;
     }
-    .news-back-btn {
-        padding: 7px 12px;
-        font-size: 10.5px;
+    .news-detail-dialog .dialog-heading {
+        padding: 18px 20px 14px;
+    }
+    .news-detail-dialog .dialog-heading h2 {
+        font-size: 20px;
+    }
+    .news-detail-dialog .info-scroll {
+        padding: 14px 16px 18px;
     }
 }
 
@@ -596,21 +711,23 @@
         top: -4px;
         right: -4px;
     }
-    .news-back-btn {
-        padding: 6px 10px;
-        font-size: 10px;
-        gap: 4px;
-    }
-    .news-back-btn span[aria-hidden="true"] {
-        font-size: 12px;
+    .news-detail-dialog .dialog-heading h2 {
+        font-size: 18px;
     }
 }
 
-/* ===== Reduced Motion ===== */
+/* ===== Reduced Motion — disable all animations ===== */
 @media (prefers-reduced-motion: reduce) {
     .news-card:hover { transform: none !important; }
     .news-new-dot { animation: none !important; }
     .admin-post-btn:active { transform: none !important; }
-    .news-back-btn { transition: none !important; }
-    .news-back-btn:active { transform: none !important; }
+
+    .news-detail-dialog,
+    .news-detail-dialog[open],
+    .news-detail-dialog::backdrop,
+    .news-detail-dialog[open]::backdrop {
+        transition: none !important;
+        opacity: 1;
+        transform: none;
+    }
 }
