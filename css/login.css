@@ -37,24 +37,27 @@
 @keyframes btn-spin{to{transform:rotate(360deg)}}
 
 /* ============================================================
-   UX TIER 1 — LOGIN ENHANCEMENTS
+   UX TIER 1 — LOGIN ENHANCEMENTS (wrapper-based, zero conflict)
    ============================================================ */
 
-/* ===== 5. Card Fade-in on Load ===== */
+/* ===== 5. Card Fade-in on Load (WRAPPER) ===== */
 @keyframes card-fade-in {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
-.login-card {
+
+/* Fade-in hanya di wrapper — play sekali seumur page load */
+.login-card-wrap {
     animation: card-fade-in 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-/* ===== 2. Error Shake Animation ===== */
+/* ===== 2. Error Shake Animation (CARD, separate element) ===== */
 @keyframes card-shake {
     0%, 100% { transform: translateX(0); }
     15%, 45%, 75% { transform: translateX(-8px); }
     30%, 60%, 90% { transform: translateX(8px); }
 }
+
 .login-card.is-shaking {
     animation: card-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
@@ -189,7 +192,7 @@
 
 /* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {
-    .login-card { animation: none !important; }
+    .login-card-wrap { animation: none !important; }
     .login-card.is-shaking { animation: none !important; }
     .button-primary:not(:disabled):hover { animation: none !important; }
     .continue-as-wrap { animation: none !important; }
