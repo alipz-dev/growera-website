@@ -1,0 +1,176 @@
+/* css/ux-polish.css — UX Enhancement Tier 1 */
+
+/* ===== 1. Skeleton Loaders ===== */
+@keyframes skel-pulse {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+body.is-loading [data-skel] {
+    color: transparent !important;
+    position: relative;
+    user-select: none;
+    pointer-events: none;
+}
+
+body.is-loading [data-skel]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 0.7em;
+    background: linear-gradient(90deg, #1a2540 25%, #2a3555 50%, #1a2540 75%);
+    background-size: 200% 100%;
+    animation: skel-pulse 1.4s ease-in-out infinite;
+    border-radius: 4px;
+    opacity: 0.85;
+}
+
+/* Skeleton khusus bio (kotak besar) */
+body.is-loading #bioValue[data-skel]::after {
+    top: 10px;
+    bottom: 10px;
+    left: 12px;
+    right: 12px;
+    height: auto;
+    transform: none;
+}
+
+/* Skeleton khusus badge (kecil) */
+body.is-loading .tiny-badge[data-skel]::after {
+    height: 0.55em;
+    left: -2px;
+    right: -2px;
+}
+
+/* Skeleton XP track — full width */
+body.is-loading #xpFill {
+    background-image: linear-gradient(90deg, #1a2540 25%, #2a3555 50%, #1a2540 75%) !important;
+    background-size: 200% 100% !important;
+    animation: skel-pulse 1.4s ease-in-out infinite;
+    width: 100% !important;
+}
+
+/* ===== 2. Copy on Click ===== */
+[data-copy] {
+    cursor: pointer;
+    position: relative;
+    transition: color .15s, text-shadow .15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+[data-copy]:hover {
+    color: #b5ecff !important;
+    text-shadow: 0 0 12px rgba(140, 232, 255, 0.35);
+}
+
+[data-copy]:active {
+    transform: scale(0.97);
+}
+
+[data-copy].is-copied {
+    color: #72f0bd !important;
+    text-shadow: 0 0 12px rgba(114, 240, 189, 0.5);
+}
+
+body.is-loading [data-copy] {
+    pointer-events: none;
+    cursor: default;
+}
+
+/* ===== 3. Last Updated ===== */
+.dashboard-meta-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.last-updated {
+    font-family: monospace;
+    font-size: 10px;
+    color: #667392;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #ffffff08;
+    border: 1px solid var(--line);
+    transition: color .3s, border-color .3s;
+    white-space: nowrap;
+}
+
+.last-updated.is-fresh {
+    color: #72f0bd;
+    border-color: #72f0bd33;
+}
+
+.last-updated.is-stale {
+    color: #f8d58c;
+    border-color: #f8d58c33;
+}
+
+/* ===== 4. Sticky Header ===== */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(8, 13, 25, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    margin-top: -8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid transparent;
+    transition: background .25s, backdrop-filter .25s,
+                -webkit-backdrop-filter .25s, border-color .25s,
+                padding .25s;
+}
+
+.topbar.is-scrolled {
+    background: rgba(8, 13, 25, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom-color: var(--line);
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-heading {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .dashboard-meta-right {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+/* ===== 5. XP Bar Animation ===== */
+.xp-fill {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: width;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+    .xp-fill { transition: none !important; }
+    body.is-loading [data-skel]::after { animation: none !important; }
+    body.is-loading #xpFill { animation: none !important; }
+    .topbar { transition: none !important; }
+}
