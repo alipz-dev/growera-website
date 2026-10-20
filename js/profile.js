@@ -1,7 +1,6 @@
 // js/profile.js
 // Logic untuk profile page (profile.html)
-// v4: item images 100% LOCAL dari Vercel CDN (no GTPS fallback)
-// + logger untuk item yang hilang → cek di console: __growera_missing_items()
+// v5: UX Tier 1 (skeleton, copy, last updated, sticky, XP animation)
 
 import {
     apiRequest,
@@ -25,6 +24,11 @@ let isAuthenticated = false;
 let isBusy = false;
 let isSavingEdit = false;
 
+// UX state
+let lastRefreshAt = 0;       // timestamp ms terakhir data berhasil di-render
+let lastUpdatedTimerId = 0;  // setInterval id untuk update text "Updated Xs ago"
+let previousXp = 0;          // XP terakhir yang ditampilkan (untuk animasi)
+
 const player = {
     username: "Player", displayName: "Player", role: "player",
     level: 1, xp: 0, nextLevelXp: 1, gems: 0, playtime: 0, online: false,
@@ -35,14 +39,12 @@ const player = {
 /* ===== Item Image Loader (LOCAL ONLY) ===== */
 const missingItemIds = new Set();
 
-// Debug helper — buka F12 Console, ketik: __growera_missing_items()
 window.__growera_missing_items = () => {
     const list = Array.from(missingItemIds).sort((a, b) => a - b);
     console.log("[GROWERA] Missing item IDs (" + list.length + "):", list);
     return list;
 };
 
-// Debug helper — print ke console sebagai list siap download
 window.__growera_missing_report = () => {
     const list = Array.from(missingItemIds).sort((a, b) => a - b);
     if (!list.length) {
@@ -66,18 +68,203 @@ function loadItemImage(img, itemId, onFail) {
         if (typeof onFail === "function") onFail();
         return;
     }
-
     const local = itemImageUrl(n);
     if (!local) {
         if (typeof onFail === "function") onFail();
         return;
     }
-
     img.src = local;
     img.addEventListener("error", () => {
         missingItemIds.add(n);
         if (typeof onFail === "function") onFail();
     }, { once: true });
+}
+
+/* ===== Skeleton Loading Toggle ===== */
+function setSkeletonLoading(loading) {
+    document.body.classList.toggle("is-loading", Boolean(loading));
+}
+
+/* ===== Last Updated Timer ===== */
+function startLastUpdatedTimer() {
+    if (lastUpdatedTimerId) clearInterval(lastUpdatedTimerId);
+    lastUpdatedTimerId = setInterval(updateLastUpdatedText, 1000);
+    updateLastUpdatedText();
+}
+
+function updateLastUpdatedText() {
+    const el = $("#lastUpdated");
+    if (!el) return;
+
+    if (!lastRefreshAt) {
+        el.textContent = "Loading...";
+        el.classList.remove("is-fresh", "is-stale");
+        return;
+    }
+
+    const seconds = Math.max(0, Math.floor((Date.now() - lastRefreshAt) / 1000));
+    el.classList.remove("is-fresh", "is-stale");
+
+    if (seconds < 5) {
+        el.textContent = "Updated just now";
+        el.classList.add("is-fresh");
+    } else if (seconds < 60) {
+        el.textContent = "Updated " + seconds + "s ago";
+        if (seconds < 30) el.classList.add("is-fresh");
+    } else if (seconds < 3600) {
+        const m = Math.floor(seconds / 60);
+        el.textContent = "Updated " + m + "m ago";
+    } else {
+        const h = Math.floor(seconds / 3600);
+        el.textContent = "Updated " + h + "h ago";
+        el.classList.add("is-stale");
+    }
+}
+
+function markRefreshed() {
+    lastRefreshAt = Date.now();
+    updateLastUpdatedText();
+}
+
+/* ===== Copy on Click ===== */
+function showCopyFeedback(el) {
+    if (!el) return;
+    el.classList.add("is-copied");
+    setTimeout(() => el.classList.remove("is-copied"), 800);
+}
+
+async function copyText(text) {
+    if (!text) return false;
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(String(text));
+            return true;
+        }
+    } catch (e) {
+        console.warn("[GROWERA] clipboard API gagal:", e);
+    }
+    // Fallback (Android lama / non-secure context)
+    try {
+        const ta = document.createElement("textarea");
+        ta.value = String(text);
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0;";
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return ok;
+    } catch (e) {
+        console.warn("[GROWERA] execCommand copy gagal:", e);
+        return false;
+    }
+}
+
+function getCopyValue(el) {
+    if (!el) return "";
+    const raw = el.dataset.copyValue;
+    if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
+        return String(raw);
+    }
+    return String(el.textContent || "").trim();
+}
+
+function wireCopyHandlers() {
+    document.body.addEventListener("click", async (e) => {
+        const target = e.target.closest("[data-copy]");
+        if (!target) return;
+        if (document.body.classList.contains("is-loading")) return;
+
+        const value = getCopyValue(target);
+        if (!value || value === "—" || value === "#—" || value === "@player") return;
+
+        const ok = await copyText(value);
+        if (ok) {
+            showCopyFeedback(target);
+            toast("Copied: " + value, "success", 1800);
+        } else {
+            toast("Gagal copy. Coba lagi.", "error", 2200);
+        }
+    });
+}
+
+/* ===== XP Bar Animation ===== */
+function animateXPBar(fromXp, toXp, targetXp) {
+    const fill = $("#xpFill");
+    const currentEl = $("#xpCurrent");
+    const percentEl = $("#xpPercent");
+    if (!fill) return;
+
+    const next = Math.max(1, toNumber(targetXp, 1));
+
+    // Respect reduced motion
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const pct = Math.min(100, Math.round((toXp / next) * 100));
+        fill.style.width = pct + "%";
+        if (currentEl) currentEl.textContent = fmt(toXp) + " XP";
+        if (percentEl) percentEl.textContent = pct + "%";
+        previousXp = toXp;
+        return;
+    }
+
+    // Reset ke posisi lama (animasi dari 0 kalau previousXp belum ada)
+    const startPct = Math.min(100, Math.round((fromXp / next) * 100));
+    fill.style.transition = "none";
+    fill.style.width = startPct + "%";
+
+    // Force reflow supaya browser acknowledge perubahan
+    void fill.offsetWidth;
+
+    // Aktifkan transition dan set target
+    fill.style.transition = "";
+    const endPct = Math.min(100, Math.round((toXp / next) * 100));
+    requestAnimationFrame(() => {
+        fill.style.width = endPct + "%";
+    });
+
+    // Counter animate (angka & percent ikut naik)
+    if (currentEl || percentEl) {
+        const duration = 800;
+        const start = performance.now();
+        function tick(now) {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+            const cur = Math.round(fromXp + (toXp - fromXp) * eased);
+            const pct = Math.min(100, Math.round((cur / next) * 100));
+            if (currentEl) currentEl.textContent = fmt(cur) + " XP";
+            if (percentEl) percentEl.textContent = pct + "%";
+            if (t < 1) requestAnimationFrame(tick);
+            else {
+                if (currentEl) currentEl.textContent = fmt(toXp) + " XP";
+                if (percentEl) percentEl.textContent = endPct + "%";
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+
+    previousXp = toXp;
+}
+
+/* ===== Sticky Topbar ===== */
+function wireStickyTopbar() {
+    const topbar = $("#topbar");
+    if (!topbar) return;
+
+    let ticking = false;
+
+    function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const scrolled = window.scrollY > 8;
+            topbar.classList.toggle("is-scrolled", scrolled);
+            ticking = false;
+        });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
 }
 
 /* ===== Normalize ===== */
@@ -129,9 +316,11 @@ function setMetaValue(id, value, emptyText = "—") {
     if (value === undefined || value === null || String(value).trim() === "") {
         el.textContent = emptyText;
         if (item) item.classList.add("is-empty");
+        el.dataset.copyValue = "";
     } else {
         el.textContent = String(value);
         if (item) item.classList.remove("is-empty");
+        el.dataset.copyValue = String(value);
     }
 }
 
@@ -143,9 +332,11 @@ function setCountryValue(code) {
     if (!code || !/^[A-Z]{2}$/.test(code)) {
         el.textContent = "—";
         if (item) item.classList.add("is-empty");
+        el.dataset.copyValue = "";
         return;
     }
     if (item) item.classList.remove("is-empty");
+    el.dataset.copyValue = code;
     const img = document.createElement("img");
     img.src = flagUrl(code);
     img.alt = code;
@@ -161,7 +352,9 @@ function renderProfile() {
     if ($("#welcomeName")) $("#welcomeName").textContent = name;
     if ($("#profileName")) $("#profileName").textContent = name;
     if ($("#profileHandle")) {
-        $("#profileHandle").textContent = "@" + name.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24);
+        const handle = "@" + name.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 24);
+        $("#profileHandle").textContent = handle;
+        $("#profileHandle").dataset.copyValue = handle;
     }
     const avatarEl = $("#avatarInitial");
     if (avatarEl) {
@@ -184,34 +377,50 @@ function renderProfile() {
         if (player.role === "admin") { roleBadge.classList.add("role-admin"); roleBadge.textContent = "ADMIN"; }
         else { roleBadge.classList.add("role-player"); roleBadge.textContent = "PLAYER"; }
     }
-    if ($("#levelValue")) $("#levelValue").textContent = fmt(player.level);
-    if ($("#gemsValue")) $("#gemsValue").textContent = fmt(player.gems);
+    if ($("#levelValue")) {
+        $("#levelValue").textContent = fmt(player.level);
+        $("#levelValue").dataset.copyValue = String(player.level);
+    }
+    if ($("#gemsValue")) {
+        $("#gemsValue").textContent = fmt(player.gems);
+        $("#gemsValue").dataset.copyValue = String(player.gems);
+    }
+
+    // XP — animate kalau data berubah
     const xp = Math.max(0, toNumber(player.xp));
     const next = Math.max(1, toNumber(player.nextLevelXp, 1));
-    const percent = Math.min(100, Math.round((xp / next) * 100));
-    if ($("#xpPercent")) $("#xpPercent").textContent = percent + "%";
-    if ($("#xpFill")) $("#xpFill").style.width = percent + "%";
-    if ($("#xpCurrent")) $("#xpCurrent").textContent = fmt(xp) + " XP";
     if ($("#xpNext")) $("#xpNext").textContent = fmt(next) + " XP";
-    if ($("#playtimeValue")) $("#playtimeValue").textContent = fmtPlaytime(player.playtime);
+    animateXPBar(previousXp, xp, next);
+    if ($("#xpCurrent")) $("#xpCurrent").dataset.copyValue = String(xp);
+
+    if ($("#playtimeValue")) {
+        $("#playtimeValue").textContent = fmtPlaytime(player.playtime);
+        $("#playtimeValue").dataset.copyValue = String(Math.floor(player.playtime));
+    }
+
     const bio = $("#bioValue");
     if (bio) {
-        if (player.bio) { bio.textContent = player.bio; bio.classList.remove("is-empty"); }
-        else { bio.textContent = "Belum ada bio."; bio.classList.add("is-empty"); }
+        if (player.bio) { bio.textContent = player.bio; bio.classList.remove("is-empty"); bio.dataset.copyValue = player.bio; }
+        else { bio.textContent = "Belum ada bio."; bio.classList.add("is-empty"); bio.dataset.copyValue = ""; }
     }
     setCountryValue(player.country);
     setMetaValue("#birthdateValue", fmtBirthdate(player.birthdate));
     setMetaValue("#discordValue", player.discordUsername ? "@" + player.discordUsername : "");
     setMetaValue("#memberSinceValue", fmtDateId(player.createdAt));
 
-    if ($("#todayDate")) $("#todayDate").textContent = player.todayDate || "—";
+    if ($("#todayDate")) {
+        $("#todayDate").textContent = player.todayDate || "—";
+        $("#todayDate").dataset.copyValue = player.todayDate || "";
+    }
     if ($("#todayEvents")) {
         if (player.todayEvents) {
             $("#todayEvents").textContent = player.todayEvents;
             $("#todayEvents").style.color = "";
+            $("#todayEvents").dataset.copyValue = player.todayEvents;
         } else {
             $("#todayEvents").textContent = "No events today";
             $("#todayEvents").style.color = "#4b5670";
+            $("#todayEvents").dataset.copyValue = "";
         }
     }
 
@@ -335,16 +544,23 @@ function setProfileLoading(loading) {
 
 async function refreshProfile(silent = false) {
     if (isBusy) return;
+    isBusy = true;
     setProfileLoading(true);
+    if (!silent) setSkeletonLoading(true);
     try {
         await bootstrapProfile();
         renderProfile();
+        markRefreshed();
         if (!silent) toast("Profil diperbarui.", "info", 2200);
     } catch (error) {
         console.error("[GROWERA] Refresh gagal:", error);
         if (error.isAuthError) forceLogout();
         else if (!silent) toast("Gagal refresh: " + error.message, "error");
-    } finally { setProfileLoading(false); }
+    } finally {
+        setProfileLoading(false);
+        setSkeletonLoading(false);
+        isBusy = false;
+    }
 }
 
 /* ===== Logout ===== */
@@ -355,6 +571,10 @@ function forceLogout(message) {
     closeEditDialog();
     closeAllInfoDialogs();
     resetStatCardValues();
+    if (lastUpdatedTimerId) {
+        clearInterval(lastUpdatedTimerId);
+        lastUpdatedTimerId = 0;
+    }
     if (message) toast(message, "info");
     window.location.replace("/");
 }
@@ -549,6 +769,7 @@ async function handleEditSubmit(event) {
         const updated = normalizePlayer(result);
         Object.assign(player, updated);
         renderProfile();
+        markRefreshed();
         closeEditDialog();
         toast("Profil berhasil disimpan.", "success");
     } catch (error) {
@@ -973,7 +1194,9 @@ function openFriendDetail(friend) {
     }
 
     if ($("#friendDetailId")) {
-        $("#friendDetailId").textContent = friend.userID > 0 ? "#" + friend.userID : "#—";
+        const idText = friend.userID > 0 ? "#" + friend.userID : "#—";
+        $("#friendDetailId").textContent = idText;
+        $("#friendDetailId").dataset.copyValue = friend.userID > 0 ? String(friend.userID) : "";
     }
     if ($("#friendDetailLevel")) $("#friendDetailLevel").textContent = String(Number(friend.level) || 1);
     if ($("#friendDetailGems")) $("#friendDetailGems").textContent = fmt(Number(friend.gems) || 0);
@@ -1109,17 +1332,23 @@ async function loadGuildDialog() {
                 else { $("#guildDesc").textContent = "Tidak ada deskripsi."; $("#guildDesc").style.color = "#4b5670"; }
             }
             if ($("#guildLevel")) $("#guildLevel").textContent = "LV " + (guild.level || 0);
-            if ($("#guildId")) $("#guildId").textContent = "#" + guild.id;
+            if ($("#guildId")) {
+                $("#guildId").textContent = "#" + guild.id;
+                $("#guildId").dataset.copyValue = String(guild.id);
+            }
             if ($("#guildLevelValue")) $("#guildLevelValue").textContent = guild.level || 0;
             if ($("#guildXp")) $("#guildXp").textContent = fmt(guild.xp || 0);
             if ($("#guildPoints")) $("#guildPoints").textContent = fmt(guild.points || 0);
-            if ($("#guildWorld")) $("#guildWorld").textContent = guild.worldID > 0 ? ("#" + guild.worldID) : "—";
+            if ($("#guildWorld")) {
+                const worldText = guild.worldID > 0 ? ("#" + guild.worldID) : "—";
+                $("#guildWorld").textContent = worldText;
+                $("#guildWorld").dataset.copyValue = guild.worldID > 0 ? String(guild.worldID) : "";
+            }
             if ($("#guildCreated")) $("#guildCreated").textContent = fmtGuildDate(guild.created);
 
             const mascotWrap = $("#guildMascotWrap"), mascotImg = $("#guildMascotImg"), mascotFallback = $("#guildMascotFallback");
             if (mascotWrap) mascotWrap.querySelectorAll(".guild-mascot-bg").forEach((el) => el.remove());
 
-            // Mascot BG — LOCAL ONLY with logger
             if (guild.mascotBg > 0 && mascotWrap) {
                 const bg = document.createElement("div");
                 bg.className = "guild-mascot-bg";
@@ -1136,7 +1365,6 @@ async function loadGuildDialog() {
                 mascotWrap.insertBefore(bg, mascotWrap.firstChild);
             }
 
-            // Mascot FG — LOCAL ONLY
             const fgId = (guild.mascotFg > 0) ? guild.mascotFg : (guild.mascotDisplay > 0 ? guild.mascotDisplay : 0);
             if (fgId > 0 && mascotImg) {
                 mascotImg.style.display = "block";
@@ -1269,6 +1497,10 @@ function wireEvents() {
     $("#friendsSearch")?.addEventListener("input", (e) => {
         renderFriendsList(e.target.value);
     });
+
+    // UX Tier 1
+    wireCopyHandlers();
+    wireStickyTopbar();
 }
 
 /* ===== Footer Year ===== */
@@ -1286,9 +1518,13 @@ async function init() {
     }
 
     isBusy = true;
+    setSkeletonLoading(true);
+    startLastUpdatedTimer();
+
     try {
         await bootstrapProfile();
         renderProfile();
+        markRefreshed();
         autoFillCountryIfEmpty();
     } catch (error) {
         console.error("[GROWERA] Init gagal:", error);
@@ -1299,6 +1535,7 @@ async function init() {
         }
         toast("Gagal memuat profil: " + error.message, "error");
     } finally {
+        setSkeletonLoading(false);
         isBusy = false;
     }
 }
