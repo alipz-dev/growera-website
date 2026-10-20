@@ -1,5 +1,6 @@
 // js/login.js
-// Login page logic + UX Tier 1 (remember username, continue-as, shake, timer, smart focus)
+// Login page logic + UX Tier 1
+// Wrapper-based fade-in (CSS) → no JS timer for animation class
 
 import { apiRequest, saveToken, clearToken } from "./core.js";
 
@@ -12,7 +13,7 @@ const formMessage = $("#formMessage");
 const loginButton = $("#loginButton");
 const usernameInput = $("#username");
 const passwordInput = $("#password");
-const loginCard = document.querySelector(".login-card");
+const loginCard = document.querySelector(".login-card");  // inner card untuk shake
 const continueAsWrap = $("#continueAsWrap");
 const continueAsBtn = $("#continueAsBtn");
 const continueAsAvatar = $("#continueAsAvatar");
