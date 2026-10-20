@@ -16,7 +16,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/friends.css">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/friends.css"><link rel="stylesheet" href="css/ux-polish.css">
 </head>
 <body>
 
@@ -26,7 +26,7 @@
 
 <section class="profile-view" id="profileView" aria-labelledby="profileTitle">
 
-    <header class="topbar">
+    <header class="topbar" id="topbar">
         <div class="login-brand compact">
             <div class="brand-gem">
                 <img src="assets/itemimage/112.png" alt="" width="18" height="18" style="image-rendering:pixelated">
@@ -50,12 +50,15 @@
     <div class="dashboard-heading">
         <div>
             <div class="eyebrow"><span class="eyebrow-line"></span> PLAYER ACCOUNT</div>
-            <h1 id="profileTitle">Welcome back, <span id="welcomeName">Player</span>.</h1>
+            <h1 id="profileTitle">Welcome back, <span id="welcomeName" data-skel>Player</span>.</h1>
             <p class="muted">Your Crystal Era journey at a glance.</p>
         </div>
-        <div class="online-pill" id="onlinePill">
-            <span class="status-dot"></span>
-            <span id="onlineText">OFFLINE</span>
+        <div class="dashboard-meta-right">
+            <div class="online-pill" id="onlinePill">
+                <span class="status-dot"></span>
+                <span id="onlineText">OFFLINE</span>
+            </div>
+            <span class="last-updated" id="lastUpdated">Loading...</span>
         </div>
     </div>
 
@@ -64,15 +67,15 @@
         <article class="player-card glass">
             <div class="card-topline">
                 <span>PLAYER PROFILE</span>
-                <span class="tiny-badge" id="roleBadge">PLAYER</span>
+                <span class="tiny-badge" id="roleBadge" data-skel>PLAYER</span>
             </div>
 
             <div class="avatar-orbit">
                 <div class="avatar" id="avatarInitial">P</div>
             </div>
 
-            <h2 id="profileName">Player</h2>
-            <p class="player-handle" id="profileHandle">@player</p>
+            <h2 id="profileName" data-skel>Player</h2>
+            <p class="player-handle" id="profileHandle" data-copy>@player</p>
             <div class="rank-chip" id="rankChip">
                 <img src="assets/itemimage/262.png" alt="" width="12" height="12" style="image-rendering:pixelated">
                 <span>CRYSTAL EXPLORER</span>
@@ -83,22 +86,22 @@
             <div class="mini-stats">
                 <div>
                     <img class="mini-stat-icon" src="assets/itemimage/1488.png" alt="Level" width="30" height="30" loading="lazy" style="image-rendering:pixelated">
-                    <strong id="levelValue">—</strong>
+                    <strong id="levelValue" data-skel data-copy>—</strong>
                 </div>
                 <div>
                     <img class="mini-stat-icon" src="assets/itemimage/9438.png" alt="Gems" width="30" height="30" loading="lazy" style="image-rendering:pixelated">
-                    <strong id="gemsValue">—</strong>
+                    <strong id="gemsValue" data-skel data-copy>—</strong>
                 </div>
             </div>
 
             <div class="xp-heading">
                 <span>EXPERIENCE</span>
-                <span id="xpPercent">0%</span>
+                <span id="xpPercent" data-skel>0%</span>
             </div>
             <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
             <div class="xp-caption">
-                <span id="xpCurrent">0 XP</span>
-                <span id="xpNext">1 XP</span>
+                <span id="xpCurrent" data-skel>0 XP</span>
+                <span id="xpNext" data-skel>1 XP</span>
             </div>
 
             <button class="button button-outline button-wide" id="editPreviewButton" type="button">
@@ -158,14 +161,14 @@
             <article class="profile-meta glass">
                 <div class="meta-header">
                     <h3>ABOUT ME</h3>
-                    <span class="tiny-badge" id="memberSinceBadge">—</span>
+                    <span class="tiny-badge" id="memberSinceBadge" data-skel>—</span>
                 </div>
-                <p class="meta-bio" id="bioValue">Belum ada bio.</p>
+                <p class="meta-bio" id="bioValue" data-skel>Belum ada bio.</p>
                 <div class="meta-grid">
-                    <div class="meta-item" id="metaCountry"><span class="meta-label">COUNTRY</span><strong id="countryValue">—</strong></div>
-                    <div class="meta-item" id="metaBirthdate"><span class="meta-label">BIRTHDATE</span><strong id="birthdateValue">—</strong></div>
-                    <div class="meta-item" id="metaDiscord"><span class="meta-label">DISCORD</span><strong id="discordValue">—</strong></div>
-                    <div class="meta-item" id="metaMemberSince"><span class="meta-label">MEMBER SINCE</span><strong id="memberSinceValue">—</strong></div>
+                    <div class="meta-item" id="metaCountry"><span class="meta-label">COUNTRY</span><strong id="countryValue" data-skel>—</strong></div>
+                    <div class="meta-item" id="metaBirthdate"><span class="meta-label">BIRTHDATE</span><strong id="birthdateValue" data-skel>—</strong></div>
+                    <div class="meta-item" id="metaDiscord"><span class="meta-label">DISCORD</span><strong id="discordValue" data-skel>—</strong></div>
+                    <div class="meta-item" id="metaMemberSince"><span class="meta-label">MEMBER SINCE</span><strong id="memberSinceValue" data-skel>—</strong></div>
                 </div>
             </article>
 
@@ -186,14 +189,14 @@
                             <span class="today-emoji">📅</span>
                             <div class="today-text">
                                 <span class="today-label">TODAY</span>
-                                <strong id="todayDate">—</strong>
+                                <strong id="todayDate" data-skel>—</strong>
                             </div>
                         </div>
                         <div class="today-row">
                             <span class="today-emoji">🎉</span>
                             <div class="today-text">
                                 <span class="today-label">EVENTS</span>
-                                <span id="todayEvents">—</span>
+                                <span id="todayEvents" data-skel>—</span>
                             </div>
                         </div>
                     </div>
@@ -206,25 +209,25 @@
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogAchievements" aria-label="Open achievements">
                     <div class="stat-icon purple"><img src="assets/itemimage/1458.png" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">ACHIEVEMENTS</span>
-                    <strong id="statAchValue">—</strong>
+                    <strong id="statAchValue" data-skel>—</strong>
                     <p>Milestones await</p>
                 </article>
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogFriends" aria-label="Open friends list">
                     <div class="stat-icon cyan"><img src="assets/itemimage/980.png" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">FRIENDS</span>
-                    <strong id="statFriendsValue">—</strong>
+                    <strong id="statFriendsValue" data-skel>—</strong>
                     <p>Your allies</p>
                 </article>
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogGuild" aria-label="Open guild info">
                     <div class="stat-icon purple"><img src="assets/itemimage/1744.png" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">GUILD</span>
-                    <strong id="statGuildValue">—</strong>
+                    <strong id="statGuildValue" data-skel>—</strong>
                     <p>Team legacy</p>
                 </article>
                 <article class="stat-card glass is-clickable" role="button" tabindex="0" data-open-dialog="dialogPlaytime" aria-label="Open play time stats">
                     <div class="stat-icon cyan"><img src="assets/itemimage/7162.png" alt="" width="20" height="20" style="image-rendering:pixelated"></div>
                     <span class="stat-label">PLAY TIME</span>
-                    <strong id="playtimeValue">—</strong>
+                    <strong id="playtimeValue" data-skel data-copy>—</strong>
                     <p>Adventure history</p>
                 </article>
             </div>
@@ -336,7 +339,7 @@
 </dialog>
 
 
-<!-- FRIENDS DIALOG (with search) -->
+<!-- FRIENDS DIALOG -->
 <dialog class="info-dialog glass" id="dialogFriends">
     <div class="dialog-heading">
         <div>
@@ -372,7 +375,7 @@
             <div class="friend-detail-avatar" id="friendDetailAvatar">?</div>
             <div class="friend-detail-info">
                 <div class="friend-detail-status" id="friendDetailStatus">—</div>
-                <div class="friend-detail-id" id="friendDetailId">#—</div>
+                <div class="friend-detail-id" id="friendDetailId" data-copy>#—</div>
             </div>
         </div>
         <div class="friend-detail-grid">
@@ -424,11 +427,11 @@
             </div>
 
             <div class="guild-stats-grid">
-                <div class="guild-stat"><span>GUILD ID</span><strong id="guildId">—</strong></div>
+                <div class="guild-stat"><span>GUILD ID</span><strong id="guildId" data-copy>—</strong></div>
                 <div class="guild-stat"><span>LEVEL</span><strong id="guildLevelValue">—</strong></div>
                 <div class="guild-stat"><span>XP</span><strong id="guildXp">—</strong></div>
                 <div class="guild-stat"><span>POINTS</span><strong id="guildPoints">—</strong></div>
-                <div class="guild-stat"><span>WORLD</span><strong id="guildWorld">—</strong></div>
+                <div class="guild-stat"><span>WORLD</span><strong id="guildWorld" data-copy>—</strong></div>
                 <div class="guild-stat"><span>CREATED</span><strong id="guildCreated">—</strong></div>
             </div>
 
