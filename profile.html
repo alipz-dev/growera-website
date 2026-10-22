@@ -16,7 +16,20 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/friends.css"><link rel="stylesheet" href="css/ux-polish.css">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/friends.css"><link rel="stylesheet" href="css/ux-polish.css"><link rel="stylesheet" href="css/growtopia-theme.css" id="gt-theme-link" disabled>
+
+<script>
+(function(){
+    try {
+        var theme = localStorage.getItem("growera_theme") || "crystal";
+        document.documentElement.setAttribute("data-theme", theme);
+        if (theme === "growtopia") {
+            var link = document.getElementById("gt-theme-link");
+            if (link) link.disabled = false;
+        }
+    } catch(e){}
+})();
+</script>
 </head>
 <body>
 
@@ -27,7 +40,6 @@
 <section class="profile-view" id="profileView" aria-labelledby="profileTitle">
 
     <header class="topbar" id="topbar">
-        <!-- CHANGED: brand jadi anchor ke home -->
         <a href="/home.html" class="login-brand compact brand-home-link" aria-label="Back to home">
             <div class="brand-gem">
                 <img src="assets/itemimage/112.png" alt="" width="18" height="18" style="image-rendering:pixelated">
@@ -246,7 +258,6 @@
 
 </main>
 
-<!-- EDIT DIALOG -->
 <dialog class="edit-dialog glass" id="editDialog">
     <form id="editForm" novalidate>
         <div class="dialog-heading">
@@ -307,7 +318,6 @@
     </form>
 </dialog>
 
-<!-- ACHIEVEMENTS DIALOG -->
 <dialog class="info-dialog glass" id="dialogAchievements">
     <div class="dialog-heading">
         <div>
@@ -331,7 +341,6 @@
     </div>
 </dialog>
 
-<!-- FRIENDS DIALOG -->
 <dialog class="info-dialog glass" id="dialogFriends">
     <div class="dialog-heading">
         <div>
@@ -352,7 +361,6 @@
     </div>
 </dialog>
 
-<!-- FRIEND DETAIL DIALOG -->
 <dialog class="info-dialog glass friend-detail-dialog" id="dialogFriendDetail">
     <div class="dialog-heading">
         <div>
@@ -380,7 +388,6 @@
     </div>
 </dialog>
 
-<!-- GUILD DIALOG -->
 <dialog class="info-dialog glass" id="dialogGuild">
     <div class="dialog-heading">
         <div>
@@ -424,7 +431,6 @@
     </div>
 </dialog>
 
-<!-- PLAY TIME DIALOG -->
 <dialog class="info-dialog glass" id="dialogPlaytime">
     <div class="dialog-heading">
         <div>
