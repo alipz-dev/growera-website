@@ -16,7 +16,20 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/news.css"><link rel="stylesheet" href="css/markdown.css">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/news.css"><link rel="stylesheet" href="css/markdown.css"><link rel="stylesheet" href="css/growtopia-theme.css" id="gt-theme-link" disabled>
+
+<script>
+(function(){
+    try {
+        var theme = localStorage.getItem("growera_theme") || "crystal";
+        document.documentElement.setAttribute("data-theme", theme);
+        if (theme === "growtopia") {
+            var link = document.getElementById("gt-theme-link");
+            if (link) link.disabled = false;
+        }
+    } catch(e){}
+})();
+</script>
 </head>
 <body>
 
@@ -62,7 +75,6 @@
         </div>
     </div>
 
-    <!-- Access denied overlay -->
     <div class="admin-denied" id="adminDenied" hidden>
         <div class="admin-denied-card glass">
             <div class="admin-denied-icon">🔒</div>
@@ -74,10 +86,8 @@
         </div>
     </div>
 
-    <!-- Admin content -->
     <div class="admin-content" id="adminContent" hidden>
 
-        <!-- Toolbar -->
         <div class="admin-toolbar">
             <div class="admin-toolbar-left">
                 <span class="admin-stat">
@@ -94,17 +104,14 @@
             </button>
         </div>
 
-        <!-- Loading -->
         <div class="admin-loading" id="adminLoading">Memuat news...</div>
 
-        <!-- Empty -->
         <div class="admin-empty" id="adminEmpty" hidden>
             <div class="admin-empty-icon">📝</div>
             <strong>Belum ada news</strong>
             <p class="muted">Klik "+ New News" untuk membuat news pertama.</p>
         </div>
 
-        <!-- News list -->
         <div class="admin-news-list" id="adminNewsList" hidden></div>
 
     </div>
@@ -114,7 +121,6 @@
 
 </main>
 
-<!-- ===== Dialog: Create / Edit News ===== -->
 <dialog class="edit-dialog glass admin-editor-dialog" id="dialogEditor">
     <form id="editorForm" novalidate>
         <div class="dialog-heading">
@@ -181,7 +187,6 @@
     </form>
 </dialog>
 
-<!-- ===== Dialog: Delete Confirmation ===== -->
 <dialog class="edit-dialog glass admin-confirm-dialog" id="dialogConfirm">
     <form id="confirmForm" novalidate>
         <div class="dialog-heading">
