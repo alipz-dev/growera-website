@@ -1,0 +1,1153 @@
+/* ============================================================
+   GROWTOPIA FULL THEME — Override semua page
+   Load PALING AKHIR setelah CSS lain di setiap HTML
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Questrial&family=Montserrat:wght@700;800;900&display=swap');
+
+/* ===== 1. VARIABLES ===== */
+:root {
+    /* Growtopia palette */
+    --gt-panel-top: #2a3d63;
+    --gt-panel-bot: #0f1828;
+    --gt-panel-deep: #050a14;
+    --gt-border-gold: #d4af37;
+    --gt-border-bright: #f6d76b;
+    --gt-text: #ffffff;
+    --gt-text-muted: #b8c4dc;
+    --gt-text-dim: #8194b8;
+    --gt-accent: #5ec4d4;
+    --gt-green: #5ab552;
+    --gt-red: #d94f4f;
+    --gt-blue: #4a7fd4;
+    --gt-yellow: #e8c145;
+    --gt-purple: #9c7fd4;
+
+    /* Override existing vars */
+    --bg: #0a0f1a;
+    --text: var(--gt-text);
+    --muted: var(--gt-text-muted);
+    --line: #d4af3740;
+    --cyan: var(--gt-accent);
+    --purple: var(--gt-purple);
+    --pink: #e8a5ff;
+    --gold: var(--gt-yellow);
+    --display: "Montserrat", "Questrial", sans-serif;
+    --font-display: "Montserrat", "Questrial", sans-serif;
+}
+
+/* ===== 2. GLOBAL FONT ===== */
+*,
+*::before,
+*::after {
+    font-family: "Questrial", "Century Gothic", "Avenir Next", "Montserrat", sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.brand-name,
+.brand-subtitle,
+.button,
+.tab-btn,
+.eyebrow,
+.tiny-badge,
+.stat-label,
+.meta-label,
+.quick-nav-label,
+.friend-level,
+.guild-level-chip,
+.guild-stat span,
+.ach-badge,
+.rank-chip,
+.today-label,
+.news-tag,
+.edit-dialog label,
+.edit-label-row label,
+.player-handle,
+.online-pill,
+.tab-count,
+.inv-item-count,
+.inv-item-id,
+.world-group-head,
+.world-chip,
+.guild-member-chip,
+.pt-label,
+.guild-members-head,
+.news-date,
+.news-detail-date,
+.news-detail-author,
+.friend-id,
+.friend-meta,
+.friend-last-seen,
+.mini-stat,
+.form-message,
+.caps-warning,
+.edit-hint,
+.edit-counter,
+.last-updated,
+.footer-separator,
+.site-footer,
+.demo-note,
+.meta-bio,
+.form-message,
+.md-content code,
+.md-format-help code {
+    font-family: "Montserrat", "Century Gothic", "Questrial", sans-serif !important;
+}
+
+/* Headers: bold + shadow */
+h1, h2, h3,
+.brand-name,
+.dashboard-heading h1,
+.player-card h2,
+.welcome-content h2,
+.info-dialog .dialog-heading h2,
+.edit-dialog .dialog-heading h2,
+.news-card-title,
+.news-detail-dialog .dialog-heading h2 {
+    font-weight: 800 !important;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5) !important;
+    letter-spacing: 0.01em !important;
+}
+
+/* ===== 3. BODY / BACKGROUND ===== */
+body {
+    background-color: #050a14 !important;
+    background-image:
+        radial-gradient(circle at 15% 15%, rgba(94, 196, 212, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(232, 193, 69, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at center, #0f1828 0%, #050a14 100%) !important;
+}
+
+/* Hide ambient blobs (non-Growtopia) */
+.ambient { display: none !important; }
+
+/* ===== 4. GLASS PANEL — Growtopia dialogue box ===== */
+.glass {
+    background: linear-gradient(180deg, var(--gt-panel-top) 0%, var(--gt-panel-bot) 100%) !important;
+    border: 3px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 0 1px #0a0f1a,
+        0 12px 32px rgba(0, 0, 0, 0.65) !important;
+}
+
+/* ===== 5. BRAND / LOGO ===== */
+.brand-gem {
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    background: linear-gradient(180deg, #3a4a6b, #1a2540) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 3px 0 #0a0f1a !important;
+}
+
+.brand-name {
+    color: var(--gt-border-bright) !important;
+    text-shadow:
+        1px 1px 0 rgba(0, 0, 0, 0.7),
+        0 0 8px rgba(246, 215, 107, 0.4) !important;
+    letter-spacing: 0.14em !important;
+}
+
+.brand-subtitle {
+    color: var(--gt-text-dim) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ===== 6. EYEBROW ===== */
+.eyebrow {
+    color: var(--gt-border-bright) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6) !important;
+}
+
+.eyebrow-line {
+    background: linear-gradient(90deg, var(--gt-border-gold), transparent) !important;
+}
+
+/* ===== 7. BUTTONS — Classic game button ===== */
+.button {
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    transition: transform 0.08s, box-shadow 0.08s, filter 0.15s !important;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+        0 3px 0 #0a0f1a !important;
+}
+
+.button:hover {
+    filter: brightness(1.12) !important;
+    transform: none !important;
+}
+
+.button:active {
+    transform: translateY(2px) !important;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+        0 1px 0 #0a0f1a !important;
+}
+
+.button-primary {
+    background: linear-gradient(180deg, #6ecf62 0%, var(--gt-green) 50%, #3d8a36 100%) !important;
+    color: #ffffff !important;
+}
+
+.button-outline {
+    background: linear-gradient(180deg, #5a8fe4 0%, var(--gt-blue) 50%, #2a5a9c 100%) !important;
+    color: #ffffff !important;
+    border-color: var(--gt-border-gold) !important;
+}
+
+.button-quiet {
+    background: linear-gradient(180deg, #3a4a6b 0%, #1a2540 100%) !important;
+    color: var(--gt-text) !important;
+    border-color: var(--gt-border-gold) !important;
+}
+
+/* Refresh button */
+.refresh-button {
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    background: linear-gradient(180deg, #3a4a6b, #1a2540) !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+}
+.refresh-button:hover {
+    background: linear-gradient(180deg, #4a5a7b, #2a3550) !important;
+    border-color: var(--gt-border-bright) !important;
+}
+
+/* Icon buttons (dialog close) */
+.icon-button {
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    background: linear-gradient(180deg, #a84444 0%, #6b2828 100%) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+}
+.icon-button:hover {
+    filter: brightness(1.15) !important;
+}
+
+/* ===== 8. INPUTS — Inset panel ===== */
+.input-wrap {
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    background: #050a14 !important;
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.65),
+        0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+.input-wrap:focus-within {
+    border-color: var(--gt-border-bright) !important;
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.65),
+        0 0 0 2px rgba(246, 215, 107, 0.3) !important;
+}
+
+.input-wrap input {
+    color: var(--gt-text) !important;
+    font-weight: 400 !important;
+}
+
+.input-wrap input::placeholder {
+    color: #4b5670 !important;
+}
+
+/* Dialog inputs (edit profile, news post) */
+.edit-dialog input,
+.edit-dialog textarea,
+#dialogPostNews input,
+#dialogPostNews textarea,
+#editorNewsTitle,
+#editorNewsBody,
+.edit-select {
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    background: #050a14 !important;
+    color: var(--gt-text) !important;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+}
+
+.edit-dialog input:focus,
+.edit-dialog textarea:focus,
+.edit-select:focus {
+    border-color: var(--gt-border-bright) !important;
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.6),
+        0 0 0 2px rgba(246, 215, 107, 0.3) !important;
+}
+
+.edit-select option {
+    background: var(--gt-panel-bot) !important;
+    color: var(--gt-text) !important;
+}
+
+/* ===== 9. CARDS (player, stat, quick-nav, news, friend) ===== */
+.player-card,
+.profile-meta,
+.stat-card,
+.quick-nav-card,
+.news-card,
+.friend-card,
+.admin-news-card,
+.welcome-panel,
+.today-card,
+.player-mini,
+.coming-soon-card,
+.notice-panel {
+    background: linear-gradient(180deg, var(--gt-panel-top) 0%, var(--gt-panel-bot) 100%) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 6px 16px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: none !important;
+}
+
+.quick-nav-card:hover,
+.stat-card.is-clickable:hover,
+.news-card:hover,
+.friend-card:hover,
+.admin-news-card:hover {
+    border-color: var(--gt-border-bright) !important;
+    filter: brightness(1.15) !important;
+    transform: none !important;
+}
+
+/* Stat card icon backgrounds */
+.stat-icon.purple { background: rgba(156, 127, 212, 0.25) !important; border: 1px solid rgba(156, 127, 212, 0.5) !important; }
+.stat-icon.cyan { background: rgba(94, 196, 212, 0.25) !important; border: 1px solid rgba(94, 196, 212, 0.5) !important; }
+.stat-icon.gold { background: rgba(232, 193, 69, 0.25) !important; border: 1px solid rgba(232, 193, 69, 0.5) !important; }
+
+.quick-nav-icon.purple { background: rgba(156, 127, 212, 0.25) !important; }
+.quick-nav-icon.cyan { background: rgba(94, 196, 212, 0.25) !important; }
+.quick-nav-icon.gold { background: rgba(232, 193, 69, 0.25) !important; }
+
+/* ===== 10. TABS ===== */
+.tab-btn {
+    border: 2px solid transparent !important;
+    border-radius: 5px !important;
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    color: var(--gt-text-muted) !important;
+    font-weight: 800 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    transition: filter 0.15s, border-color 0.15s !important;
+}
+
+.tab-btn:hover {
+    filter: brightness(1.15) !important;
+    color: var(--gt-text) !important;
+}
+
+.tab-btn.active {
+    border-color: var(--gt-border-gold) !important;
+    background: linear-gradient(180deg, #5a8fe4 0%, #2a5a9c 100%) !important;
+    color: #ffffff !important;
+    border-bottom-color: var(--gt-border-gold) !important;
+}
+
+.tab-count {
+    background: rgba(0, 0, 0, 0.4) !important;
+    color: var(--gt-border-bright) !important;
+    border: 1px solid var(--gt-border-gold) !important;
+    border-radius: 4px !important;
+    font-weight: 800 !important;
+}
+
+.tab-btn.active .tab-count {
+    background: rgba(0, 0, 0, 0.5) !important;
+    color: #ffffff !important;
+}
+
+/* ===== 11. AVATAR ===== */
+.avatar-orbit {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: radial-gradient(circle, rgba(232, 193, 69, 0.2), rgba(15, 24, 40, 0.9) 70%) !important;
+    box-shadow: 0 0 24px rgba(232, 193, 69, 0.25) !important;
+}
+
+.avatar-orbit::before,
+.avatar-orbit::after {
+    border-color: rgba(232, 193, 69, 0.4) !important;
+}
+
+.avatar {
+    border: 2px solid var(--gt-border-bright) !important;
+    background: linear-gradient(145deg, #3a4a6b, #1a2540) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Mini avatar di home */
+.mini-avatar {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(145deg, #3a4a6b, #1a2540) !important;
+}
+
+/* Friend avatar */
+.friend-avatar {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(145deg, #3a4a6b, #1a2540) !important;
+}
+
+/* ===== 12. TINY BADGE (role, member since) ===== */
+.tiny-badge {
+    border: 1px solid var(--gt-border-gold) !important;
+    background: rgba(232, 193, 69, 0.15) !important;
+    color: var(--gt-border-bright) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 800 !important;
+    border-radius: 4px !important;
+}
+
+.tiny-badge.role-admin {
+    color: var(--gt-border-bright) !important;
+    border-color: var(--gt-border-gold) !important;
+    background: rgba(232, 193, 69, 0.2) !important;
+}
+
+.tiny-badge.role-player {
+    color: var(--gt-accent) !important;
+    border-color: var(--gt-accent) !important;
+    background: rgba(94, 196, 212, 0.15) !important;
+}
+
+/* Rank chip */
+.rank-chip {
+    border: 1px solid var(--gt-border-gold) !important;
+    background: rgba(232, 193, 69, 0.1) !important;
+    color: var(--gt-border-bright) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    border-radius: 4px !important;
+}
+
+/* Online pill */
+.online-pill {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(180deg, #3a4a6b, #1a2540) !important;
+    color: var(--gt-text-muted) !important;
+    border-radius: 4px !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+}
+
+.online-pill.is-online {
+    border-color: var(--gt-green) !important;
+    background: linear-gradient(180deg, #4a9b42, #2d6b28) !important;
+    color: #ffffff !important;
+}
+
+.online-pill.is-online .status-dot {
+    background: #b5ffb0 !important;
+    box-shadow: 0 0 10px #b5ffb0aa !important;
+}
+
+/* ===== 13. XP BAR ===== */
+.xp-track {
+    background: #050a14 !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 4px !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7) !important;
+    height: 12px !important;
+}
+
+.xp-fill {
+    background: linear-gradient(180deg, #9aff7a 0%, #6ecf62 40%, #4a9b42 100%) !important;
+    border-radius: 1px !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ===== 14. DIALOGS ===== */
+.info-dialog,
+.edit-dialog {
+    background: linear-gradient(180deg, var(--gt-panel-top) 0%, var(--gt-panel-bot) 100%) !important;
+    border: 3px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+        0 12px 40px rgba(0, 0, 0, 0.7) !important;
+    color: var(--gt-text) !important;
+}
+
+.info-dialog::backdrop,
+.edit-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Dialog heading bar */
+.info-dialog .dialog-heading,
+.edit-dialog .dialog-heading {
+    background: linear-gradient(180deg, #2a3d63, #1a2540) !important;
+    border-bottom: 2px solid var(--gt-border-gold) !important;
+    padding: 16px 22px !important;
+}
+
+.info-dialog .dialog-heading h2,
+.edit-dialog .dialog-heading h2 {
+    color: var(--gt-border-bright) !important;
+}
+
+/* Dialog actions bar */
+.edit-dialog .dialog-actions {
+    background: rgba(5, 10, 20, 0.95) !important;
+    border-top: 2px solid var(--gt-border-gold) !important;
+}
+
+/* News detail dialog */
+.news-detail-dialog {
+    background: linear-gradient(180deg, var(--gt-panel-top) 0%, var(--gt-panel-bot) 100%) !important;
+    border: 3px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+        0 12px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+.news-detail-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+
+.news-detail-dialog .dialog-heading {
+    background: linear-gradient(180deg, #2a3d63, #1a2540) !important;
+    border-bottom: 2px solid var(--gt-border-gold) !important;
+}
+
+.news-detail-dialog .dialog-heading h2 {
+    color: var(--gt-border-bright) !important;
+}
+
+.news-detail-dialog::after {
+    color: var(--gt-text-dim) !important;
+}
+
+/* ===== 15. TAB PANELS ===== */
+.player-card-tabs .tabs-header {
+    background: rgba(5, 10, 20, 0.6) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+}
+
+.player-card-tabs .tabs-content {
+    background: #050a14 !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+}
+
+/* Inventory item card */
+.inv-item {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+}
+
+.inv-item:hover {
+    border-color: var(--gt-border-bright) !important;
+    filter: brightness(1.15) !important;
+    transform: none !important;
+}
+
+.inv-item-id {
+    background: rgba(0, 0, 0, 0.7) !important;
+    color: var(--gt-border-bright) !important;
+    border-radius: 3px !important;
+    font-weight: 800 !important;
+}
+
+.inv-item-count {
+    background: rgba(0, 0, 0, 0.85) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--gt-border-gold) !important;
+    border-radius: 3px !important;
+    font-weight: 800 !important;
+}
+
+.inv-item-name {
+    color: var(--gt-text) !important;
+    font-weight: 600 !important;
+}
+
+/* World chips */
+.world-group-head {
+    border-bottom: 1px solid var(--gt-border-gold) !important;
+    color: var(--gt-border-bright) !important;
+}
+
+.world-group-head strong {
+    background: rgba(232, 193, 69, 0.15) !important;
+    color: var(--gt-border-bright) !important;
+    border: 1px solid var(--gt-border-gold) !important;
+    font-weight: 800 !important;
+}
+
+.world-chip {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    color: var(--gt-text) !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+}
+
+.world-chip:hover {
+    border-color: var(--gt-border-bright) !important;
+    filter: brightness(1.2) !important;
+}
+
+/* ===== 16. ACHIEVEMENTS ===== */
+.ach-card {
+    background: linear-gradient(180deg, #1a2540, #0f1828) !important;
+    border: 2px solid rgba(212, 175, 55, 0.3) !important;
+    border-radius: 5px !important;
+    opacity: 0.6 !important;
+}
+
+.ach-card.unlocked {
+    background: linear-gradient(180deg, #3a3d1e, #1a1d10) !important;
+    border-color: var(--gt-border-gold) !important;
+    opacity: 1 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 16px rgba(232, 193, 69, 0.15) !important;
+}
+
+.ach-card.unlocked:hover {
+    border-color: var(--gt-border-bright) !important;
+    box-shadow: 0 0 24px rgba(232, 193, 69, 0.3) !important;
+}
+
+.ach-card.unlocked .ach-icon {
+    background: rgba(232, 193, 69, 0.15) !important;
+}
+
+.ach-badge {
+    font-weight: 800 !important;
+    border-radius: 4px !important;
+}
+
+.ach-card.unlocked .ach-badge {
+    background: rgba(232, 193, 69, 0.2) !important;
+    color: var(--gt-border-bright) !important;
+    border: 1px solid var(--gt-border-gold) !important;
+}
+
+.ach-summary-box,
+.ach-progress-wrap {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+}
+
+.ach-progress-bar {
+    background: #050a14 !important;
+    border: 2px solid rgba(212, 175, 55, 0.5) !important;
+    border-radius: 4px !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6) !important;
+    height: 12px !important;
+}
+
+.ach-progress-fill {
+    background: linear-gradient(180deg, #9aff7a, #4a9b42) !important;
+    border-radius: 1px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ===== 17. NEWS TAGS ===== */
+.news-tag {
+    font-weight: 800 !important;
+    border-radius: 4px !important;
+    border-width: 2px !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.news-tag.tag-update {
+    background: rgba(94, 196, 212, 0.2) !important;
+    border-color: var(--gt-accent) !important;
+    color: var(--gt-accent) !important;
+}
+
+.news-tag.tag-fix {
+    background: rgba(90, 181, 82, 0.2) !important;
+    border-color: var(--gt-green) !important;
+    color: #9aff7a !important;
+}
+
+.news-tag.tag-event {
+    background: rgba(232, 193, 69, 0.2) !important;
+    border-color: var(--gt-border-gold) !important;
+    color: var(--gt-border-bright) !important;
+}
+
+.news-tag.tag-maintenance {
+    background: rgba(217, 79, 79, 0.2) !important;
+    border-color: var(--gt-red) !important;
+    color: #ff9999 !important;
+}
+
+.news-tag.tag-info {
+    background: rgba(156, 127, 212, 0.2) !important;
+    border-color: var(--gt-purple) !important;
+    color: #c7b8ff !important;
+}
+
+.news-pin-badge,
+.admin-news-pin-badge {
+    background: linear-gradient(135deg, var(--gt-border-bright), var(--gt-border-gold)) !important;
+    color: #1a1206 !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ===== 18. GUILD ===== */
+.guild-hero {
+    background: linear-gradient(135deg, #3a3d1e, #1a1d10) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+}
+
+.guild-mascot {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: #050a14 !important;
+    border-radius: 6px !important;
+}
+
+.guild-level-chip {
+    background: rgba(232, 193, 69, 0.15) !important;
+    border: 1px solid var(--gt-border-gold) !important;
+    color: var(--gt-border-bright) !important;
+    font-weight: 800 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.guild-stat {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 4px !important;
+}
+
+.guild-stat span {
+    color: var(--gt-text-dim) !important;
+}
+
+.guild-stat strong {
+    color: var(--gt-text) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.guild-member-chip {
+    background: linear-gradient(180deg, #2a5a3a, #1a3a25) !important;
+    border: 2px solid var(--gt-green) !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+}
+
+.guild-member-chip::before {
+    background: #9aff7a !important;
+    box-shadow: 0 0 6px #9aff7acc !important;
+}
+
+.guild-members-head {
+    border-top: 2px solid var(--gt-border-gold) !important;
+}
+
+/* ===== 19. PLAYTIME CHART ===== */
+.playtime-total {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+}
+
+.playtime-total strong {
+    color: var(--gt-accent) !important;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.playtime-chart {
+    background: #050a14 !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 4px !important;
+}
+
+.pt-bar {
+    background: linear-gradient(180deg, #6ecf62, #2d6b28) !important;
+    border-radius: 2px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.pt-bar-wrap.is-today .pt-bar {
+    background: linear-gradient(180deg, var(--gt-border-bright), var(--gt-border-gold)) !important;
+    box-shadow: 0 0 12px rgba(232, 193, 69, 0.5) !important;
+}
+
+.pt-label {
+    color: var(--gt-text-dim) !important;
+    font-weight: 800 !important;
+}
+
+.pt-bar-wrap.is-today .pt-label {
+    color: var(--gt-border-bright) !important;
+}
+
+/* ===== 20. TOAST ===== */
+.toast {
+    background: linear-gradient(180deg, var(--gt-panel-top), var(--gt-panel-bot)) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 6px 20px rgba(0, 0, 0, 0.6) !important;
+    color: var(--gt-text) !important;
+    font-weight: 700 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.toast.toast-success { border-color: var(--gt-green) !important; }
+.toast.toast-success .toast-icon { color: #9aff7a !important; }
+.toast.toast-error { border-color: var(--gt-red) !important; }
+.toast.toast-error .toast-icon { color: #ff9999 !important; }
+.toast.toast-info { border-color: var(--gt-accent) !important; }
+.toast.toast-info .toast-icon { color: var(--gt-accent) !important; }
+
+/* ===== 21. FORM HINTS / MESSAGES ===== */
+.form-message[data-type="error"] {
+    color: #ff9999 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 700 !important;
+}
+
+.form-message[data-type="success"] {
+    color: #9aff7a !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 700 !important;
+}
+
+.form-message[data-type="info"] {
+    color: var(--gt-accent) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 700 !important;
+}
+
+.caps-warning {
+    color: var(--gt-border-bright) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 700 !important;
+}
+
+/* ===== 22. LOGIN CARD (special treatment) ===== */
+.login-card {
+    border-width: 4px !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.5),
+        inset 0 0 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px #0a0f1a,
+        0 20px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+.login-card h1 {
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6) !important;
+    font-weight: 900 !important;
+}
+
+.login-card h1 span {
+    background: linear-gradient(180deg, var(--gt-border-bright), var(--gt-border-gold)) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    filter: drop-shadow(0 0 12px rgba(232, 193, 69, 0.4)) !important;
+}
+
+/* Continue as button */
+.continue-as-btn {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(180deg, #3a4a6b, #1a2540) !important;
+    border-radius: 5px !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+}
+
+.continue-as-btn:hover {
+    filter: brightness(1.15) !important;
+    border-color: var(--gt-border-bright) !important;
+    transform: none !important;
+}
+
+.continue-as-avatar {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(145deg, #3a4a6b, #1a2540) !important;
+}
+
+.continue-as-arrow {
+    color: var(--gt-border-gold) !important;
+}
+
+.continue-as-btn:hover .continue-as-arrow {
+    color: var(--gt-border-bright) !important;
+}
+
+.continue-as-divider {
+    color: var(--gt-text-dim) !important;
+}
+
+.continue-as-divider::before,
+.continue-as-divider::after {
+    background: rgba(212, 175, 55, 0.3) !important;
+}
+
+/* ===== 23. WELCOME PANEL (home & profile) ===== */
+.welcome-content h2 {
+    color: var(--gt-text) !important;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6) !important;
+}
+
+.welcome-art {
+    background: radial-gradient(ellipse at 75% 48%, rgba(232, 193, 69, 0.15), transparent 60%) !important;
+}
+
+.art-glow {
+    background: var(--gt-border-gold) !important;
+    opacity: 0.08 !important;
+}
+
+.crystal {
+    background: linear-gradient(140deg, rgba(246, 215, 107, 0.6), rgba(212, 175, 55, 0.2) 47%, rgba(156, 127, 212, 0.3)) !important;
+    filter: drop-shadow(0 0 20px rgba(232, 193, 69, 0.5)) !important;
+}
+
+/* ===== 24. TODAY WIDGET ===== */
+.today-widget {
+    background: rgba(5, 10, 20, 0.6) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+}
+
+.today-emoji {
+    background: rgba(232, 193, 69, 0.15) !important;
+    border: 1px solid var(--gt-border-gold) !important;
+    border-radius: 4px !important;
+}
+
+.today-label {
+    color: var(--gt-border-bright) !important;
+    font-weight: 800 !important;
+}
+
+.today-text strong,
+.today-text span:not(.today-label) {
+    color: var(--gt-text) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ===== 25. NOTICE PANEL ===== */
+.notice-panel {
+    border-color: var(--gt-accent) !important;
+}
+
+.notice-panel strong {
+    color: var(--gt-accent) !important;
+}
+
+/* ===== 26. LAST UPDATED ===== */
+.last-updated {
+    background: rgba(5, 10, 20, 0.7) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    color: var(--gt-text-dim) !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.last-updated.is-fresh {
+    color: #9aff7a !important;
+    border-color: var(--gt-green) !important;
+}
+
+.last-updated.is-stale {
+    color: var(--gt-border-bright) !important;
+    border-color: var(--gt-border-gold) !important;
+}
+
+/* ===== 27. TOPBAR ===== */
+.topbar {
+    border-bottom: 3px solid var(--gt-border-gold) !important;
+    background: transparent !important;
+}
+
+.topbar.is-scrolled {
+    background: linear-gradient(180deg, #1a2540 0%, #0f1828 100%) !important;
+    border-bottom-color: var(--gt-border-gold) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* ===== 28. FOOTER ===== */
+.site-footer {
+    color: var(--gt-text-dim) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.2) !important;
+    padding-top: 20px !important;
+}
+
+/* ===== 29. META SECTION (about me) ===== */
+.meta-item {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid rgba(212, 175, 55, 0.4) !important;
+    border-radius: 4px !important;
+}
+
+.meta-label {
+    color: var(--gt-border-bright) !important;
+    font-weight: 800 !important;
+}
+
+.meta-bio {
+    background: rgba(5, 10, 20, 0.6) !important;
+    border: 1px dashed var(--gt-border-gold) !important;
+    color: var(--gt-text-muted) !important;
+}
+
+/* ===== 30. SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050a14 !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--gt-border-gold), #8a6f1f) !important;
+    border-radius: 2px !important;
+    border: 2px solid #050a14 !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--gt-border-bright), var(--gt-border-gold)) !important;
+}
+
+/* ===== 31. MISC ===== */
+.text-button {
+    color: var(--gt-accent) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 800 !important;
+}
+
+.text-button:hover {
+    color: var(--gt-border-bright) !important;
+}
+
+.mini-profile-btn {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(180deg, #5a8fe4, #2a5a9c) !important;
+    color: #ffffff !important;
+    border-radius: 5px !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+    font-weight: 800 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.mini-profile-btn:hover {
+    filter: brightness(1.15) !important;
+}
+
+/* ===== 32. NEWS CARD PREVIEW (compact) ===== */
+.news-card-title {
+    color: var(--gt-text) !important;
+}
+
+.news-card-preview {
+    color: var(--gt-text-muted) !important;
+}
+
+.news-author,
+.news-date {
+    color: var(--gt-text-dim) !important;
+}
+
+.news-read-more {
+    color: var(--gt-border-bright) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    font-weight: 800 !important;
+}
+
+/* ===== 33. ADMIN PANEL SPECIFIC ===== */
+.admin-badge {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: rgba(232, 193, 69, 0.15) !important;
+    color: var(--gt-border-bright) !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+    border-radius: 4px !important;
+    font-weight: 800 !important;
+}
+
+.admin-toolbar {
+    background: linear-gradient(180deg, #243a63, #1a2540) !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 6px !important;
+}
+
+.admin-stat strong {
+    color: var(--gt-border-bright) !important;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.admin-action-btn {
+    border: 2px solid var(--gt-border-gold) !important;
+    background: linear-gradient(180deg, #3a4a6b, #1a2540) !important;
+    color: var(--gt-text) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 0 #0a0f1a !important;
+    font-weight: 800 !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.admin-action-btn:hover {
+    filter: brightness(1.15) !important;
+    transform: none !important;
+}
+
+.admin-action-btn.is-pinned {
+    background: linear-gradient(180deg, #8a6f1f, #5a4a1f) !important;
+    border-color: var(--gt-border-bright) !important;
+    color: #ffffff !important;
+}
+
+.admin-action-btn.is-danger {
+    background: linear-gradient(180deg, #d94f4f, #8a3030) !important;
+    border-color: #ff9999 !important;
+    color: #ffffff !important;
+}
+
+/* Editor dialog preview panel */
+.editor-preview {
+    background: #050a14 !important;
+    border: 2px solid var(--gt-border-gold) !important;
+    border-radius: 5px !important;
+}
+
+/* ===== 34. REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+    .button,
+    .tab-btn,
+    .refresh-button,
+    .quick-nav-card,
+    .news-card {
+        transition: none !important;
+    }
+}
