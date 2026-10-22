@@ -1,11 +1,11 @@
 // js/login.js
-// Login page logic + UX Tier 1
-// Redirect target: /home.html (bukan /profile.html)
+// Login page logic + UX Tier 1 + Theme switcher
 
 import { apiRequest, saveToken, clearToken } from "./core.js";
 
 const $ = (s) => document.querySelector(s);
 const REMEMBER_KEY = "growera_last_username";
+const THEME_KEY = "growera_theme";
 
 const loginForm = $("#loginForm");
 const formMessage = $("#formMessage");
@@ -17,11 +17,45 @@ const continueAsWrap = $("#continueAsWrap");
 const continueAsBtn = $("#continueAsBtn");
 const continueAsAvatar = $("#continueAsAvatar");
 const continueAsUsername = $("#continueAsUsername");
+const themeToggle = $("#themeToggle");
+const gtThemeLink = document.getElementById("gt-theme-link");
 
 let isBusy = false;
 let submitTimerId = 0;
 let submitStartAt = 0;
 
+/* ===== Theme Switcher ===== */
+function getCurrentTheme() {
+    return document.documentElement.getAttribute("data-theme") || "crystal";
+}
+
+function applyTheme(theme, animate) {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (gtThemeLink) gtThemeLink.disabled = (theme !== "growtopia");
+    if (themeToggle) themeToggle.setAttribute("aria-checked", String(theme === "growtopia"));
+    if (animate) {
+        document.documentElement.classList.add("theme-transitioning");
+        setTimeout(() => {
+            document.documentElement.classList.remove("theme-transitioning");
+        }, 400);
+    }
+}
+
+function handleThemeToggle() {
+    const current = getCurrentTheme();
+    const next = current === "growtopia" ? "crystal" : "growtopia";
+    try { localStorage.setItem(THEME_KEY, next); }
+    catch (e) { console.warn("[GROWERA] Cannot save theme preference:", e); }
+    applyTheme(next, true);
+}
+
+function wireThemeToggle() {
+    if (!themeToggle) return;
+    themeToggle.setAttribute("aria-checked", String(getCurrentTheme() === "growtopia"));
+    themeToggle.addEventListener("click", handleThemeToggle);
+}
+
+/* ===== Message ===== */
 function setMessage(message, type = "error") {
     if (!formMessage) return;
     formMessage.textContent = message || "";
@@ -29,6 +63,7 @@ function setMessage(message, type = "error") {
     else delete formMessage.dataset.type;
 }
 
+/* ===== Remember Username ===== */
 function saveLastUsername(username) {
     try {
         const clean = String(username || "").trim();
@@ -41,6 +76,7 @@ function getLastUsername() {
     catch { return ""; }
 }
 
+/* ===== Continue As ===== */
 function showContinueAs(username) {
     if (!continueAsWrap || !username) return;
     const name = String(username).trim();
@@ -71,6 +107,7 @@ function handleContinueAsClick() {
     setTimeout(() => passwordInput?.focus(), 50);
 }
 
+/* ===== Shake Animation ===== */
 function triggerShake() {
     if (!loginCard) return;
     loginCard.classList.remove("is-shaking");
@@ -79,6 +116,7 @@ function triggerShake() {
     setTimeout(() => loginCard.classList.remove("is-shaking"), 500);
 }
 
+/* ===== Submit Timer ===== */
 function formatSubmitLabel(seconds) {
     if (seconds < 0.5) return "SIGNING IN";
     return "SIGNING IN (" + seconds.toFixed(1) + "s)";
@@ -164,8 +202,6 @@ async function handleLogin(event) {
         const token = result?.token || result?.accessToken || result?.data?.token || result?.data?.accessToken;
         saveToken(token);
         saveLastUsername(username);
-
-        // ▼▼▼ INI PERUBAHANNYA — ke /home.html ▼▼▼
         window.location.replace("/home.html");
     } catch (error) {
         clearToken();
@@ -222,6 +258,7 @@ function init() {
     continueAsBtn?.addEventListener("click", handleContinueAsClick);
     wireInputClearOnType();
     smartInitialFocus();
+    wireThemeToggle();
 }
 
 loginForm?.addEventListener("submit", handleLogin);
