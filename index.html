@@ -9,14 +9,27 @@
 (function(){
     try {
         var token = localStorage.getItem("growera_session_token") || sessionStorage.getItem("growera_session_token");
-        if (token) { window.location.replace("/home.html"); }  <!-- CHANGED: /profile.html → /home.html -->
+        if (token) { window.location.replace("/home.html"); }
     } catch(e) {}
 })();
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/login.css"><link rel="stylesheet" href="css/theme-toggle.css"><link rel="stylesheet" href="css/growtopia-theme.css" id="gt-theme-link" disabled>
+
+<script>
+(function(){
+    try {
+        var theme = localStorage.getItem("growera_theme") || "crystal";
+        document.documentElement.setAttribute("data-theme", theme);
+        if (theme === "growtopia") {
+            var link = document.getElementById("gt-theme-link");
+            if (link) link.disabled = false;
+        }
+    } catch(e){}
+})();
+</script>
 </head>
 <body>
 
@@ -82,6 +95,15 @@
 
             <div class="demo-note">
                 <span class="status-dot"></span> LIVE MODE <span class="demo-divider">•</span> GROWERA Player Server
+            </div>
+
+            <!-- THEME SWITCHER -->
+            <div class="theme-switcher">
+                <span class="theme-switcher-label theme-switcher-label-crystal">CRYSTAL</span>
+                <button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Toggle theme">
+                    <span class="theme-toggle-thumb"></span>
+                </button>
+                <span class="theme-switcher-label theme-switcher-label-growtopia">GROWTOPIA</span>
             </div>
         </div>
     </div>
