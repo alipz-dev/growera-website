@@ -16,7 +16,20 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/home.css"><link rel="stylesheet" href="css/news.css"><link rel="stylesheet" href="css/markdown.css">
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/home.css"><link rel="stylesheet" href="css/news.css"><link rel="stylesheet" href="css/markdown.css"><link rel="stylesheet" href="css/growtopia-theme.css" id="gt-theme-link" disabled>
+
+<script>
+(function(){
+    try {
+        var theme = localStorage.getItem("growera_theme") || "crystal";
+        document.documentElement.setAttribute("data-theme", theme);
+        if (theme === "growtopia") {
+            var link = document.getElementById("gt-theme-link");
+            if (link) link.disabled = false;
+        }
+    } catch(e){}
+})();
+</script>
 </head>
 <body>
 
@@ -209,7 +222,6 @@
 
 </main>
 
-<!-- ===== DIALOG: News Detail (no close button — click outside / ESC) ===== -->
 <dialog class="info-dialog glass news-detail-dialog" id="dialogNewsDetail">
     <div class="dialog-heading">
         <div>
